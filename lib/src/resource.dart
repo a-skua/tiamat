@@ -1,4 +1,5 @@
-const MEMORY_SIZE = 2 << 16;
+const WORD_SIZE = 16;
+const MEMORY_SIZE = 1 << 16;
 const GR_SIZE = 8;
 const OVERFLOW_FLAG = 1 << 0;
 const SIGN_FLAG = 1 << 1;
@@ -19,11 +20,14 @@ class Resource {
   }
 
   int getGR(int i) {
-    return i < this._general_registers.length ? this._general_registers[i] : 0;
+    if (i >= 0 && i < this._general_registers.length) {
+      return this._general_registers[i];
+    }
+    return 0;
   }
 
   bool setGR(int i, int val) {
-    if (i < this._general_registers.length) {
+    if (i >= 0 && i < this._general_registers.length) {
       this._general_registers[i] = val;
       return true;
     }
@@ -31,13 +35,13 @@ class Resource {
   }
 
   int get SP => this._stack_pointer;
-  set SP(int val) => this._stack_pointer = val;
+  set SP(int val) => this._stack_pointer = val & ((1 << WORD_SIZE) - 1);
 
   int get PR => this._program_register;
-  set PR(int val) => this._program_register = val;
+  set PR(int val) => this._program_register = val & ((1 << WORD_SIZE) - 1);
 
   int get FR => this._flag_register;
-  set FR(int val) => this._flag_register;
+  set FR(int val) => this._flag_register = val & ((1 << 3) - 1);
 
   bool get OF => this._flag_register & OVERFLOW_FLAG > 0;
   set OF(bool f) {
