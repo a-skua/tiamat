@@ -7,7 +7,7 @@ void main() {
   final rand = Random();
 
   group('GRs', () {
-    for (var i = 0; i < GR_SIZE; i++) {
+    for (var i = 0; i < generalRegisterSize; i++) {
       test('set/get success; GR[$i]', () {
         final r = Resource();
         final val = rand.nextInt(randSize);
@@ -16,7 +16,7 @@ void main() {
       });
     }
 
-    for (var i = GR_SIZE; i < GR_SIZE * 2; i++) {
+    for (var i = generalRegisterSize; i < generalRegisterSize * 2; i++) {
       test('set/get fail; GR[$i]', () {
         final r = Resource();
         final val = rand.nextInt(randSize);
@@ -25,7 +25,7 @@ void main() {
       });
     }
 
-    for (var i = -1; i >= GR_SIZE * -1; i--) {
+    for (var i = -1; i >= generalRegisterSize * -1; i--) {
       test('set/get fail; GR[$i]', () {
         final r = Resource();
         final val = rand.nextInt(randSize);
@@ -114,17 +114,17 @@ void main() {
         bool sf = false;
         bool zf = false;
 
-        if (i & OVERFLOW_FLAG > 0) {
+        if (i & overflowFlag > 0) {
           of = true;
-          val |= OVERFLOW_FLAG;
+          val |= overflowFlag;
         }
-        if (i & SIGN_FLAG > 0) {
+        if (i & signFlag > 0) {
           sf = true;
-          val |= SIGN_FLAG;
+          val |= signFlag;
         }
-        if (i & ZERO_FLAG > 0) {
+        if (i & zeroFlag > 0) {
           zf = true;
-          val |= ZERO_FLAG;
+          val |= zeroFlag;
         }
         r.OF = of;
         r.SF = sf;
@@ -135,6 +135,17 @@ void main() {
         expect(r.ZF, equals(zf));
         expect(r.FR, equals(val));
       });
+    }
+  });
+
+  test('memory', () {
+    final r = Resource();
+    for (var i = 0; i < 8; i++) {
+      final addr = rand.nextInt(r.memory.size);
+      final val = rand.nextInt(wordSize);
+      expect(r.memory.setWord(addr, val), equals(true));
+
+      expect(r.memory.getWord(addr), equals(val));
     }
   });
 }
