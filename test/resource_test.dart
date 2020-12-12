@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:tiamat/src/resource.dart';
 import 'package:test/test.dart';
 
