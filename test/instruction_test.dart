@@ -80,29 +80,127 @@ void main() {
         expect(r.getGR(reg), equals(data));
       }
     });
+
+    test('flags', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      var op = (0x10 << 0x8);
+      var base = 0;
+      var addr = ((1 << 16) - 1) - base;
+      var data = 0;
+
+      r.memory.setWord(r.PR, op);
+      r.memory.setWord(r.PR + 1, addr);
+      r.memory.setWord(addr + base, data);
+      ins.loadMemory(r);
+      expect(r.OF, equals(false));
+      expect(r.SF, equals(false));
+      expect(r.ZF, equals(true));
+      expect(r.getGR(0), equals(data));
+
+      op = (0x10 << 0x8) + (0x1 << 0x4) + 0x1;
+      base = 10;
+      addr = ((1 << 16) - 1) - base;
+      data = 1 << 15;
+
+      r.setGR(1, base);
+      r.memory.setWord(r.PR, op);
+      r.memory.setWord(r.PR + 1, addr);
+      r.memory.setWord(addr + base, data);
+      ins.loadMemory(r);
+      expect(r.OF, equals(false));
+      expect(r.SF, equals(true));
+      expect(r.ZF, equals(false));
+      expect(r.getGR(1), equals(data));
+
+      op = (0x10 << 0x8) + (0x7 << 0x4) + 0x2;
+      base = 20;
+      addr = ((1 << 16) - 1) - base;
+      data = rand.nextInt(1 << 15);
+
+      r.setGR(2, base);
+      r.memory.setWord(r.PR, op);
+      r.memory.setWord(r.PR + 1, addr);
+      r.memory.setWord(addr + base, data);
+      ins.loadMemory(r);
+      expect(r.OF, equals(false));
+      expect(r.SF, equals(false));
+      expect(r.ZF, equals(false));
+      expect(r.getGR(7), equals(data));
+    });
   });
 
-  test('load', () {
-    final r = Resource();
-    final ins = Instruction();
+  group('load', () {
+    test('default', () {
+      final r = Resource();
+      final ins = Instruction();
 
-    for (var i = 0; i < 8; i++) {
-      final r1 = rand.nextInt(8);
-      final r2 = rand.nextInt(8);
-      final pr = rand.nextInt(1 << 16);
+      for (var i = 0; i < 8; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = rand.nextInt(8);
+        final pr = rand.nextInt(1 << 16);
 
-      final op = (0x14 << 0x8) + (r1 << 0x4) + r2;
-      final data = rand.nextInt(1 << 16);
+        final op = (0x14 << 0x8) + (r1 << 0x4) + r2;
+        final data = rand.nextInt(1 << 16);
 
-      r.setGR(r1, 0);
+        r.setGR(r1, 0);
+        r.setGR(r2, data);
+        r.memory.setWord(pr, op);
+        r.PR = pr;
+
+        ins.load(r);
+        expect(r.PR, equals(pr + 1));
+        expect(r.getGR(r1), equals(data));
+      }
+    });
+
+    test('flags', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      var r1 = rand.nextInt(8);
+      var r2 = rand.nextInt(8);
+      var op = (0x14 << 8) + (r1 << 4) + r2;
+      var data = 0;
+
       r.setGR(r2, data);
-      r.memory.setWord(pr, op);
-      r.PR = pr;
-
+      r.FR = 6;
+      r.memory.setWord(r.PR, op);
       ins.load(r);
-      expect(r.PR, equals(pr + 1));
       expect(r.getGR(r1), equals(data));
-    }
+      expect(r.OF, equals(false));
+      expect(r.SF, equals(false));
+      expect(r.ZF, equals(true));
+
+      r1 = rand.nextInt(8);
+      r2 = rand.nextInt(8);
+      op = (0x14 << 8) + (r1 << 4) + r2;
+      data = 1 << 15;
+
+      r.setGR(r2, data);
+      r.FR = 5;
+      r.memory.setWord(r.PR, op);
+      ins.load(r);
+      expect(r.getGR(r1), equals(data));
+      expect(r.OF, equals(false));
+      expect(r.SF, equals(true));
+      expect(r.ZF, equals(false));
+
+      r1 = rand.nextInt(8);
+      r2 = rand.nextInt(8);
+      op = (0x14 << 8) + (r1 << 4) + r2;
+      data = rand.nextInt(1 << 15);
+
+      r.setGR(r2, data);
+      r.FR = 7;
+      r.memory.setWord(r.PR, op);
+      ins.load(r);
+      expect(r.getGR(r1), equals(data));
+      expect(r.OF, equals(false));
+      expect(r.SF, equals(false));
+      expect(r.ZF, equals(false));
+    });
   });
 
   group('store', () {

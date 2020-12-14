@@ -66,7 +66,7 @@ class Resource {
 
   bool setGR(final int i, final int val) {
     if (i >= 0 && i < this._generalRegisters.length) {
-      this._generalRegisters[i] = val;
+      this._generalRegisters[i] = val & ((1 << wordSize) - 1);
       return true;
     }
     return false;
