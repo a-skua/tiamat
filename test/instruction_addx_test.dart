@@ -27,6 +27,7 @@ void main() {
         r.memory.setWord(addr, v2);
         ins.addArithmeticMemory(r);
         expect(r.getGR(reg), equals(v1 + v2));
+        expect(r.PR, equals(pr + 2));
       }
     });
 
@@ -55,6 +56,7 @@ void main() {
         r.memory.setWord(addr, v2);
         ins.addArithmeticMemory(r);
         expect(r.getGR(reg), equals(v1 + v2));
+        expect(r.PR, equals(pr + 2));
       }
     });
 
@@ -106,7 +108,7 @@ void main() {
         }
       });
 
-      test('zefo', () {
+      test('zero', () {
         final r = Resource();
         final ins = Instruction();
 

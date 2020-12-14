@@ -108,7 +108,7 @@ void _addArithmeticMemory(final Resource r) {
   var flag = 0;
   if ((raw & overflowFlag) > 0) {
     flag |= overflowFlag;
-  } else if (((v1 & signMask) ^ (v2 & signMask)) == 0) {
+  } else if ((v1 & signMask) == (v2 & signMask)) {
     if ((v1 & signMask) != (result & signMask)) {
       flag |= overflowFlag;
     }
