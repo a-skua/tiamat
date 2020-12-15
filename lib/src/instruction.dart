@@ -7,6 +7,7 @@ class Instruction {
   final loadAddress = _loadAddress;
   final load = _load;
   final addArithmeticMemory = _addArithmeticMemory;
+  final addArithmetic = _addArithmetic;
 }
 
 /// NOP
@@ -96,20 +97,50 @@ void _addArithmeticMemory(final Resource r) {
       x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
   r.PR += 1;
 
+  const maskBits = (1 << wordSize) - 1;
+
+  final v1 = r.getGR(gr);
+  final v2 = r.memory.getWord(adr);
+  final result = (v1 + v2) & maskBits;
+  final flag = _addaFR(v1, v2);
+
+  r.setGR(gr, result);
+  r.FR = flag;
+}
+
+/// ADDA r1, r2
+void _addArithmetic(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final r2 = cache & 0xf;
+  final r1 = (cache >> 4) & 0xf;
+
+  const maskBits = (1 << wordSize) - 1;
+
+  final v1 = r.getGR(r1);
+  final v2 = r.getGR(r2);
+
+  final result = (v1 + v2) & maskBits;
+  final flag = _addaFR(v1, v2);
+
+  r.setGR(r1, result);
+  r.FR = flag;
+}
+
+int _addaFR(final int v1, final int v2) {
   const signMask = 1 << (wordSize - 1);
   const maskBits = (1 << wordSize) - 1;
   const overflowMask = -1 ^ maskBits;
 
-  final v1 = r.getGR(gr);
-  final v2 = r.memory.getWord(adr);
   final raw = v1 + v2;
   final result = raw & maskBits;
 
   var flag = 0;
-  if ((raw & overflowFlag) > 0) {
-    flag |= overflowFlag;
-  } else if ((v1 & signMask) == (v2 & signMask)) {
-    if ((v1 & signMask) != (result & signMask)) {
+  if ((v1 & signMask) == (v2 & signMask)) {
+    if ((raw & overflowMask) > 0) {
+      flag |= overflowFlag;
+    } else if ((v1 & signMask) != (result & signMask)) {
       flag |= overflowFlag;
     }
   }
@@ -119,21 +150,8 @@ void _addArithmeticMemory(final Resource r) {
   if (result == 0) {
     flag |= zeroFlag;
   }
-  r.setGR(gr, result);
-  r.FR = flag;
+  return flag;
 }
-
-/// ADDA r1, r2
-// void _addArithmetic(final Resource r) {
-//   final cache = r.memory.getWord(r.PR);
-//   r.PR += 1;
-//
-//   final r2 = cache & 0xf;
-//   final r1 = (cache >> 4) & 0xf;
-//
-//   final result = r.getGR(r1) + r.getGR(r2);
-//   r.setGR(r1, result);
-// }
 
 /// SUBA r, adr, x
 // void _subtractArithmeticMemory(final Resource r) {

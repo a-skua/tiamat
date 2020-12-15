@@ -165,4 +165,196 @@ void main() {
       });
     });
   });
+
+  group('add arithmetic', () {
+    test('default', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      for (var i = 0; i < 8; i++) {
+        final r1 = rand.nextInt(8);
+        var r2 = rand.nextInt(8);
+        if (r1 == r2) {
+          r2 = r2 == 7 ? 0 : r2 + 1;
+        }
+        final pr = rand.nextInt(0xffff);
+
+        final op = (0x24 << 8) + (r1 << 4) + r2;
+        final v1 = rand.nextInt(1 << 15);
+        final v2 = rand.nextInt(1 << 15);
+
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+        r.PR = pr;
+
+        ins.addArithmetic(r);
+        expect(r.PR, equals(pr + 1));
+        expect(r.getGR(r1), equals(v1 + v2));
+      }
+    });
+
+    group('flags', () {
+      test('overflow', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final r1 = rand.nextInt(8);
+          var r2 = rand.nextInt(8);
+          if (r1 == r2) {
+            r2 = r2 == 7 ? 0 : r2 + 1;
+          }
+          final pr = rand.nextInt(0xffff);
+
+          final op = (0x24 << 8) + (r1 << 4) + r2;
+          final v1 = 1 << 15;
+          final v2 = rand.nextInt(1 << 15) + (1 << 15);
+
+          r.setGR(r1, v1);
+          r.setGR(r2, v2);
+          r.memory.setWord(pr, op);
+          r.PR = pr;
+          final result = (v1 + v2) & 0xffff;
+
+          ins.addArithmetic(r);
+          expect(r.PR, equals(pr + 1));
+          expect(r.getGR(r1), equals(result));
+          expect(r.OF, equals(true));
+          expect(r.SF, equals(false));
+          expect(r.ZF, equals(result == 0));
+        }
+
+        for (var i = 0; i < 4; i++) {
+          final r1 = rand.nextInt(8);
+          var r2 = rand.nextInt(8);
+          if (r1 == r2) {
+            r2 = r2 == 7 ? 0 : r2 + 1;
+          }
+          final pr = rand.nextInt(0xffff);
+
+          final op = (0x24 << 8) + (r1 << 4) + r2;
+          final v1 = 1 << 14;
+          final v2 = rand.nextInt(1 << 14) + (1 << 14);
+
+          r.setGR(r1, v1);
+          r.setGR(r2, v2);
+          r.memory.setWord(pr, op);
+          r.PR = pr;
+          final result = (v1 + v2) & 0xffff;
+
+          ins.addArithmetic(r);
+          expect(r.PR, equals(pr + 1));
+          expect(r.getGR(r1), equals(result));
+          expect(r.OF, equals(true));
+          expect(r.SF, equals(true));
+          expect(r.ZF, equals(false));
+        }
+
+        for (var i = 0; i < 4; i++) {
+          final r1 = rand.nextInt(8);
+          var r2 = rand.nextInt(8);
+          if (r1 == r2) {
+            r2 = r2 == 7 ? 0 : r2 + 1;
+          }
+          final pr = rand.nextInt(0xffff);
+
+          final op = (0x24 << 8) + (r1 << 4) + r2;
+          final v1 = 1 << 15;
+          final v2 = rand.nextInt(1 << 15) + (1 << 15);
+
+          r.setGR(r1, v1);
+          r.setGR(r2, v2);
+          r.memory.setWord(pr, op);
+          r.PR = pr;
+          final result = (v1 + v2) & 0xffff;
+
+          ins.addArithmetic(r);
+          expect(r.PR, equals(pr + 1));
+          expect(r.getGR(r1), equals(result));
+          expect(r.OF, equals(true));
+          expect(r.SF, equals((result & (1 << 15)) > 0));
+          expect(r.ZF, equals(result == 0));
+        }
+      });
+
+      test('sign', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        final r1 = rand.nextInt(8);
+        var r2 = rand.nextInt(8);
+        if (r1 == r2) {
+          r2 = r2 == 7 ? 0 : r2 + 1;
+        }
+
+        final op = (0x24 << 8) + (r1 << 4) + r2;
+        var v1 = 0;
+        var v2 = rand.nextInt(1 << 15) + (1 << 15);
+        var result = (v1 + v2) & 0xffff;
+
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(r.PR, op);
+
+        ins.addArithmetic(r);
+        expect(r.getGR(r1), equals(result));
+        expect(r.OF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.ZF, equals(false));
+
+        v1 = rand.nextInt(1 << 15);
+        v2 = 0;
+        result = (v1 + v2) & 0xffff;
+
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(r.PR, op);
+
+        ins.addArithmetic(r);
+        expect(r.getGR(r1), equals(result));
+        expect(r.OF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.ZF, equals(result == 0));
+      });
+
+      test('zero', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        final r1 = rand.nextInt(8);
+        var r2 = rand.nextInt(8);
+        if (r1 == r2) {
+          r2 = r2 == 7 ? 0 : r2 + 1;
+        }
+
+        final op = (0x24 << 8) + (r1 << 4) + r2;
+        var v1 = 1 << 15;
+        var v2 = 1 << 15;
+
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(r.PR, op);
+
+        ins.addArithmetic(r);
+        expect(r.getGR(r1), equals(0));
+        expect(r.OF, equals(true));
+        expect(r.SF, equals(false));
+        expect(r.ZF, equals(true));
+
+        v1 = 0;
+        v2 = 0;
+
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(r.PR, op);
+
+        ins.addArithmetic(r);
+        expect(r.getGR(r1), equals(0));
+        expect(r.OF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.ZF, equals(true));
+      });
+    });
+  });
 }
