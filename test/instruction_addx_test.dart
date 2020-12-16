@@ -4,6 +4,8 @@ import 'package:tiamat/src/instruction.dart';
 import 'package:tiamat/src/resource.dart';
 import 'package:test/test.dart';
 
+import 'util.dart';
+
 void main() {
   final rand = Random();
 
@@ -12,21 +14,21 @@ void main() {
       final r = Resource();
       final ins = Instruction();
 
-      for (var i = 0; i < 3; i++) {
-        final reg = rand.nextInt(8);
-        final pr = rand.nextInt(1 << 15);
-        final op = (0x20 << 8) + (reg << 4);
+      for (var i = 0; i < 4; i++) {
+        final gr = rand.nextInt(8);
+        final pr = rand.nextInt((1 << 15) - 1);
+        final op = (0x20 << 8) + (gr << 4);
         final addr = rand.nextInt(1 << 15) + (1 << 15);
         final v1 = rand.nextInt(1 << 15);
         final v2 = rand.nextInt(1 << 15);
 
         r.PR = pr;
-        r.setGR(reg, v1);
+        r.setGR(gr, v1);
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, addr);
         r.memory.setWord(addr, v2);
         ins.addArithmeticMemory(r);
-        expect(r.getGR(reg), equals(v1 + v2));
+        expect(r.getGR(gr), equals(v1 + v2));
         expect(r.PR, equals(pr + 2));
       }
     });
@@ -35,27 +37,24 @@ void main() {
       final r = Resource();
       final ins = Instruction();
 
-      for (var i = 0; i < 3; i++) {
-        final reg = rand.nextInt(8);
-        var baseReg = rand.nextInt(7) + 1;
-        if (reg == baseReg) {
-          baseReg = baseReg == 7 ? 1 : baseReg + 1;
-        }
-        final pr = rand.nextInt(1 << 15) + (1 << 15);
-        final op = (0x20 << 8) + (reg << 4);
+      for (var i = 0; i < 4; i++) {
+        final gr = rand.nextInt(8);
+        final baseGR = getX(gr, rand.nextInt(7) + 1);
+        final pr = rand.nextInt((1 << 15) - 1) + (1 << 15);
+        final op = (0x20 << 8) + (gr << 4) + baseGR;
         final addr = rand.nextInt(1 << 14);
         final base = rand.nextInt(1 << 14);
         final v1 = rand.nextInt(1 << 15);
         final v2 = rand.nextInt(1 << 15);
 
         r.PR = pr;
-        r.setGR(reg, v1);
-        r.setGR(baseReg, base);
+        r.setGR(gr, v1);
+        r.setGR(baseGR, base);
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, addr);
-        r.memory.setWord(addr, v2);
+        r.memory.setWord(base + addr, v2);
         ins.addArithmeticMemory(r);
-        expect(r.getGR(reg), equals(v1 + v2));
+        expect(r.getGR(gr), equals((v1 + v2) & 0xffff));
         expect(r.PR, equals(pr + 2));
       }
     });

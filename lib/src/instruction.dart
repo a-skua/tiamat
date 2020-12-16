@@ -8,6 +8,7 @@ class Instruction {
   final load = _load;
   final addArithmeticMemory = _addArithmeticMemory;
   final addArithmetic = _addArithmetic;
+  final subtractArithmeticMemory = _subtractArithmeticMemory;
 }
 
 /// NOP
@@ -21,7 +22,7 @@ void _loadMemory(final Resource r) {
   r.PR += 1;
 
   final x = cache & 0xf;
-  final reg = (cache >> 4) & 0xf;
+  final gr = (cache >> 4) & 0xf;
   final adr =
       x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
   r.PR += 1;
@@ -34,7 +35,7 @@ void _loadMemory(final Resource r) {
   if ((data & (1 << (wordSize - 1))) > 0) {
     flag |= signFlag;
   }
-  r.setGR(reg, data);
+  r.setGR(gr, data);
   r.FR = flag;
 }
 
@@ -64,12 +65,12 @@ void _store(final Resource r) {
   r.PR += 1;
 
   final x = cache & 0xf;
-  final reg = (cache >> 4) & 0xf;
+  final gr = (cache >> 4) & 0xf;
   final adr =
       x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
   r.PR += 1;
 
-  r.memory.setWord(adr, r.getGR(reg));
+  r.memory.setWord(adr, r.getGR(gr));
 }
 
 /// LAD r, adr, x
@@ -78,12 +79,12 @@ void _loadAddress(final Resource r) {
   r.PR += 1;
 
   final x = cache & 0xf;
-  final reg = (cache >> 4) & 0xf;
+  final gr = (cache >> 4) & 0xf;
   final adr =
       x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
   r.PR += 1;
 
-  r.setGR(reg, adr);
+  r.setGR(gr, adr);
 }
 
 /// ADDA r, adr, x
@@ -102,7 +103,7 @@ void _addArithmeticMemory(final Resource r) {
   final v1 = r.getGR(gr);
   final v2 = r.memory.getWord(adr);
   final result = (v1 + v2) & maskBits;
-  final flag = _addaFR(v1, v2);
+  final flag = _addaFlag(v1, v2);
 
   r.setGR(gr, result);
   r.FR = flag;
@@ -122,13 +123,34 @@ void _addArithmetic(final Resource r) {
   final v2 = r.getGR(r2);
 
   final result = (v1 + v2) & maskBits;
-  final flag = _addaFR(v1, v2);
+  final flag = _addaFlag(v1, v2);
 
   r.setGR(r1, result);
   r.FR = flag;
 }
 
-int _addaFR(final int v1, final int v2) {
+/// SUBA r, adr, x
+void _subtractArithmeticMemory(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr =
+      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
+  r.PR += 1;
+
+  const maskBits = (1 << wordSize) - 1;
+
+  final v1 = r.getGR(gr);
+  final v2 = ((r.memory.getWord(adr) ^ -1) + 1) & maskBits;
+  final result = (v1 + v2) & maskBits;
+  final flag = _addaFlag(v1, v2);
+  r.setGR(gr, result);
+  r.FR = flag;
+}
+
+int _addaFlag(final int v1, final int v2) {
   const signMask = 1 << (wordSize - 1);
   const maskBits = (1 << wordSize) - 1;
   const overflowMask = -1 ^ maskBits;
@@ -152,17 +174,3 @@ int _addaFR(final int v1, final int v2) {
   }
   return flag;
 }
-
-/// SUBA r, adr, x
-// void _subtractArithmeticMemory(final Resource r) {
-//   final cache = r.memory.getWord(r.PR);
-//   r.PR += 1;
-//
-//   final x = cache & 0xf;
-//   final reg = (cache >> 4) & 0xf;
-//   final adr =
-//       x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-//   r.PR += 1;
-//   fial result = r.getGR(reg) - r.memory.getWord(adr);
-//   r.setGR(reg, result);
-// }
