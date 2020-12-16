@@ -40,7 +40,7 @@ void main() {
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
-        final baseGR = getX(gr, rand.nextInt(7) + 1);
+        final baseGR = getX(gr);
         final pr = rand.nextInt((1 << 15) - 1) + (1 << 15);
         final op = (0x21 << 8) + (gr << 4) + baseGR;
         final addr = rand.nextInt(1 << 14);
@@ -135,8 +135,8 @@ void main() {
         addr = rand.nextInt(1 << 16) | (1 << 15);
         gr = rand.nextInt(8);
         op = (0x21 << 8) + (gr << 4);
-        v1 = (rand.nextInt((1 << 16) - 1) + 1) | (1 << 15);
-        v2 = (1 << 15) + 1; // TODO: (-) - (-(1 << 15))
+        v1 = (rand.nextInt((1 << 16) - 2) + 1) | (1 << 15);
+        v2 = (1 << 15) + 1;
         result = (v1 + (v2 ^ -1) + 1) & 0xffff;
 
         r.setGR(gr, v1);

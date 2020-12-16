@@ -39,7 +39,7 @@ void main() {
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
-        final baseGR = getX(gr, rand.nextInt(7) + 1);
+        final baseGR = getX(gr);
         final pr = rand.nextInt((1 << 15) - 1) + (1 << 15);
         final op = (0x20 << 8) + (gr << 4) + baseGR;
         final addr = rand.nextInt(1 << 14);
