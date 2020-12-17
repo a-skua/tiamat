@@ -9,6 +9,7 @@ class Instruction {
   final addArithmeticMemory = _addArithmeticMemory;
   final addArithmetic = _addArithmetic;
   final subtractArithmeticMemory = _subtractArithmeticMemory;
+  final subtractArithmetic = _subtractArithmetic;
 }
 
 /// NOP
@@ -143,11 +144,33 @@ void _subtractArithmeticMemory(final Resource r) {
   const maskBits = (1 << wordSize) - 1;
 
   final v1 = r.getGR(gr);
-  final v2 = ((r.memory.getWord(adr) ^ -1) + 1) & maskBits;
+  final v2 = _complement2(r.memory.getWord(adr));
   final result = (v1 + v2) & maskBits;
   final flag = _addaFlag(v1, v2);
   r.setGR(gr, result);
   r.FR = flag;
+}
+
+/// SUBA r1, r2
+int _subtractArithmetic(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final r2 = cache & 0xf;
+  final r1 = (cache >> 4) & 0xf;
+  const maskBits = (1 << wordSize) - 1;
+
+  final v1 = r.getGR(r1);
+  final v2 = _complement2(r.getGR(r2));
+  final result = (v1 + v2) & maskBits;
+  final flag = _addaFlag(v1, v2);
+  r.setGR(r1, result);
+  r.FR = flag;
+}
+
+int _complement2(final int v) {
+  const maskBits = (1 << wordSize) - 1;
+  return ((v ^ -1) + 1) & maskBits;
 }
 
 int _addaFlag(final int v1, final int v2) {

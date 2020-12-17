@@ -107,6 +107,47 @@ void main() {
         }
       });
 
+      test('sign', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        var addr = rand.nextInt(1 << 16);
+        var gr = rand.nextInt(8);
+        var op = (0x20 << 8) + (gr << 4);
+        var v1 = 0;
+        var v2 = rand.nextInt(1 << 16) | (1 << 15);
+        var result = v1 + v2;
+
+        r.setGR(gr, v1);
+        r.memory.setWord(r.PR, op);
+        r.memory.setWord(r.PR + 1, addr);
+        r.memory.setWord(addr, v2);
+
+        ins.addArithmeticMemory(r);
+        expect(r.getGR(gr), equals(result));
+        expect(r.OF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.ZF, equals(false));
+
+        addr = rand.nextInt(1 << 16);
+        gr = rand.nextInt(8);
+        op = (0x29 << 8) + (gr << 4);
+        v1 = rand.nextInt(1 << 16) | (1 << 15);
+        v2 = 0;
+        result = v1 + v2;
+
+        r.setGR(gr, v1);
+        r.memory.setWord(r.PR, op);
+        r.memory.setWord(r.PR + 1, addr);
+        r.memory.setWord(addr, v2);
+
+        ins.addArithmeticMemory(r);
+        expect(r.getGR(gr), equals(result));
+        expect(r.OF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.ZF, equals(false));
+      });
+
       test('zero', () {
         final r = Resource();
         final ins = Instruction();
