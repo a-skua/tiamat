@@ -213,13 +213,10 @@ void main() {
 
       for (var i = 0; i < 8; i++) {
         final r1 = rand.nextInt(8);
-        var r2 = rand.nextInt(8);
-        if (r1 == r2) {
-          r2 = r2 == 7 ? 0 : r2 + 1;
-        }
+        final r2 = getX(r1, base: 0);
         final pr = rand.nextInt(0xffff);
 
-        final op = (0x24 << 8) + (r1 << 4) + r2;
+        final op = (0x24 << 8) | (r1 << 4) | r2;
         final v1 = rand.nextInt(1 << 15);
         final v2 = rand.nextInt(1 << 15);
 
@@ -241,15 +238,12 @@ void main() {
 
         for (var i = 0; i < 4; i++) {
           final r1 = rand.nextInt(8);
-          var r2 = rand.nextInt(8);
-          if (r1 == r2) {
-            r2 = r2 == 7 ? 0 : r2 + 1;
-          }
+          final r2 = getX(r1, base: 0);
           final pr = rand.nextInt(0xffff);
 
-          final op = (0x24 << 8) + (r1 << 4) + r2;
+          final op = (0x24 << 8) | (r1 << 4) | r2;
           final v1 = 1 << 15;
-          final v2 = rand.nextInt(1 << 15) + (1 << 15);
+          final v2 = rand.nextInt(1 << 16) | (1 << 15);
 
           r.setGR(r1, v1);
           r.setGR(r2, v2);
@@ -267,10 +261,7 @@ void main() {
 
         for (var i = 0; i < 4; i++) {
           final r1 = rand.nextInt(8);
-          var r2 = rand.nextInt(8);
-          if (r1 == r2) {
-            r2 = r2 == 7 ? 0 : r2 + 1;
-          }
+          final r2 = getX(r1, base: 0);
           final pr = rand.nextInt(0xffff);
 
           final op = (0x24 << 8) + (r1 << 4) + r2;
@@ -293,10 +284,7 @@ void main() {
 
         for (var i = 0; i < 4; i++) {
           final r1 = rand.nextInt(8);
-          var r2 = rand.nextInt(8);
-          if (r1 == r2) {
-            r2 = r2 == 7 ? 0 : r2 + 1;
-          }
+          final r2 = getX(r1, base: 0);
           final pr = rand.nextInt(0xffff);
 
           final op = (0x24 << 8) + (r1 << 4) + r2;
@@ -323,10 +311,7 @@ void main() {
         final ins = Instruction();
 
         final r1 = rand.nextInt(8);
-        var r2 = rand.nextInt(8);
-        if (r1 == r2) {
-          r2 = r2 == 7 ? 0 : r2 + 1;
-        }
+        final r2 = getX(r1, base: 0);
 
         final op = (0x24 << 8) + (r1 << 4) + r2;
         var v1 = 0;
@@ -363,10 +348,7 @@ void main() {
         final ins = Instruction();
 
         final r1 = rand.nextInt(8);
-        var r2 = rand.nextInt(8);
-        if (r1 == r2) {
-          r2 = r2 == 7 ? 0 : r2 + 1;
-        }
+        final r2 = getX(r1, base: 0);
 
         final op = (0x24 << 8) + (r1 << 4) + r2;
         var v1 = 1 << 15;
@@ -529,6 +511,128 @@ void main() {
 
           ins.addLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
+          expect(r.OF, equals(true));
+          expect(r.SF, equals(false));
+          expect(r.ZF, equals(true));
+        }
+      });
+    });
+  });
+
+  group('add logical', () {
+    const maskBits = 0xffff;
+
+    test('default', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      for (var i = 0; i < 4; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = getX(r1, base: 0);
+        final pr = rand.nextInt((1 << 16) - 1);
+
+        final op = (0x26 << 8) | (r1 << 4) | r2;
+        final v1 = rand.nextInt(1 << 16);
+        final v2 = rand.nextInt(1 << 16);
+        final raw = v1 + v2;
+        final result = raw & maskBits;
+
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+        r.PR = pr;
+
+        ins.addLogical(r);
+        expect(r.getGR(r1), equals(result));
+        expect(r.PR, equals(pr + 1));
+        expect(r.OF, equals((raw & (maskBits << 16)) > 0));
+        expect(r.SF, equals((result & (1 << 15)) > 0));
+        expect(r.ZF, equals(result == 0));
+      }
+    });
+
+    group('flags', () {
+      test('overflow', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final r1 = rand.nextInt(8);
+          final r2 = getX(r1, base: 0);
+          final pr = rand.nextInt((1 << 16) - 1);
+
+          final op = (0x26 << 8) | (r1 << 4) | r2;
+          final v1 = rand.nextInt(1 << 16) | (1 << 15);
+          final v2 = rand.nextInt(1 << 16) | (1 << 15);
+          final raw = v1 + v2;
+          final result = raw & maskBits;
+
+          r.setGR(r1, v1);
+          r.setGR(r2, v2);
+          r.memory.setWord(pr, op);
+          r.PR = pr;
+
+          ins.addLogical(r);
+          expect(r.getGR(r1), equals(result));
+          expect(r.PR, equals(pr + 1));
+          expect(r.OF, equals(true));
+          expect(r.SF, equals((result & (1 << 15)) > 0));
+          expect(r.ZF, equals(result == 0));
+        }
+      });
+
+      test('sign', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final r1 = rand.nextInt(8);
+          final r2 = getX(r1, base: 0);
+          final pr = rand.nextInt((1 << 16) - 1);
+
+          final op = (0x26 << 8) | (r1 << 4) | r2;
+          final v1 = rand.nextInt(1 << 15) | (1 << 14);
+          final v2 = rand.nextInt(1 << 15) | (1 << 14);
+          final raw = v1 + v2;
+          final result = raw & maskBits;
+
+          r.setGR(r1, v1);
+          r.setGR(r2, v2);
+          r.memory.setWord(pr, op);
+          r.PR = pr;
+
+          ins.addLogical(r);
+          expect(r.getGR(r1), equals(result));
+          expect(r.PR, equals(pr + 1));
+          expect(r.OF, equals(false));
+          expect(r.SF, equals(true));
+          expect(r.ZF, equals(false));
+        }
+      });
+
+      test('zero', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final r1 = rand.nextInt(8);
+          final r2 = getX(r1, base: 0);
+          final pr = rand.nextInt((1 << 16) - 1);
+
+          final op = (0x26 << 8) | (r1 << 4) | r2;
+          final v1 = rand.nextInt(1 << 16);
+          final v2 = ((v1 ^ -1) + 1) & maskBits;
+          final raw = v1 + v2;
+          final result = raw & maskBits;
+
+          r.setGR(r1, v1);
+          r.setGR(r2, v2);
+          r.memory.setWord(pr, op);
+          r.PR = pr;
+
+          ins.addLogical(r);
+          expect(r.getGR(r1), equals(result));
+          expect(r.PR, equals(pr + 1));
           expect(r.OF, equals(true));
           expect(r.SF, equals(false));
           expect(r.ZF, equals(true));
