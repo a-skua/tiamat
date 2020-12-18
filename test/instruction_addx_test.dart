@@ -18,7 +18,7 @@ void main() {
         final gr = rand.nextInt(8);
         final pr = rand.nextInt((1 << 15) - 1);
         final op = (0x20 << 8) + (gr << 4);
-        final addr = rand.nextInt(1 << 15) + (1 << 15);
+        final addr = rand.nextInt(1 << 16) | (1 << 15);
         final v1 = rand.nextInt(1 << 15);
         final v2 = rand.nextInt(1 << 15);
 
@@ -40,7 +40,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final baseGR = getX(gr);
-        final pr = rand.nextInt((1 << 15) - 1) + (1 << 15);
+        final pr = rand.nextInt((1 << 16) - 1) | (1 << 15);
         final op = (0x20 << 8) + (gr << 4) + baseGR;
         final addr = rand.nextInt(1 << 14);
         final base = rand.nextInt(1 << 14);
@@ -67,7 +67,7 @@ void main() {
 
         // (-) + (-)
         for (var i = 0; i < 4; i++) {
-          final addr = rand.nextInt(1 << 15) + (1 << 15);
+          final addr = rand.nextInt(1 << 16) | (1 << 15);
           final v1 = 1 << 15;
           final v2 = rand.nextInt(1 << 15) + (1 << 15);
           final gr = rand.nextInt(8);
@@ -394,6 +394,145 @@ void main() {
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
         expect(r.ZF, equals(true));
+      });
+    });
+  });
+
+  group('add logical memory', () {
+    const maskBits = (1 << 16) - 1;
+    test('without base', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      for (var i = 0; i < 4; i++) {
+        final gr = rand.nextInt(8);
+        final op = (0x22 << 8) + (gr << 4);
+        final pr = rand.nextInt((1 << 15) - 1);
+        final addr = rand.nextInt(1 << 16) | (1 << 15);
+        final v1 = rand.nextInt(1 << 16);
+        final v2 = rand.nextInt(1 << 16);
+        final result = (v1 + v2) & maskBits;
+
+        r.PR = pr;
+        r.setGR(gr, v1);
+        r.memory.setWord(pr, op);
+        r.memory.setWord(pr + 1, addr);
+        r.memory.setWord(addr, v2);
+
+        ins.addLogicalMemory(r);
+        expect(r.getGR(gr), equals(result));
+        expect(r.PR, equals(pr + 2));
+        expect(r.OF, equals((v1 + v2) > maskBits));
+        expect(r.SF, equals((result & (1 << 15)) > 0));
+        expect(r.ZF, equals(result == 0));
+      }
+    });
+
+    test('with base', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      for (var i = 0; i < 4; i++) {
+        final gr = rand.nextInt(8);
+        final baseGR = getX(gr);
+        final pr = rand.nextInt((1 << 16) - 2) | (1 << 15);
+        final op = (0x22 << 8) + (gr << 4) + baseGR;
+        final addr = rand.nextInt(1 << 14);
+        final base = rand.nextInt(1 << 14);
+        final v1 = rand.nextInt(1 << 16);
+        final v2 = rand.nextInt(1 << 16);
+        final result = (v1 + v2) & maskBits;
+
+        r.PR = pr;
+        r.setGR(gr, v1);
+        r.setGR(baseGR, base);
+        r.memory.setWord(pr, op);
+        r.memory.setWord(pr + 1, addr);
+        r.memory.setWord(base + addr, v2);
+
+        ins.addLogicalMemory(r);
+        expect(r.getGR(gr), equals(result));
+        expect(r.PR, equals(pr + 2));
+        expect(r.OF, equals((v1 + v2) > maskBits));
+        expect(r.SF, equals((result & (1 << 15)) > 0));
+        expect(r.ZF, equals(result == 0));
+      }
+    });
+
+    group('flags', () {
+      test('overflow', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final gr = rand.nextInt(8);
+          final op = (0x22 << 8) | (gr << 4);
+          final addr = rand.nextInt(1 << 16) | (1 << 15);
+          final v1 = rand.nextInt(1 << 16) | (1 << 15);
+          final v2 = rand.nextInt(1 << 16) | (1 << 15);
+          final result = (v1 + v2) & maskBits;
+
+          r.setGR(gr, v1);
+          r.memory.setWord(r.PR, op);
+          r.memory.setWord(r.PR + 1, addr);
+          r.memory.setWord(addr, v2);
+
+          ins.addLogicalMemory(r);
+          expect(r.getGR(gr), equals(result));
+          expect(r.OF, equals(true));
+          expect(r.SF, equals((result & (1 << 15)) > 0));
+          expect(r.ZF, equals(result == 0));
+        }
+      });
+
+      test('sign', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final gr = rand.nextInt(8);
+          final op = (0x22 << 8) | (gr << 4);
+          final addr = rand.nextInt(1 << 16) | (1 << 15);
+          final v1 = rand.nextInt(1 << 15) | (1 << 14);
+          final v2 = rand.nextInt(1 << 15) | (1 << 14);
+          final result = (v1 + v2) & maskBits;
+
+          r.setGR(gr, v1);
+          r.memory.setWord(r.PR, op);
+          r.memory.setWord(r.PR + 1, addr);
+          r.memory.setWord(addr, v2);
+
+          ins.addLogicalMemory(r);
+          expect(r.getGR(gr), equals(result));
+          expect(r.OF, equals((v1 + v2) > maskBits));
+          expect(r.SF, equals(true));
+          expect(r.ZF, equals(false));
+        }
+      });
+
+      test('zero', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final gr = rand.nextInt(8);
+          final op = (0x22 << 8) | (gr << 4);
+          final addr = rand.nextInt(1 << 16) | (1 << 15);
+          final v1 = rand.nextInt(1 << 16);
+          final v2 = ((v1 ^ -1) + 1) & maskBits;
+          final result = (v1 + v2) & maskBits;
+
+          r.setGR(gr, v1);
+          r.memory.setWord(r.PR, op);
+          r.memory.setWord(r.PR + 1, addr);
+          r.memory.setWord(addr, v2);
+
+          ins.addLogicalMemory(r);
+          expect(r.getGR(gr), equals(result));
+          expect(r.OF, equals(true));
+          expect(r.SF, equals(false));
+          expect(r.ZF, equals(true));
+        }
       });
     });
   });

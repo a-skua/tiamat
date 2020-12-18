@@ -10,6 +10,7 @@ class Instruction {
   final addArithmetic = _addArithmetic;
   final subtractArithmeticMemory = _subtractArithmeticMemory;
   final subtractArithmetic = _subtractArithmetic;
+  final addLogicalMemory = _addLogicalMemory;
 }
 
 /// NOP
@@ -130,6 +131,28 @@ void _addArithmetic(final Resource r) {
   r.FR = flag;
 }
 
+/// ADDL r, addr, x
+void _addLogicalMemory(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  const maskBits = (1 << wordSize) - 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr =
+      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
+  r.PR += 1;
+
+  final v1 = r.getGR(gr);
+  final v2 = r.memory.getWord(adr);
+  final result = (v1 + v2) & maskBits;
+  final flag = _addlFlag(v1, v2);
+
+  r.setGR(gr, result);
+  r.FR = flag;
+}
+
 /// SUBA r, adr, x
 void _subtractArithmeticMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
@@ -176,7 +199,7 @@ int _complement2(final int v) {
 int _addaFlag(final int v1, final int v2) {
   const signMask = 1 << (wordSize - 1);
   const maskBits = (1 << wordSize) - 1;
-  const overflowMask = -1 ^ maskBits;
+  const overflowMask = maskBits << wordSize;
 
   final raw = v1 + v2;
   final result = raw & maskBits;
@@ -188,6 +211,27 @@ int _addaFlag(final int v1, final int v2) {
     } else if ((v1 & signMask) != (result & signMask)) {
       flag |= overflowFlag;
     }
+  }
+  if ((result & signMask) > 0) {
+    flag |= signFlag;
+  }
+  if (result == 0) {
+    flag |= zeroFlag;
+  }
+  return flag;
+}
+
+int _addlFlag(final int v1, final int v2) {
+  const signMask = 1 << (wordSize - 1);
+  const maskBits = (1 << wordSize) - 1;
+  const overflowMask = maskBits << wordSize;
+
+  final raw = v1 + v2;
+  final result = raw & maskBits;
+
+  var flag = 0;
+  if ((raw & overflowMask) > 0) {
+    flag |= overflowFlag;
   }
   if ((result & signMask) > 0) {
     flag |= signFlag;
