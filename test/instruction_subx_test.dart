@@ -527,4 +527,118 @@ void main() {
       });
     });
   });
+
+  group('subtract logical', () {
+    const maskBits = 0xffff;
+
+    test('default', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      for (var i = 0; i < 8; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = getX(r1, base: 0);
+        final op = (0x27 << 8) | (r1 << 4) | r2;
+        final pr = rand.nextInt(1 << 16);
+        final v1 = rand.nextInt(1 << 16);
+        final v2 = rand.nextInt(1 << 16);
+        final raw = v1 - v2;
+        final result = (v1 - v2) & maskBits;
+
+        r.PR = pr;
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+
+        ins.subtractLogical(r);
+        expect(r.getGR(r1), equals(result));
+        expect(r.PR, equals((pr + 1) & maskBits));
+        expect(r.OF, equals(raw < 0));
+        expect(r.SF, equals((result & (1 << 15)) > 0));
+        expect(r.ZF, equals(result == 0));
+      }
+    });
+
+    group('flags', () {
+      test('overflow', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final r1 = rand.nextInt(8);
+          final r2 = getX(r1, base: 0);
+          final op = (0x27 << 8) | (r1 << 4) | r2;
+          final pr = rand.nextInt(1 << 16);
+          final v1 = rand.nextInt(1 << 15);
+          final v2 = v1 | (1 << 15);
+          final result = (v1 - v2) & maskBits;
+
+          r.PR = pr;
+          r.setGR(r1, v1);
+          r.setGR(r2, v2);
+          r.memory.setWord(pr, op);
+
+          ins.subtractLogical(r);
+          expect(r.getGR(r1), equals(result));
+          expect(r.PR, equals((pr + 1) & maskBits));
+          expect(r.OF, equals(true));
+          expect(r.SF, equals((result & (1 << 15)) > 0));
+          expect(r.ZF, equals(result == 0));
+        }
+      });
+
+      test('sign', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final r1 = rand.nextInt(8);
+          final r2 = getX(r1, base: 0);
+          final op = (0x27 << 8) | (r1 << 4) | r2;
+          final pr = rand.nextInt(1 << 16);
+          final v1 = rand.nextInt(1 << 14);
+          final v2 = rand.nextInt(1 << 15) | (1 << 14);
+          final result = (v1 - v2) & maskBits;
+
+          r.PR = pr;
+          r.setGR(r1, v1);
+          r.setGR(r2, v2);
+          r.memory.setWord(pr, op);
+
+          ins.subtractLogical(r);
+          expect(r.getGR(r1), equals(result));
+          expect(r.PR, equals((pr + 1) & maskBits));
+          expect(r.OF, equals(true));
+          expect(r.SF, equals(true));
+          expect(r.ZF, equals(result == 0));
+        }
+      });
+
+      test('zero', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 4; i++) {
+          final r1 = rand.nextInt(8);
+          final r2 = getX(r1, base: 0);
+          final op = (0x27 << 8) | (r1 << 4) | r2;
+          final pr = rand.nextInt(1 << 16);
+          final v1 = rand.nextInt(1 << 16);
+          final v2 = v1;
+
+          r.PR = pr;
+          r.setGR(r1, v1);
+          r.setGR(r2, v2);
+          r.memory.setWord(pr, op);
+
+          ins.subtractLogical(r);
+          expect(r.getGR(r1), equals(0));
+          expect(r.PR, equals((pr + 1) & maskBits));
+          expect(r.OF, equals(false));
+          expect(r.SF, equals(false));
+          expect(r.ZF, equals(true));
+        }
+      });
+    });
+  });
 }

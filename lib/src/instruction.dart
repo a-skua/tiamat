@@ -13,6 +13,7 @@ class Instruction {
   final addLogicalMemory = _addLogicalMemory;
   final addLogical = _addLogical;
   final subtractLogicalMemory = _subtractLogicalMemory;
+  final subtractLogical = _subtractLogical;
 }
 
 /// NOP
@@ -230,6 +231,24 @@ void _subtractLogicalMemory(final Resource r) {
   final flag = _sublFlag(v1, v2);
 
   r.setGR(gr, result);
+  r.FR = flag;
+}
+
+/// SUBL r1, r2
+void _subtractLogical(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final r2 = cache & 0xf;
+  final r1 = (cache >> 4) & 0xf;
+
+  const maskBits = (1 << wordSize) - 1;
+  final v1 = r.getGR(r1);
+  final v2 = r.getGR(r2);
+  final result = (v1 - v2) & maskBits;
+  final flag = _sublFlag(v1, v2);
+
+  r.setGR(r1, result);
   r.FR = flag;
 }
 
