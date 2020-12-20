@@ -22,13 +22,13 @@ class Instruction {
     this._map[0x81] = this.returnFromSubroutine;
   }
 
-  // void exec(final Resource r) {
-  //   // FIXME conditional
-  //   while (r.SP == 0) {
-  //     final op = (r.memory.getWord(r.PR) >> 8) & 0xff;
-  //     this._map[op];
-  //   }
-  // }
+  void exec(final Resource r) {
+    // FIXME conditional
+    while (r.SP != 0) {
+      final op = (r.memory.getWord(r.PR) >> 8) & 0xff;
+      this._map[op](r);
+    }
+  }
 
   final noOperation = _noOperation;
 

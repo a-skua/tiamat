@@ -53,7 +53,7 @@ class Memory {
 class Resource {
   final Memory _memory = Memory();
   final List<int> _generalRegisters = List.filled(generalRegisterSize, 0);
-  int _stackPointer = 0;
+  int _stackPointer = 0xffff;
   int _programRegister = 0;
   int _flagRegister = 0;
 
