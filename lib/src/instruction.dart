@@ -1,19 +1,53 @@
 import 'resource.dart';
 
 class Instruction {
+  final _map = List.filled(1 << 8, _noOperation);
+
+  Instruction() {
+    this._map[0x10] = this.loadMemory;
+    this._map[0x11] = this.store;
+    this._map[0x12] = this.loadAddress;
+    this._map[0x14] = this.load;
+
+    this._map[0x20] = this.addArithmeticMemory;
+    this._map[0x21] = this.subtractArithmeticMemory;
+    this._map[0x22] = this.addLogicalMemory;
+    this._map[0x23] = this.subtractLogicalMemory;
+    this._map[0x24] = this.addArithmetic;
+    this._map[0x25] = this.subtractArithmetic;
+    this._map[0x26] = this.addLogical;
+    this._map[0x27] = this.subtractLogical;
+
+    this._map[0x80] = this.callSubroutine;
+    this._map[0x81] = this.returnFromSubroutine;
+  }
+
+  // void exec(final Resource r) {
+  //   // FIXME conditional
+  //   while (r.SP == 0) {
+  //     final op = (r.memory.getWord(r.PR) >> 8) & 0xff;
+  //     this._map[op];
+  //   }
+  // }
+
   final noOperation = _noOperation;
+
   final loadMemory = _loadMemory;
   final store = _store;
   final loadAddress = _loadAddress;
   final load = _load;
+
   final addArithmeticMemory = _addArithmeticMemory;
-  final addArithmetic = _addArithmetic;
   final subtractArithmeticMemory = _subtractArithmeticMemory;
-  final subtractArithmetic = _subtractArithmetic;
   final addLogicalMemory = _addLogicalMemory;
-  final addLogical = _addLogical;
   final subtractLogicalMemory = _subtractLogicalMemory;
+  final addArithmetic = _addArithmetic;
+  final subtractArithmetic = _subtractArithmetic;
+  final addLogical = _addLogical;
   final subtractLogical = _subtractLogical;
+
+  final callSubroutine = _callSubroutine;
+  final returnFromSubroutine = _returnFromSubroutine;
 }
 
 /// NOP
@@ -227,7 +261,7 @@ void _subtractLogicalMemory(final Resource r) {
 
   final v1 = r.getGR(gr);
   final v2 = r.memory.getWord(adr);
-  final result = (v1 + (v2 ^ -1) + 1) & maskBits;
+  final result = (v1 - v2) & maskBits;
   final flag = _sublFlag(v1, v2);
 
   r.setGR(gr, result);
@@ -250,6 +284,26 @@ void _subtractLogical(final Resource r) {
 
   r.setGR(r1, result);
   r.FR = flag;
+}
+
+/// CALL adr, x
+void _callSubroutine(final Resource r) {
+  final x = r.memory.getWord(r.PR) & 0xf;
+  r.PR += 1;
+
+  final adr =
+      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
+  r.PR += 1;
+
+  r.SP -= 1;
+  r.memory.setWord(r.SP, r.PR);
+  r.PR = adr;
+}
+
+/// RET
+void _returnFromSubroutine(final Resource r) {
+  r.PR = r.memory.getWord(r.SP);
+  r.SP += 1;
 }
 
 int _complement2(final int v) {
