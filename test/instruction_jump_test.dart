@@ -19,7 +19,7 @@ void main() {
         final adr = rand.nextInt(0x10000);
 
         r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, adr);
+        r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
         ins.unconditionalJump(r);
         expect(r.PR, equals(adr));
@@ -38,7 +38,7 @@ void main() {
 
         r.setGR(baseGR, base);
         r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, adr);
+        r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
         ins.unconditionalJump(r);
         expect(r.PR, equals(base + adr));
@@ -58,7 +58,7 @@ void main() {
 
         r.FR = i;
         r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, adr);
+        r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
         ins.jumpOnPlus(r);
         if (!r.SF && !r.ZF) {
@@ -76,16 +76,60 @@ void main() {
       for (var i = 0; i < 8; i++) {
         final baseGR = getX(0);
         final op = 0x6500 | baseGR;
-        final base = rand.nextInt(0x10000);
-        final adr = rand.nextInt(0x10000);
+        final base = rand.nextInt(0x8000);
+        final adr = rand.nextInt(0x8000);
         final pr = r.PR;
 
+        r.FR = i;
         r.setGR(baseGR, base);
         r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, adr);
+        r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
         ins.jumpOnPlus(r);
         final e = (r.SF || r.ZF ? pr + 2 : base + adr) & 0xffff;
+        expect(r.PR, equals(e));
+      }
+    });
+  });
+
+  group('jump on minus', () {
+    test('without base', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      for (var i = 0; i < 8; i++) {
+        final op = 0x6100;
+        final adr = rand.nextInt(0x10000);
+        final pr = (r.PR + 2) & 0xffff;
+
+        r.FR = i;
+        r.memory.setWord(r.PR, op);
+        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+
+        ins.jumpOnMinus(r);
+        final e = r.SF ? adr : pr;
+        expect(r.PR, equals(e));
+      }
+    });
+
+    test('with base', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      for (var i = 0; i < 8; i++) {
+        final baseGR = getX(0);
+        final op = 0x6100 | baseGR;
+        final base = rand.nextInt(0x8000);
+        final adr = rand.nextInt(0x8000);
+        final pr = (r.PR + 2) & 0xffff;
+
+        r.FR = i;
+        r.setGR(baseGR, base);
+        r.memory.setWord(r.PR, op);
+        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+
+        ins.jumpOnMinus(r);
+        final e = r.SF ? (base + adr) & 0xffff : pr;
         expect(r.PR, equals(e));
       }
     });

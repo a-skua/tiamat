@@ -18,6 +18,7 @@ class Instruction {
     this._map[0x26] = this.addLogical;
     this._map[0x27] = this.subtractLogical;
 
+    this._map[0x61] = this.jumpOnMinus;
     this._map[0x64] = this.unconditionalJump;
     this._map[0x65] = this.jumpOnPlus;
 
@@ -49,6 +50,7 @@ class Instruction {
   final addLogical = _addLogical;
   final subtractLogical = _subtractLogical;
 
+  final jumpOnMinus = _jumpOnMinus;
   final unconditionalJump = _unconditionalJump;
   final jumpOnPlus = _jumpOnPlus;
 
@@ -61,7 +63,7 @@ void _noOperation(final Resource r) {
   r.PR += 1;
 }
 
-/// LD r, adr, x
+/// LD r,adr,x
 void _loadMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -84,7 +86,7 @@ void _loadMemory(final Resource r) {
   r.FR = flag;
 }
 
-/// LD r1, r2
+/// LD r1,r2
 void _load(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -104,7 +106,7 @@ void _load(final Resource r) {
   r.FR = flag;
 }
 
-/// ST r, adr, x
+/// ST r,adr,x
 void _store(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -132,7 +134,7 @@ void _loadAddress(final Resource r) {
   r.setGR(gr, adr);
 }
 
-/// ADDA r, adr, x
+/// ADDA r,adr,x
 void _addArithmeticMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -154,7 +156,7 @@ void _addArithmeticMemory(final Resource r) {
   r.FR = flag;
 }
 
-/// ADDA r1, r2
+/// ADDA r1,r2
 void _addArithmetic(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -174,7 +176,7 @@ void _addArithmetic(final Resource r) {
   r.FR = flag;
 }
 
-/// ADDL r, addr, x
+/// ADDL r,addr,x
 void _addLogicalMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -196,7 +198,7 @@ void _addLogicalMemory(final Resource r) {
   r.FR = flag;
 }
 
-/// ALLD r1, r2
+/// ALLD r1,r2
 void _addLogical(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -214,7 +216,7 @@ void _addLogical(final Resource r) {
   r.FR = flag;
 }
 
-/// SUBA r, adr, x
+/// SUBA r,adr,x
 void _subtractArithmeticMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -235,7 +237,7 @@ void _subtractArithmeticMemory(final Resource r) {
   r.FR = flag;
 }
 
-/// SUBA r1, r2
+/// SUBA r1,r2
 void _subtractArithmetic(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -252,7 +254,7 @@ void _subtractArithmetic(final Resource r) {
   r.FR = flag;
 }
 
-/// SUBL r, adr, x
+/// SUBL r,adr,x
 void _subtractLogicalMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -274,7 +276,7 @@ void _subtractLogicalMemory(final Resource r) {
   r.FR = flag;
 }
 
-/// SUBL r1, r2
+/// SUBL r1,r2
 void _subtractLogical(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
@@ -292,7 +294,7 @@ void _subtractLogical(final Resource r) {
   r.FR = flag;
 }
 
-/// JUMP adr, x
+/// JUMP adr,x
 void _unconditionalJump(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
@@ -304,7 +306,7 @@ void _unconditionalJump(final Resource r) {
   r.PR = adr;
 }
 
-/// JPL adr, x
+/// JPL adr,x
 void _jumpOnPlus(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
@@ -318,7 +320,21 @@ void _jumpOnPlus(final Resource r) {
   }
 }
 
-/// CALL adr, x
+/// JMI adr,x
+void _jumpOnMinus(final Resource r) {
+  final x = r.memory.getWord(r.PR) & 0xf;
+  r.PR += 1;
+
+  final adr =
+      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
+  r.PR += 1;
+
+  if (r.SF) {
+    r.PR = adr;
+  }
+}
+
+/// CALL adr,x
 void _callSubroutine(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
