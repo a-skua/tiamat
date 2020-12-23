@@ -19,6 +19,7 @@ class Instruction {
     this._map[0x27] = this.subtractLogical;
 
     this._map[0x61] = this.jumpOnMinus;
+    this._map[0x62] = this.jumpOnNonZero;
     this._map[0x64] = this.unconditionalJump;
     this._map[0x65] = this.jumpOnPlus;
 
@@ -51,6 +52,7 @@ class Instruction {
   final subtractLogical = _subtractLogical;
 
   final jumpOnMinus = _jumpOnMinus;
+  final jumpOnNonZero = _jumpOnNonZero;
   final unconditionalJump = _unconditionalJump;
   final jumpOnPlus = _jumpOnPlus;
 
@@ -330,6 +332,20 @@ void _jumpOnMinus(final Resource r) {
   r.PR += 1;
 
   if (r.SF) {
+    r.PR = adr;
+  }
+}
+
+/// JNZ adr,x
+void _jumpOnNonZero(final Resource r) {
+  final x = r.memory.getWord(r.PR) & 0xf;
+  r.PR += 1;
+
+  final adr =
+      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
+  r.PR += 1;
+
+  if (!r.ZF) {
     r.PR = adr;
   }
 }

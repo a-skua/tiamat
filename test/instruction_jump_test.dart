@@ -133,5 +133,47 @@ void main() {
         expect(r.PR, equals(e));
       }
     });
+
+    group('jump on non zero', () {
+      test('without base', () {
+        final r = Resource();
+        final ins = Instruction();
+
+        for (var i = 0; i < 8; i++) {
+          final op = 0x6200;
+          final adr = rand.nextInt(0x10000);
+          final pr = r.PR;
+
+          r.FR = i;
+          r.memory.setWord(r.PR, op);
+          r.memory.setWord((r.PR + 1) & 0xffff, adr);
+
+          ins.jumpOnNonZero(r);
+          final e = r.ZF ? (pr + 2) & 0xffff : adr;
+          expect(r.PR, equals(e));
+        }
+      });
+
+      test('with base', () {
+        final r = Resource();
+        final ins = Instruction();
+        for (var i = 0; i < 8; i++) {
+          final baseGR = getX(0);
+          final op = 0x6200 | baseGR;
+          final base = rand.nextInt(0x10000);
+          final adr = rand.nextInt(0x10000);
+          final pr = r.PR;
+
+          r.FR = i;
+          r.setGR(baseGR, base);
+          r.memory.setWord(r.PR, op);
+          r.memory.setWord((r.PR + 1) & 0xffff, adr);
+
+          ins.jumpOnNonZero(r);
+          final e = (r.ZF ? pr + 2 : base + adr) & 0xffff;
+          expect(r.PR, equals(e));
+        }
+      });
+    });
   });
 }
