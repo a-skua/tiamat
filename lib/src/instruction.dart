@@ -19,6 +19,7 @@ class Instruction {
     this._map[0x27] = this.subtractLogical;
 
     this._map[0x64] = this.unconditionalJump;
+    this._map[0x65] = this.jumpOnPlus;
 
     this._map[0x80] = this.callSubroutine;
     this._map[0x81] = this.returnFromSubroutine;
@@ -49,6 +50,7 @@ class Instruction {
   final subtractLogical = _subtractLogical;
 
   final unconditionalJump = _unconditionalJump;
+  final jumpOnPlus = _jumpOnPlus;
 
   final callSubroutine = _callSubroutine;
   final returnFromSubroutine = _returnFromSubroutine;
@@ -300,6 +302,20 @@ void _unconditionalJump(final Resource r) {
   r.PR += 1;
 
   r.PR = adr;
+}
+
+/// JPL adr, x
+void _jumpOnPlus(final Resource r) {
+  final x = r.memory.getWord(r.PR) & 0xf;
+  r.PR += 1;
+
+  final adr =
+      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
+  r.PR += 1;
+
+  if (!r.SF && !r.ZF) {
+    r.PR = adr;
+  }
 }
 
 /// CALL adr, x
