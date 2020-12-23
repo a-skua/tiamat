@@ -23,6 +23,7 @@ class Instruction {
     this._map[0x62] = this.jumpOnZero;
     this._map[0x64] = this.unconditionalJump;
     this._map[0x65] = this.jumpOnPlus;
+    this._map[0x66] = this.jumpOnOverflow;
 
     this._map[0x80] = this.callSubroutine;
     this._map[0x81] = this.returnFromSubroutine;
@@ -57,6 +58,7 @@ class Instruction {
   final jumpOnZero = _jumpOnZero;
   final unconditionalJump = _unconditionalJump;
   final jumpOnPlus = _jumpOnPlus;
+  final jumpOnOverflow = _jumpOnOverflow;
 
   final callSubroutine = _callSubroutine;
   final returnFromSubroutine = _returnFromSubroutine;
@@ -362,6 +364,20 @@ void _jumpOnZero(final Resource r) {
   r.PR += 1;
 
   if (r.ZF) {
+    r.PR = adr;
+  }
+}
+
+/// JOV adr,x
+void _jumpOnOverflow(final Resource r) {
+  final x = r.memory.getWord(r.PR) & 0xf;
+  r.PR += 1;
+
+  final adr =
+      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
+  r.PR += 1;
+
+  if (r.OF) {
     r.PR = adr;
   }
 }

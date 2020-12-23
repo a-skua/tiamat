@@ -217,4 +217,45 @@ void main() {
       }
     });
   });
+
+  group('jump on overflow', () {
+    test('without base', () {
+      final r = Resource();
+      final ins = Instruction();
+      for (var i = 0; i < 8; i++) {
+        final op = 0x6600;
+        final adr = rand.nextInt(0x10000);
+        final pr = r.PR;
+
+        r.FR = i;
+        r.memory.setWord(r.PR, op);
+        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+
+        ins.jumpOnOverflow(r);
+        final e = r.OF ? adr : (pr + 2) & 0xffff;
+        expect(r.PR, equals(e));
+      }
+    });
+
+    test('with base', () {
+      final r = Resource();
+      final ins = Instruction();
+      for (var i = 0; i < 8; i++) {
+        final baseGR = getX(0);
+        final op = 0x6600 | baseGR;
+        final base = rand.nextInt(0x10000);
+        final adr = rand.nextInt(0x10000);
+        final pr = r.PR;
+
+        r.FR = i;
+        r.setGR(baseGR, base);
+        r.memory.setWord(r.PR, op);
+        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+
+        ins.jumpOnOverflow(r);
+        final e = (r.OF ? base + adr : pr + 2) & 0xffff;
+        expect(r.PR, equals(e));
+      }
+    });
+  });
 }
