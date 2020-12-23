@@ -2,7 +2,9 @@ name: tiamat
 version: 0.1.0
 authors:
 - asuka y <yagi.asuka.0x06@gmail.com>
+environment:
+  sdk: ">=2.12.0-0 <3.0.0"
 descriptions: >
   Tiamat is an emulator of the COMET II.
 dev_dependencies:
-  test: ^1.15.7
+  test: ^1.16.0-nullsafety.13
