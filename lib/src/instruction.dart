@@ -18,6 +18,8 @@ class Instruction {
     this._map[0x26] = this.addLogical;
     this._map[0x27] = this.subtractLogical;
 
+    this._map[0x30] = this.compareArithmeticMemory;
+
     this._map[0x61] = this.jumpOnMinus;
     this._map[0x62] = this.jumpOnNonZero;
     this._map[0x62] = this.jumpOnZero;
@@ -52,6 +54,8 @@ class Instruction {
   final subtractArithmetic = _subtractArithmetic;
   final addLogical = _addLogical;
   final subtractLogical = _subtractLogical;
+
+  final compareArithmeticMemory = _compareArithmeticMemory;
 
   final jumpOnMinus = _jumpOnMinus;
   final jumpOnNonZero = _jumpOnNonZero;
@@ -300,6 +304,39 @@ void _subtractLogical(final Resource r) {
   r.FR = flag;
 }
 
+/// CPA r,adr,x
+void _compareArithmeticMemory(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr = _getADR(r, x);
+
+  final v1 = r.getGR(gr);
+  final v2 = r.memory.getWord(adr);
+
+  if (v1 == v2) {
+    r.FR = 1;
+    return;
+  }
+
+  const signMask = 0x8000;
+  if ((v1 & signMask == 0 && v2 & signMask == 0) ||
+      (v1 & signMask > 0 && v2 & signMask > 0)) {
+    if (v1 > v2) {
+      r.FR = 0;
+    } else {
+      r.FR = 2;
+    }
+  } else if (v1 & signMask > 0 && v2 & signMask == 0) {
+    r.FR = 2;
+  } else {
+    // v1 & signMask == 0 && v2 & signMask > 0
+    r.FR = 0;
+  }
+}
+
 /// JUMP adr,x
 void _unconditionalJump(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
@@ -400,6 +437,14 @@ void _callSubroutine(final Resource r) {
 void _returnFromSubroutine(final Resource r) {
   r.PR = r.memory.getWord(r.SP);
   r.SP += 1;
+}
+
+int _getADR(final Resource r, final int x) {
+  final adr = x == 0
+      ? r.memory.getWord(r.PR)
+      : (r.memory.getWord(r.PR) + r.getGR(x)) & 0xffff;
+  r.PR += 1;
+  return adr;
 }
 
 int _complement2(final int v) {
