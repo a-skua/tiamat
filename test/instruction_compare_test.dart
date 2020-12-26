@@ -18,7 +18,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final pr = rand.nextInt(0x10000);
-        final op = 0x3000 | (gr << 4);
+        final op = 0x4000 | (gr << 4);
         final adr = rand.nextInt(0x10000);
         final v1 = rand.nextInt(0x8000);
         final v2 = rand.nextInt(0x10000) | 0x8000;
@@ -38,7 +38,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final pr = rand.nextInt(0x10000);
-        final op = 0x3000 | (gr << 4);
+        final op = 0x4000 | (gr << 4);
         final adr = rand.nextInt(0x10000);
         final v1 = rand.nextInt(0x8000) | 0x4000;
         final v2 = rand.nextInt(0x4000);
@@ -58,7 +58,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final pr = rand.nextInt(0x10000);
-        final op = 0x3000 | (gr << 4);
+        final op = 0x4000 | (gr << 4);
         final adr = rand.nextInt(0x10000);
         final v1 = rand.nextInt(0x100) | 0xff00;
         final v2 = rand.nextInt(0x100) | 0x8000;
@@ -83,7 +83,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final x = getX(gr);
-        final op = 0x3000 | (gr << 4) | x;
+        final op = 0x4000 | (gr << 4) | x;
         final pr = rand.nextInt(0x10000);
         final base = rand.nextInt(0x10000);
         final adr = rand.nextInt(0x10000);
@@ -106,7 +106,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final x = getX(gr);
-        final op = 0x3000 | (gr << 4) | x;
+        final op = 0x4000 | (gr << 4) | x;
         final pr = rand.nextInt(0x10000);
         final base = rand.nextInt(0x10000);
         final adr = rand.nextInt(0x10000);
@@ -129,7 +129,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final x = getX(gr);
-        final op = 0x3000 | (gr << 4) | x;
+        final op = 0x4000 | (gr << 4) | x;
         final pr = rand.nextInt(0x10000);
         final base = rand.nextInt(0x10000);
         final adr = rand.nextInt(0x10000);
@@ -156,7 +156,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final pr = rand.nextInt(0x10000);
-        final op = 0x3000 | (gr << 4);
+        final op = 0x4000 | (gr << 4);
         final adr = rand.nextInt(0x10000);
         final v1 = rand.nextInt(0x10000);
         final v2 = v1;
@@ -180,7 +180,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final x = getX(gr);
-        final op = 0x3000 | (gr << 4) | x;
+        final op = 0x4000 | (gr << 4) | x;
         final pr = rand.nextInt(0x10000);
         final base = rand.nextInt(0x10000);
         final adr = rand.nextInt(0x10000);
@@ -208,7 +208,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final pr = rand.nextInt(0x10000);
-        final op = 0x3000 | (gr << 4);
+        final op = 0x4000 | (gr << 4);
         final adr = rand.nextInt(0x10000);
         final v1 = rand.nextInt(0x10000) | 0x8000;
         final v2 = rand.nextInt(0x8000);
@@ -228,7 +228,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final pr = rand.nextInt(0x10000);
-        final op = 0x3000 | (gr << 4);
+        final op = 0x4000 | (gr << 4);
         final adr = rand.nextInt(0x10000);
         final v1 = rand.nextInt(0x4000);
         final v2 = rand.nextInt(0x8000) | 0x4000;
@@ -248,7 +248,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final pr = rand.nextInt(0x10000);
-        final op = 0x3000 | (gr << 4);
+        final op = 0x4000 | (gr << 4);
         final adr = rand.nextInt(0x10000);
         final v1 = rand.nextInt(0x100) | 0x8000;
         final v2 = rand.nextInt(0x100) | 0xff00;
@@ -273,7 +273,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final x = getX(gr);
-        final op = 0x3000 | (gr << 4) | x;
+        final op = 0x4000 | (gr << 4) | x;
         final pr = rand.nextInt(0x10000);
         final base = rand.nextInt(0x10000);
         final adr = rand.nextInt(0x10000);
@@ -296,7 +296,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final x = getX(gr);
-        final op = 0x3000 | (gr << 4) | x;
+        final op = 0x4000 | (gr << 4) | x;
         final pr = rand.nextInt(0x10000);
         final base = rand.nextInt(0x10000);
         final adr = rand.nextInt(0x10000);
@@ -319,7 +319,7 @@ void main() {
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
         final x = getX(gr);
-        final op = 0x3000 | (gr << 4) | x;
+        final op = 0x4000 | (gr << 4) | x;
         final pr = rand.nextInt(0x10000);
         final base = rand.nextInt(0x10000);
         final adr = rand.nextInt(0x10000);
@@ -335,6 +335,155 @@ void main() {
 
         ins.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
+        expect(r.FR, equals(2));
+      }
+    });
+  });
+
+  group('compare arithmetic', () {
+    test('r1 > r2', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      // r1(+) > r2(-)
+      for (var i = 0; i < 4; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = getX(r1, base: 0);
+        final op = 0x4400 | (r1 << 4) | r2;
+        final pr = rand.nextInt(0x10000);
+        final v1 = rand.nextInt(0x8000);
+        final v2 = rand.nextInt(0x10000) | 0x8000;
+
+        r.PR = pr;
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+
+        ins.compareArithmetic(r);
+        expect(r.PR, equals((pr + 1) & 0xffff));
+        expect(r.FR, equals(0));
+      }
+
+      // r1(+) > r2(+)
+      for (var i = 0; i < 4; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = getX(r1, base: 0);
+        final op = 0x4400 | (r1 << 4) | r2;
+        final pr = rand.nextInt(0x10000);
+        final v1 = rand.nextInt(0x8000) | 0x4400;
+        final v2 = rand.nextInt(0x4400);
+
+        r.PR = pr;
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+
+        ins.compareArithmetic(r);
+        expect(r.PR, equals((pr + 1) & 0xffff));
+        expect(r.FR, equals(0));
+      }
+
+      // r1(-) > r2(-)
+      for (var i = 0; i < 4; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = getX(r1, base: 0);
+        final op = 0x4400 | (r1 << 4) | r2;
+        final pr = rand.nextInt(0x10000);
+        final v1 = rand.nextInt(0x100) | 0xff00;
+        final v2 = rand.nextInt(0x100) | 0x8000;
+
+        r.PR = pr;
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+
+        ins.compareArithmetic(r);
+        expect(r.PR, equals((pr + 1) & 0xffff));
+        expect(r.FR, equals(0));
+      }
+    });
+
+    test('r1 = r2', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      for (var i = 0; i < 4; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = getX(r1, base: 0);
+        final op = 0x4400 | (r1 << 4) | r2;
+        final pr = rand.nextInt(0x10000);
+        final v1 = rand.nextInt(0x10000);
+        final v2 = v1;
+
+        r.PR = pr;
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+
+        ins.compareArithmetic(r);
+        expect(r.PR, equals((pr + 1) & 0xffff));
+        expect(r.FR, equals(1));
+      }
+    });
+
+    test('r1 < r2', () {
+      final r = Resource();
+      final ins = Instruction();
+
+      // r1(-) < r2(+)
+      for (var i = 0; i < 4; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = getX(r1, base: 0);
+        final op = 0x4400 | (r1 << 4) | r2;
+        final pr = rand.nextInt(0x10000);
+        final v1 = rand.nextInt(0x10000) | 0x8000;
+        final v2 = rand.nextInt(0x8000);
+
+        r.PR = pr;
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+
+        ins.compareArithmetic(r);
+        expect(r.PR, equals((pr + 1) & 0xffff));
+        expect(r.FR, equals(2));
+      }
+
+      // r1(+) < r2(+)
+      for (var i = 0; i < 4; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = getX(r1, base: 0);
+        final op = 0x4400 | (r1 << 4) | r2;
+        final pr = rand.nextInt(0x10000);
+        final v1 = rand.nextInt(0x4400);
+        final v2 = rand.nextInt(0x8000) | 0x4400;
+
+        r.PR = pr;
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+
+        ins.compareArithmetic(r);
+        expect(r.PR, equals((pr + 1) & 0xffff));
+        expect(r.FR, equals(2));
+      }
+
+      // r(-) < adr(-)
+      for (var i = 0; i < 4; i++) {
+        final r1 = rand.nextInt(8);
+        final r2 = getX(r1, base: 0);
+        final op = 0x4400 | (r1 << 4) | r2;
+        final pr = rand.nextInt(0x10000);
+        final v1 = rand.nextInt(0x100) | 0x8000;
+        final v2 = rand.nextInt(0x100) | 0xff00;
+
+        r.PR = pr;
+        r.setGR(r1, v1);
+        r.setGR(r2, v2);
+        r.memory.setWord(pr, op);
+
+        ins.compareArithmetic(r);
+        expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(2));
       }
     });

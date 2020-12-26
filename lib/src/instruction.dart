@@ -18,7 +18,8 @@ class Instruction {
     this._map[0x26] = this.addLogical;
     this._map[0x27] = this.subtractLogical;
 
-    this._map[0x30] = this.compareArithmeticMemory;
+    this._map[0x40] = this.compareArithmeticMemory;
+    this._map[0x44] = this.compareArithmetic;
 
     this._map[0x61] = this.jumpOnMinus;
     this._map[0x62] = this.jumpOnNonZero;
@@ -56,6 +57,7 @@ class Instruction {
   final subtractLogical = _subtractLogical;
 
   final compareArithmeticMemory = _compareArithmeticMemory;
+  final compareArithmetic = _compareArithmetic;
 
   final jumpOnMinus = _jumpOnMinus;
   final jumpOnNonZero = _jumpOnNonZero;
@@ -316,25 +318,21 @@ void _compareArithmeticMemory(final Resource r) {
   final v1 = r.getGR(gr);
   final v2 = r.memory.getWord(adr);
 
-  if (v1 == v2) {
-    r.FR = 1;
-    return;
-  }
+  r.FR = _cpaFlag(v1, v2);
+}
 
-  const signMask = 0x8000;
-  if ((v1 & signMask == 0 && v2 & signMask == 0) ||
-      (v1 & signMask > 0 && v2 & signMask > 0)) {
-    if (v1 > v2) {
-      r.FR = 0;
-    } else {
-      r.FR = 2;
-    }
-  } else if (v1 & signMask > 0 && v2 & signMask == 0) {
-    r.FR = 2;
-  } else {
-    // v1 & signMask == 0 && v2 & signMask > 0
-    r.FR = 0;
-  }
+/// CPA r1,r2
+void _compareArithmetic(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final r2 = cache & 0xf;
+  final r1 = (cache >> 4) & 0xf;
+
+  final v1 = r.getGR(r1);
+  final v2 = r.getGR(r2);
+
+  r.FR = _cpaFlag(v1, v2);
 }
 
 /// JUMP adr,x
@@ -515,4 +513,25 @@ int _sublFlag(final int v1, final int v2) {
     flag |= zeroFlag;
   }
   return flag;
+}
+
+int _cpaFlag(final int v1, final int v2) {
+  if (v1 == v2) {
+    return 1;
+  }
+
+  const signMask = 0x8000;
+  if ((v1 & signMask == 0 && v2 & signMask == 0) ||
+      (v1 & signMask > 0 && v2 & signMask > 0)) {
+    if (v1 > v2) {
+      return 0;
+    } else {
+      return 2;
+    }
+  } else if (v1 & signMask > 0 && v2 & signMask == 0) {
+    return 2;
+  } else {
+    // v1 & signMask == 0 && v2 & signMask > 0
+    return 0;
+  }
 }
