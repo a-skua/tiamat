@@ -142,4 +142,20 @@ void main() {
         '\tEND\n';
     expect(p.compile(asm), equals([0x1401, 0x8100]));
   });
+
+  test('ST', () {
+    final cc = Casl2();
+
+    expect(cc.st('', 'GR1,#12FF').code, equals([0x1110, 0x12ff]));
+    expect(cc.st('', 'GR0,12,GR1').code, equals([0x1101, 12]));
+
+    const asm = '; st test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,#1234\n'
+        '\tST\tGR0,#2345\n'
+        '\tRET\n'
+        '\tEND\n';
+
+    expect(cc.compile(asm), equals([0x1200, 0x1234, 0x1100, 0x2345, 0x8100]));
+  });
 }

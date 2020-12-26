@@ -5,7 +5,7 @@
 final _expLine = RegExp(r'([A-Z0-9]*)[\t ]+([A-Z]{1,8})[\t ]*([A-Z0-9,#]*)');
 final _expCommonOperand = RegExp(r'(GR[0-7]),?([A-Z0-9#]+)?,?(GR[1-7])?');
 final _expGR = RegExp(r'^GR([0-7])$');
-final _expADR = RegExp(r'^(#?[0-9]+)$');
+final _expADR = RegExp(r'^(#?[0-9A-F]+)$');
 
 class Token {
   final List<int> _code;
@@ -57,6 +57,9 @@ class Casl2 {
         case 'LAD':
           token = this.lad(label, operand);
           break;
+        case 'ST':
+          token = this.st(label, operand);
+          break;
         case 'RET':
           token = this.ret(label);
           break;
@@ -98,6 +101,7 @@ class Casl2 {
   final ret = _ret;
   final ld = _ld;
   final lad = _lad;
+  final st = _st;
 }
 
 Token _start(final String label, final String operand) {
@@ -184,6 +188,38 @@ Token _lad(final String label, final String operand) {
   final x = m?.group(3) ?? '';
 
   var op = 0x1200;
+  if (_expGR.hasMatch(r)) {
+    final gr = _expGR.firstMatch(r)?.group(1) ?? '0';
+    op |= int.parse(gr) << 4;
+  }
+
+  if (_expGR.hasMatch(x)) {
+    final gr = _expGR.firstMatch(x)?.group(1) ?? '0';
+    op |= int.parse(gr);
+  }
+
+  if (_expADR.hasMatch(adr)) {
+    final a = _expADR.firstMatch(adr)?.group(1) ?? '0';
+    return Token([
+      op,
+      int.parse(a.replaceFirst('#', '0x')),
+    ], label: label);
+  }
+  return Token(
+    [op, 0],
+    label: label,
+    refLabel: adr,
+    refIndex: 1,
+  );
+}
+
+Token _st(final String label, final String operand) {
+  final m = _expCommonOperand.firstMatch(operand);
+  final r = m?.group(1) ?? '';
+  final adr = m?.group(2) ?? '';
+  final x = m?.group(3) ?? '';
+
+  var op = 0x1100;
   if (_expGR.hasMatch(r)) {
     final gr = _expGR.firstMatch(r)?.group(1) ?? '0';
     op |= int.parse(gr) << 4;
