@@ -63,6 +63,9 @@ class Casl2 {
         case 'CPA':
           token = this.cpa(label, operand);
           break;
+        case 'CPL':
+          token = this.cpl(label, operand);
+          break;
         case 'RET':
           token = this.ret(label);
           break;
@@ -106,6 +109,7 @@ class Casl2 {
   final lad = _lad;
   final st = _st;
   final cpa = _cpa;
+  final cpl = _cpl;
 }
 
 Token _start(final String label, final String operand) {
@@ -135,55 +139,7 @@ Token _ret(final String label) => Token([0x8100], label: label);
 Token _nop(final String label) => Token([0], label: label);
 
 Token _ld(final String label, final String operand) {
-  final m = _expCommonOperand.firstMatch(operand);
-  final r1 = m?.group(1) ?? '';
-  final r2 = m?.group(2) ?? '';
-  final x = m?.group(3) ?? '';
-
-  // LD r1,r2
-  if (_expGR.hasMatch(r1) && _expGR.hasMatch(r2)) {
-    var op = 0x1400;
-    {
-      final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
-      op |= int.parse(r) << 4;
-    }
-
-    {
-      final r = _expGR.firstMatch(r2)?.group(1) ?? '0';
-      op |= int.parse(r);
-    }
-    return Token([op], label: label);
-  }
-
-  // LD r,adr,x
-  if (_expGR.hasMatch(r1)) {
-    var op = 0x1000;
-    {
-      final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
-      op |= int.parse(r) << 4;
-    }
-
-    if (_expGR.hasMatch(x)) {
-      final r = _expGR.firstMatch(x)?.group(1) ?? '0';
-      op |= int.parse(r);
-    }
-
-    if (_expADR.hasMatch(r2)) {
-      final adr = _expADR.firstMatch(r2)?.group(1) ?? '0';
-      final a = adr.replaceFirst('#', '0x');
-      return Token(
-        [op, int.parse(a)],
-        label: label,
-      );
-    }
-    return Token(
-      [op, 0],
-      label: label,
-      refLabel: r2,
-      refIndex: 1,
-    );
-  }
-  return _nop(label);
+  return _pattern(label, operand, 0x1400, 0x1000);
 }
 
 Token _lad(final String label, final String operand) {
@@ -251,14 +207,23 @@ Token _st(final String label, final String operand) {
 }
 
 Token _cpa(final String label, final String operand) {
+  return _pattern(label, operand, 0x4400, 0x4000);
+}
+
+Token _cpl(final String label, final String operand) {
+  return _pattern(label, operand, 0x4500, 0x4100);
+}
+
+Token _pattern(final String label, final String operand, final int codeR1R2,
+    final int codeRAdrX) {
   final m = _expCommonOperand.firstMatch(operand);
   final r1 = m?.group(1) ?? '';
   final r2 = m?.group(2) ?? '';
   final x = m?.group(3) ?? '';
 
-  // CPA r1,r2
+  // CODE r1,r2
   if (_expGR.hasMatch(r1) && _expGR.hasMatch(r2)) {
-    var op = 0x4400;
+    var op = codeR1R2;
     {
       final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
       op |= int.parse(r) << 4;
@@ -271,9 +236,9 @@ Token _cpa(final String label, final String operand) {
     return Token([op], label: label);
   }
 
-  // CPA r,adr,x
+  // CODE r,adr,x
   if (_expGR.hasMatch(r1)) {
-    var op = 0x4000;
+    var op = codeRAdrX;
     {
       final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
       op |= int.parse(r) << 4;

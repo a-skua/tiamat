@@ -188,4 +188,34 @@ void main() {
           0x8100,
         ]));
   });
+
+  test('CPL', () {
+    final cc = Casl2();
+
+    expect(cc.cpl('', 'GR1,GR2').code, equals([0x4512]));
+    expect(cc.cpl('', 'GR7,#ABCD').code, equals([0x4170, 0xabcd]));
+    expect(cc.cpl('', 'GR6,1234,GR5').code, equals([0x4165, 1234]));
+
+    const asm = '; cpa test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,1234\n'
+        '\tLAD\tGR1,#1234\n'
+        '\tCPL\tGR0,GR1\n'
+        '\tCPL\tGR1,LABEL\n'
+        'LABEL\tRET\n'
+        '\tEND\n';
+
+    expect(
+        cc.compile(asm),
+        equals([
+          0x1200,
+          1234,
+          0x1210,
+          0x1234,
+          0x4501,
+          0x4110,
+          7,
+          0x8100,
+        ]));
+  });
 }
