@@ -27,8 +27,8 @@ class Token {
   void setLabel(final int label) => this._code[this.refIndex] = label;
 }
 
-class Parser {
-  List<int> exec(final String s) {
+class Casl2 {
+  List<int> compile(final String s) {
     return this.trans(this.parse(s));
   }
 

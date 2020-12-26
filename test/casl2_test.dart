@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:tiamat/src/parser.dart';
+import 'package:tiamat/src/casl2.dart';
 import 'package:tiamat/src/instruction.dart';
 import 'package:tiamat/src/resource.dart';
 import 'package:test/test.dart';
@@ -13,14 +13,14 @@ void main() {
         '\tNOP\t; comment\n'
         '\tRET\n';
 
-    final p = Parser();
-    final code = p.exec(asm);
+    final p = Casl2();
+    final code = p.compile(asm);
 
     expect(code, equals([0, 0x8100]));
   });
 
   test('NOP', () {
-    final p = Parser();
+    final p = Casl2();
     final actual = p.nop('LABEL');
     final expected = Token([0], label: 'LABEL');
 
@@ -30,7 +30,7 @@ void main() {
   });
 
   test('RET', () {
-    final p = Parser();
+    final p = Casl2();
     final actual = p.ret('LABEL');
     final expected = Token([0x8100], label: 'LABEL');
 
@@ -40,7 +40,7 @@ void main() {
   });
 
   test('LD', () {
-    final p = Parser();
+    final p = Casl2();
 
     expect(p.ld('', 'GR0,GR1').code, equals([0x1401]));
     expect(p.ld('', 'GR2,GR0').code, equals([0x1420]));
@@ -61,12 +61,12 @@ void main() {
         '\tNOP ;no operation\n'
         '\tRET ;end of program';
 
-    expect(
-        p.exec(asm), equals([0x1401, 0x1020, 0x7777, 0x1034, 9999, 0, 0x8100]));
+    expect(p.compile(asm),
+        equals([0x1401, 0x1020, 0x7777, 0x1034, 9999, 0, 0x8100]));
   });
 
   test('LAD', () {
-    final p = Parser();
+    final p = Casl2();
 
     expect(p.lad('', 'GR3,#1234').code, equals([0x1230, 0x1234]));
     expect(p.lad('', 'GR2,1234,GR1').code, equals([0x1221, 1234]));
@@ -87,7 +87,7 @@ void main() {
         '\tLAD GR1,1111\n'
         '\tRET\n'
         '\tEND\n';
-    final code = p.exec(asm);
+    final code = p.compile(asm);
     expect(code,
         equals([0x6400, 4, 0x1210, 0x1111, 0x1401, 0x1210, 1111, 0x8100]));
 
@@ -110,7 +110,7 @@ void main() {
   });
 
   test('START', () {
-    final p = Parser();
+    final p = Casl2();
 
     expect(p.start('', '#1234').code, equals([0x6400, 0x1234]));
     expect(p.start('', '').code, equals([]));
@@ -127,11 +127,11 @@ void main() {
         '\tLD GR0,1\n'
         'XXX\tLD GR1,GR0\n'
         '\tRET';
-    expect(p.exec(asm), equals([0x6400, 4, 0x1000, 1, 0x1410, 0x8100]));
+    expect(p.compile(asm), equals([0x6400, 4, 0x1000, 1, 0x1410, 0x8100]));
   });
 
   test('END', () {
-    final p = Parser();
+    final p = Casl2();
 
     expect(p.end().code, equals([]));
 
@@ -140,6 +140,6 @@ void main() {
         '\tLD GR0,GR1\n'
         '\tRET\n'
         '\tEND\n';
-    expect(p.exec(asm), equals([0x1401, 0x8100]));
+    expect(p.compile(asm), equals([0x1401, 0x8100]));
   });
 }
