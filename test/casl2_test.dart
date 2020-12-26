@@ -196,7 +196,7 @@ void main() {
     expect(cc.cpl('', 'GR7,#ABCD').code, equals([0x4170, 0xabcd]));
     expect(cc.cpl('', 'GR6,1234,GR5').code, equals([0x4165, 1234]));
 
-    const asm = '; cpa test'
+    const asm = '; cpl test'
         'TEST\tSTART\n'
         '\tLAD\tGR0,1234\n'
         '\tLAD\tGR1,#1234\n'
@@ -214,6 +214,36 @@ void main() {
           0x1234,
           0x4501,
           0x4110,
+          7,
+          0x8100,
+        ]));
+  });
+
+  test('ADDA', () {
+    final cc = Casl2();
+
+    expect(cc.adda('', 'GR2,GR4').code, equals([0x2424]));
+    expect(cc.adda('', 'GR7,#CCCC').code, equals([0x2070, 0xcccc]));
+    expect(cc.adda('', 'GR1,#EEEE,GR2').code, equals([0x2012, 0xeeee]));
+
+    const asm = '; adda test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,1234\n'
+        '\tLAD\tGR1,#1234\n'
+        '\tADDA\tGR0,GR1\n'
+        '\tADDA\tGR1,LABEL,GR2\n'
+        'LABEL\tRET\n'
+        '\tEND\n';
+
+    expect(
+        cc.compile(asm),
+        equals([
+          0x1200,
+          1234,
+          0x1210,
+          0x1234,
+          0x2401,
+          0x2012,
           7,
           0x8100,
         ]));

@@ -60,6 +60,9 @@ class Casl2 {
         case 'ST':
           token = this.st(label, operand);
           break;
+        case 'ADDA':
+          token = this.adda(label, operand);
+          break;
         case 'CPA':
           token = this.cpa(label, operand);
           break;
@@ -108,6 +111,7 @@ class Casl2 {
   final ld = _ld;
   final lad = _lad;
   final st = _st;
+  final adda = _adda;
   final cpa = _cpa;
   final cpl = _cpl;
 }
@@ -204,6 +208,10 @@ Token _st(final String label, final String operand) {
     refLabel: adr,
     refIndex: 1,
   );
+}
+
+Token _adda(final String label, final String operand) {
+  return _pattern(label, operand, 0x2400, 0x2000);
 }
 
 Token _cpa(final String label, final String operand) {
