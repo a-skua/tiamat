@@ -19,7 +19,9 @@ class Instruction {
     this._map[0x27] = this.subtractLogical;
 
     this._map[0x40] = this.compareArithmeticMemory;
+    this._map[0x41] = this.compareLogicalMemory;
     this._map[0x44] = this.compareArithmetic;
+    this._map[0x45] = this.compareLogical;
 
     this._map[0x61] = this.jumpOnMinus;
     this._map[0x62] = this.jumpOnNonZero;
@@ -57,7 +59,9 @@ class Instruction {
   final subtractLogical = _subtractLogical;
 
   final compareArithmeticMemory = _compareArithmeticMemory;
+  final compareLogicalMemory = _compareLogicalMemory;
   final compareArithmetic = _compareArithmetic;
+  final compareLogical = _compareLogical;
 
   final jumpOnMinus = _jumpOnMinus;
   final jumpOnNonZero = _jumpOnNonZero;
@@ -335,6 +339,35 @@ void _compareArithmetic(final Resource r) {
   r.FR = _cpaFlag(v1, v2);
 }
 
+/// CPL r,adr,x
+void _compareLogicalMemory(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr = _getADR(r, x);
+
+  final v1 = r.getGR(gr);
+  final v2 = r.memory.getWord(adr);
+
+  r.FR = _cplFlag(v1, v2);
+}
+
+/// CPL r1,r2
+void _compareLogical(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final r2 = cache & 0xf;
+  final r1 = (cache >> 4) & 0xf;
+
+  final v1 = r.getGR(r1);
+  final v2 = r.getGR(r2);
+
+  r.FR = _cplFlag(v1, v2);
+}
+
 /// JUMP adr,x
 void _unconditionalJump(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
@@ -534,4 +567,17 @@ int _cpaFlag(final int v1, final int v2) {
     // v1 & signMask == 0 && v2 & signMask > 0
     return 0;
   }
+}
+
+int _cplFlag(final int v1, final int v2) {
+  if (v1 > v2) {
+    return 0;
+  }
+
+  if (v1 == v2) {
+    return 1;
+  }
+
+  // v1 < v2
+  return 2;
 }
