@@ -60,6 +60,9 @@ class Casl2 {
         case 'ST':
           token = this.st(label, operand);
           break;
+        case 'CPA':
+          token = this.cpa(label, operand);
+          break;
         case 'RET':
           token = this.ret(label);
           break;
@@ -102,6 +105,7 @@ class Casl2 {
   final ld = _ld;
   final lad = _lad;
   final st = _st;
+  final cpa = _cpa;
 }
 
 Token _start(final String label, final String operand) {
@@ -159,17 +163,18 @@ Token _ld(final String label, final String operand) {
       op |= int.parse(r) << 4;
     }
 
-    if (x != null && _expGR.hasMatch(x)) {
+    if (_expGR.hasMatch(x)) {
       final r = _expGR.firstMatch(x)?.group(1) ?? '0';
       op |= int.parse(r);
     }
 
     if (_expADR.hasMatch(r2)) {
       final adr = _expADR.firstMatch(r2)?.group(1) ?? '0';
-      {
-        final a = adr.replaceFirst('#', '0x');
-        return Token([op, int.parse(a)], label: label);
-      }
+      final a = adr.replaceFirst('#', '0x');
+      return Token(
+        [op, int.parse(a)],
+        label: label,
+      );
     }
     return Token(
       [op, 0],
@@ -243,4 +248,56 @@ Token _st(final String label, final String operand) {
     refLabel: adr,
     refIndex: 1,
   );
+}
+
+Token _cpa(final String label, final String operand) {
+  final m = _expCommonOperand.firstMatch(operand);
+  final r1 = m?.group(1) ?? '';
+  final r2 = m?.group(2) ?? '';
+  final x = m?.group(3) ?? '';
+
+  // CPA r1,r2
+  if (_expGR.hasMatch(r1) && _expGR.hasMatch(r2)) {
+    var op = 0x4400;
+    {
+      final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
+      op |= int.parse(r) << 4;
+    }
+
+    {
+      final r = _expGR.firstMatch(r2)?.group(1) ?? '0';
+      op |= int.parse(r);
+    }
+    return Token([op], label: label);
+  }
+
+  // CPA r,adr,x
+  if (_expGR.hasMatch(r1)) {
+    var op = 0x4000;
+    {
+      final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
+      op |= int.parse(r) << 4;
+    }
+
+    if (_expGR.hasMatch(x)) {
+      final r = _expGR.firstMatch(x)?.group(1) ?? '0';
+      op |= int.parse(r);
+    }
+
+    if (_expADR.hasMatch(r2)) {
+      final adr = _expADR.firstMatch(r2)?.group(1) ?? '0';
+      final a = adr.replaceFirst('#', '0x');
+      return Token(
+        [op, int.parse(a)],
+        label: label,
+      );
+    }
+    return Token(
+      [op, 0],
+      label: label,
+      refLabel: r2,
+      refIndex: 1,
+    );
+  }
+  return _nop(label);
 }

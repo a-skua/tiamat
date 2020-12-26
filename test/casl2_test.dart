@@ -158,4 +158,34 @@ void main() {
 
     expect(cc.compile(asm), equals([0x1200, 0x1234, 0x1100, 0x2345, 0x8100]));
   });
+
+  test('CPA', () {
+    final cc = Casl2();
+
+    expect(cc.cpa('', 'GR1,GR2').code, equals([0x4412]));
+    expect(cc.cpa('', 'GR1,#FF22').code, equals([0x4010, 0xff22]));
+    expect(cc.cpa('', 'GR5,#ABCD,GR2').code, equals([0x4052, 0xabcd]));
+
+    const asm = '; cpa test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,1234\n'
+        '\tLAD\tGR1,#1234\n'
+        '\tCPA\tGR0,GR1\n'
+        '\tCPA\tGR1,LABEL\n'
+        'LABEL\tRET\n'
+        '\tEND\n';
+
+    expect(
+        cc.compile(asm),
+        equals([
+          0x1200,
+          1234,
+          0x1210,
+          0x1234,
+          0x4401,
+          0x4010,
+          7,
+          0x8100,
+        ]));
+  });
 }
