@@ -248,4 +248,34 @@ void main() {
           0x8100,
         ]));
   });
+
+  test('ADDL', () {
+    final cc = Casl2();
+
+    expect(cc.addl('', 'GR2,GR4').code, equals([0x2624]));
+    expect(cc.addl('', 'GR7,#CCCC').code, equals([0x2270, 0xcccc]));
+    expect(cc.addl('', 'GR1,#EEEE,GR2').code, equals([0x2212, 0xeeee]));
+
+    const asm = '; adda test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,1234\n'
+        '\tLAD\tGR1,#1234\n'
+        '\tADDL\tGR0,GR1\n'
+        '\tADDL\tGR1,LABEL,GR2\n'
+        'LABEL\tRET\n'
+        '\tEND\n';
+
+    expect(
+        cc.compile(asm),
+        equals([
+          0x1200,
+          1234,
+          0x1210,
+          0x1234,
+          0x2601,
+          0x2212,
+          7,
+          0x8100,
+        ]));
+  });
 }
