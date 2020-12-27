@@ -66,6 +66,12 @@ class Casl2 {
         case 'ADDL':
           token = this.addl(label, operand);
           break;
+        case 'SUBA':
+          token = this.suba(label, operand);
+          break;
+        case 'SUBL':
+          token = this.subl(label, operand);
+          break;
         case 'CPA':
           token = this.cpa(label, operand);
           break;
@@ -116,6 +122,8 @@ class Casl2 {
   final st = _st;
   final adda = _adda;
   final addl = _addl;
+  final suba = _suba;
+  final subl = _subl;
   final cpa = _cpa;
   final cpl = _cpl;
 }
@@ -220,6 +228,14 @@ Token _adda(final String label, final String operand) {
 
 Token _addl(final String label, final String operand) {
   return _pattern(label, operand, 0x2600, 0x2200);
+}
+
+Token _suba(final String label, final String operand) {
+  return _pattern(label, operand, 0x2500, 0x2100);
+}
+
+Token _subl(final String label, final String operand) {
+  return _pattern(label, operand, 0x2700, 0x2300);
 }
 
 Token _cpa(final String label, final String operand) {

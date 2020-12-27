@@ -256,7 +256,7 @@ void main() {
     expect(cc.addl('', 'GR7,#CCCC').code, equals([0x2270, 0xcccc]));
     expect(cc.addl('', 'GR1,#EEEE,GR2').code, equals([0x2212, 0xeeee]));
 
-    const asm = '; adda test'
+    const asm = '; addl test'
         'TEST\tSTART\n'
         '\tLAD\tGR0,1234\n'
         '\tLAD\tGR1,#1234\n'
@@ -274,6 +274,66 @@ void main() {
           0x1234,
           0x2601,
           0x2212,
+          7,
+          0x8100,
+        ]));
+  });
+
+  test('SUBA', () {
+    final cc = Casl2();
+
+    expect(cc.suba('', 'GR2,GR4').code, equals([0x2524]));
+    expect(cc.suba('', 'GR7,#CCCC').code, equals([0x2170, 0xcccc]));
+    expect(cc.suba('', 'GR1,#EEEE,GR2').code, equals([0x2112, 0xeeee]));
+
+    const asm = '; suba test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,1234\n'
+        '\tLAD\tGR1,#1234\n'
+        '\tSUBA\tGR0,GR1\n'
+        '\tSUBA\tGR1,LABEL,GR2\n'
+        'LABEL\tRET\n'
+        '\tEND\n';
+
+    expect(
+        cc.compile(asm),
+        equals([
+          0x1200,
+          1234,
+          0x1210,
+          0x1234,
+          0x2501,
+          0x2112,
+          7,
+          0x8100,
+        ]));
+  });
+
+  test('SUBL', () {
+    final cc = Casl2();
+
+    expect(cc.subl('', 'GR2,GR4').code, equals([0x2724]));
+    expect(cc.subl('', 'GR7,#CCCC').code, equals([0x2370, 0xcccc]));
+    expect(cc.subl('', 'GR1,#EEEE,GR2').code, equals([0x2312, 0xeeee]));
+
+    const asm = '; subl test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,1234\n'
+        '\tLAD\tGR1,#1234\n'
+        '\tSUBL\tGR0,GR1\n'
+        '\tSUBL\tGR1,LABEL,GR2\n'
+        'LABEL\tRET\n'
+        '\tEND\n';
+
+    expect(
+        cc.compile(asm),
+        equals([
+          0x1200,
+          1234,
+          0x1210,
+          0x1234,
+          0x2701,
+          0x2312,
           7,
           0x8100,
         ]));
