@@ -79,8 +79,23 @@ class Casl2 {
         case 'CPL':
           token = this.cpl(label, operand);
           break;
+        case 'JMI':
+          token = this.jmi(label, operand);
+          break;
+        case 'JNZ':
+          token = this.jnz(label, operand);
+          break;
+        case 'JZE':
+          token = this.jze(label, operand);
+          break;
         case 'JUMP':
           token = this.jump(label, operand);
+          break;
+        case 'JPL':
+          token = this.jpl(label, operand);
+          break;
+        case 'JOV':
+          token = this.jov(label, operand);
           break;
         case 'RET':
           token = this.ret(label);
@@ -130,7 +145,12 @@ class Casl2 {
   final subl = _subl;
   final cpa = _cpa;
   final cpl = _cpl;
+  final jmi = _jmi;
+  final jnz = _jnz;
+  final jze = _jze;
   final jump = _jump;
+  final jpl = _jpl;
+  final jov = _jov;
 }
 
 Token _start(final String label, final String operand) {
@@ -251,8 +271,28 @@ Token _cpl(final String label, final String operand) {
   return _pattern(label, operand, 0x4500, 0x4100);
 }
 
+Token _jmi(final String label, final String operand) {
+  return _pattern2(label, operand, 0x6100);
+}
+
+Token _jnz(final String label, final String operand) {
+  return _pattern2(label, operand, 0x6200);
+}
+
+Token _jze(final String label, final String operand) {
+  return _pattern2(label, operand, 0x6300);
+}
+
 Token _jump(final String label, final String operand) {
   return _pattern2(label, operand, 0x6400);
+}
+
+Token _jpl(final String label, final String operand) {
+  return _pattern2(label, operand, 0x6500);
+}
+
+Token _jov(final String label, final String operand) {
+  return _pattern2(label, operand, 0x6600);
 }
 
 Token _pattern2(final String label, final String operand, final int code) {

@@ -370,4 +370,174 @@ void main() {
           0x8100,
         ]));
   });
+
+  test('JMI', () {
+    final cc = Casl2();
+    expect(cc.jmi('', '2345').code, equals([0x6100, 2345]));
+    expect(cc.jmi('XXX', '2345').label, equals('XXX'));
+    expect(cc.jmi('', '#2345,GR5').code, equals([0x6105, 0x2345]));
+
+    const asm = ';jmi test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,100\n'
+        '\tLAD\tGR1,200\n'
+        '\tCPA\tGR0,GR1\n'
+        '\tJMI\tEND\n'
+        '\tNOP\n'
+        '\tNOP\n'
+        'END\tRET\n'
+        '\tEND';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        100,
+        0x1210,
+        200,
+        0x4401,
+        0x6100,
+        9,
+        0,
+        0,
+        0x8100,
+      ]),
+    );
+  });
+
+  test('JNZ', () {
+    final cc = Casl2();
+    expect(cc.jnz('', '2345').code, equals([0x6200, 2345]));
+    expect(cc.jnz('XXX', '2345').label, equals('XXX'));
+    expect(cc.jnz('', '#2345,GR5').code, equals([0x6205, 0x2345]));
+
+    const asm = ';jnz test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,100\n'
+        '\tLAD\tGR1,200\n'
+        '\tCPA\tGR0,GR1\n'
+        '\tJNZ\tEND\n'
+        '\tNOP\n'
+        '\tNOP\n'
+        'END\tRET\n'
+        '\tEND';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        100,
+        0x1210,
+        200,
+        0x4401,
+        0x6200,
+        9,
+        0,
+        0,
+        0x8100,
+      ]),
+    );
+  });
+
+  test('JNE', () {
+    final cc = Casl2();
+    expect(cc.jze('', '2345').code, equals([0x6300, 2345]));
+    expect(cc.jze('XXX', '2345').label, equals('XXX'));
+    expect(cc.jze('', '#2345,GR5').code, equals([0x6305, 0x2345]));
+
+    const asm = ';jne test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,100\n'
+        '\tLAD\tGR1,200\n'
+        '\tCPA\tGR0,GR1\n'
+        '\tJZE\tEND\n'
+        '\tNOP\n'
+        '\tNOP\n'
+        'END\tRET\n'
+        '\tEND';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        100,
+        0x1210,
+        200,
+        0x4401,
+        0x6300,
+        9,
+        0,
+        0,
+        0x8100,
+      ]),
+    );
+  });
+
+  test('JPL', () {
+    final cc = Casl2();
+    expect(cc.jpl('', '2345').code, equals([0x6500, 2345]));
+    expect(cc.jpl('XXX', '2345').label, equals('XXX'));
+    expect(cc.jpl('', '#2345,GR5').code, equals([0x6505, 0x2345]));
+
+    const asm = ';jpl test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,100\n'
+        '\tLAD\tGR1,200\n'
+        '\tCPA\tGR0,GR1\n'
+        '\tJPL\tEND\n'
+        '\tNOP\n'
+        '\tNOP\n'
+        'END\tRET\n'
+        '\tEND';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        100,
+        0x1210,
+        200,
+        0x4401,
+        0x6500,
+        9,
+        0,
+        0,
+        0x8100,
+      ]),
+    );
+  });
+
+  test('JOV', () {
+    final cc = Casl2();
+    expect(cc.jov('', '2345').code, equals([0x6600, 2345]));
+    expect(cc.jov('XXX', '2345').label, equals('XXX'));
+    expect(cc.jov('', '#2345,GR5').code, equals([0x6605, 0x2345]));
+
+    const asm = ';jov test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,#FFFF\n'
+        '\tLAD\tGR1,#FFFF\n'
+        '\tADDL\tGR0,GR1\n'
+        '\tJOV\tEND\n'
+        '\tNOP\n'
+        '\tNOP\n'
+        'END\tRET\n'
+        '\tEND';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        0xffff,
+        0x1210,
+        0xffff,
+        0x2601,
+        0x6600,
+        9,
+        0,
+        0,
+        0x8100,
+      ]),
+    );
+  });
 }
