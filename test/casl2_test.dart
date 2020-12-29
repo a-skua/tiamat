@@ -338,4 +338,36 @@ void main() {
           0x8100,
         ]));
   });
+
+  test('JUMP', () {
+    final cc = Casl2();
+
+    expect(cc.jump('', '#FFFF').code, equals([0x6400, 0xffff]));
+    expect(cc.jump('', '1234,GR5').code, equals([0x6405, 1234]));
+    expect(cc.jump('FOO', '#FFFF').label, equals('FOO'));
+
+    const asm = ';jump test'
+        'TEST\tSTART\n'
+        '\tJUMP\tEND\n'
+        '\tNOP\n'
+        '\tNOP\n'
+        '\tNOP\n'
+        '\tNOP\n'
+        '\tNOP\n'
+        'END\tRET\n'
+        '\tEND';
+
+    expect(
+        cc.compile(asm),
+        equals([
+          0x6400,
+          7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0x8100,
+        ]));
+  });
 }

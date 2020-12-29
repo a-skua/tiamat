@@ -4,6 +4,7 @@
 //       RET
 final _expLine = RegExp(r'([A-Z0-9]*)[\t ]+([A-Z]{1,8})[\t ]*([A-Z0-9,#]*)');
 final _expCommonOperand = RegExp(r'(GR[0-7]),?([A-Z0-9#]+)?,?(GR[1-7])?');
+final _expADRX = RegExp(r'([A-Z0-9#]+),?(GR[1-7])?');
 final _expGR = RegExp(r'^GR([0-7])$');
 final _expADR = RegExp(r'^(#?[0-9A-F]+)$');
 
@@ -78,6 +79,9 @@ class Casl2 {
         case 'CPL':
           token = this.cpl(label, operand);
           break;
+        case 'JUMP':
+          token = this.jump(label, operand);
+          break;
         case 'RET':
           token = this.ret(label);
           break;
@@ -126,6 +130,7 @@ class Casl2 {
   final subl = _subl;
   final cpa = _cpa;
   final cpl = _cpl;
+  final jump = _jump;
 }
 
 Token _start(final String label, final String operand) {
@@ -244,6 +249,36 @@ Token _cpa(final String label, final String operand) {
 
 Token _cpl(final String label, final String operand) {
   return _pattern(label, operand, 0x4500, 0x4100);
+}
+
+Token _jump(final String label, final String operand) {
+  return _pattern2(label, operand, 0x6400);
+}
+
+Token _pattern2(final String label, final String operand, final int code) {
+  final m = _expADRX.firstMatch(operand);
+  final adr = m?.group(1) ?? '';
+  final x = m?.group(2) ?? '';
+
+  var op = code;
+  if (_expGR.hasMatch(x)) {
+    final gr = _expGR.firstMatch(x)?.group(1) ?? '0';
+    op |= int.parse(gr);
+  }
+
+  if (_expADR.hasMatch(adr)) {
+    final a = _expADR.firstMatch(adr)?.group(1) ?? '0';
+    return Token([
+      op,
+      int.parse(a.replaceFirst('#', '0x')),
+    ], label: label);
+  }
+  return Token(
+    [op, 0],
+    label: label,
+    refLabel: adr,
+    refIndex: 1,
+  );
 }
 
 Token _pattern(final String label, final String operand, final int codeR1R2,
