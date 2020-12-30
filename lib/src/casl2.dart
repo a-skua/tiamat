@@ -97,6 +97,12 @@ class Casl2 {
         case 'JOV':
           token = this.jov(label, operand);
           break;
+        case 'PUSH':
+          token = this.push(label, operand);
+          break;
+        case 'POP':
+          token = this.pop(label, operand);
+          break;
         case 'RET':
           token = this.ret(label);
           break;
@@ -151,6 +157,8 @@ class Casl2 {
   final jump = _jump;
   final jpl = _jpl;
   final jov = _jov;
+  final push = _push;
+  final pop = _pop;
 }
 
 Token _start(final String label, final String operand) {
@@ -293,6 +301,17 @@ Token _jpl(final String label, final String operand) {
 
 Token _jov(final String label, final String operand) {
   return _pattern2(label, operand, 0x6600);
+}
+
+Token _push(final String label, final String operand) {
+  return _pattern2(label, operand, 0x7000);
+}
+
+Token _pop(final String label, final String operand) {
+  final r = _expGR.firstMatch(operand)?.group(1) ?? '0';
+  final op = 0x7100 | (int.parse(r) << 4);
+
+  return Token([op], label: label);
 }
 
 Token _pattern2(final String label, final String operand, final int code) {

@@ -540,4 +540,56 @@ void main() {
       ]),
     );
   });
+
+  test('PUSH', () {
+    final cc = Casl2();
+    expect(cc.push('FOO', '#3333').code, equals([0x7000, 0x3333]));
+    expect(cc.push('FOO', '#3333').label, equals('FOO'));
+    expect(cc.push('', '4321,GR3').code, equals([0x7003, 4321]));
+
+    const asm = ';push test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR1,#CCCC\n'
+        '\tPUSH 0,GR1\n'
+        '\tRET\n'
+        '\tEND\n';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1210,
+        0xcccc,
+        0x7001,
+        0,
+        0x8100,
+      ]),
+    );
+  });
+
+  test('POP', () {
+    final cc = Casl2();
+    expect(cc.pop('BAR', 'GR3').code, equals([0x7130]));
+    expect(cc.pop('BAR', 'GR3').label, equals('BAR'));
+    expect(cc.pop('', 'GR4').code, equals([0x7140]));
+
+    const asm = ';pop test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR1,1234\n'
+        '\tPUSH\t0,GR1\n'
+        '\tPOP\tGR0\n'
+        '\tRET\n'
+        '\tEND';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1210,
+        1234,
+        0x7001,
+        0,
+        0x7100,
+        0x8100,
+      ]),
+    );
+  });
 }
