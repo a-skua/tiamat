@@ -30,6 +30,9 @@ class Instruction {
     this._map[0x65] = this.jumpOnPlus;
     this._map[0x66] = this.jumpOnOverflow;
 
+    this._map[0x70] = this.push;
+    this._map[0x71] = this.pop;
+
     this._map[0x80] = this.callSubroutine;
     this._map[0x81] = this.returnFromSubroutine;
   }
@@ -69,6 +72,9 @@ class Instruction {
   final unconditionalJump = _unconditionalJump;
   final jumpOnPlus = _jumpOnPlus;
   final jumpOnOverflow = _jumpOnOverflow;
+
+  final push = _push;
+  final pop = _pop;
 
   final callSubroutine = _callSubroutine;
   final returnFromSubroutine = _returnFromSubroutine;
@@ -450,14 +456,35 @@ void _jumpOnOverflow(final Resource r) {
   }
 }
 
+/// PUSH adr,x
+void _push(final Resource r) {
+  final x = r.memory.getWord(r.PR) & 0xf;
+  r.PR += 1;
+
+  final adr = _getADR(r, x);
+
+  r.SP -= 1;
+  r.memory.setWord(r.SP, adr);
+}
+
+/// POP r
+void _pop(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final gr = (cache >> 4) & 0xf;
+  final v = r.memory.getWord(r.SP);
+  r.SP += 1;
+
+  r.setGR(gr, v);
+}
+
 /// CALL adr,x
 void _callSubroutine(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   r.SP -= 1;
   r.memory.setWord(r.SP, r.PR);
