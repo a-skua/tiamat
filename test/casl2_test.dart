@@ -592,4 +592,34 @@ void main() {
       ]),
     );
   });
+
+  test('CALL', () {
+    final cc = Casl2();
+    expect(cc.call('XXX', '#1233,GR2').code, equals([0x8002, 0x1233]));
+    expect(cc.call('XXX', '#1233,GR2').label, equals('XXX'));
+    expect(cc.call('', '200').code, equals([0x8000, 200]));
+
+    const asm = ';call test'
+        'TEST\tSTART\n'
+        '\tCALL\tSUB\n'
+        '\tLAD\tGR1,300\n'
+        '\tRET\n'
+        'SUB\tLAD\tGR0,200\n'
+        '\tRET\n'
+        '\tEND';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x8000,
+        5,
+        0x1210,
+        300,
+        0x8100,
+        0x1200,
+        200,
+        0x8100,
+      ]),
+    );
+  });
 }

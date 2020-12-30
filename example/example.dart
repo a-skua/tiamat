@@ -11,6 +11,13 @@ void main() {
       '\tJUMP\tEND\n'
       'PLS\tADDA\tGR0,GR1\n'
       'END\tLAD\tGR2,100\n'
+      '\tPUSH\t400\n'
+      '\tCALL\tSUB\n'
+      '\tLAD\tGR3,300\n'
+      '\tRET\n'
+      'SUB\tPOP\tGR7\n'
+      '\tPOP\tGR4\n'
+      '\tPUSH\t0,GR7\n'
       '\tRET\n'
       '\tEND';
   print('casl2:\n$asm');
@@ -28,12 +35,7 @@ void main() {
   ins.exec(r);
   print('');
   print('result:');
-  print('GR0: ${r.getGR(0)}');
-  print('GR1: ${r.getGR(1)}');
-  print('GR2: ${r.getGR(2)}');
-  print('GR3: ${r.getGR(3)}');
-  print('GR4: ${r.getGR(4)}');
-  print('GR5: ${r.getGR(5)}');
-  print('GR6: ${r.getGR(6)}');
-  print('GR7: ${r.getGR(7)}');
+  for (var i = 0; i < 8; i++) {
+    print('GR$i: ${r.getGR(i)}');
+  }
 }
