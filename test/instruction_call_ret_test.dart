@@ -14,7 +14,6 @@ void main() {
 
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final pr = rand.nextInt(1 << 16);
@@ -27,7 +26,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, adr);
 
-        ins.callSubroutine(r);
+        Instruction.callSubroutine(r);
         expect(r.SP, equals((sp - 1) & maskBits));
         expect(r.memory.getWord(r.SP), equals((pr + 2) & maskBits));
         expect(r.PR, equals(adr));
@@ -36,7 +35,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final pr = rand.nextInt(1 << 16);
@@ -52,7 +50,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, adr);
 
-        ins.callSubroutine(r);
+        Instruction.callSubroutine(r);
         expect(r.SP, equals((sp - 1) & maskBits));
         expect(r.memory.getWord(r.SP), equals((pr + 2) & maskBits));
         expect(r.PR, equals((adr + base) & maskBits));
@@ -62,7 +60,6 @@ void main() {
 
   test('return from subroutine', () {
     final r = Resource();
-    final ins = Instruction();
     final maskBits = 0xffff;
 
     for (var i = 0; i < 8; i++) {
@@ -74,7 +71,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(sp, pr);
 
-      ins.returnFromSubroutine(r);
+      Instruction.returnFromSubroutine(r);
       expect(r.SP, equals((sp + 1) & maskBits));
       expect(r.PR, equals(pr));
     }
@@ -85,7 +82,7 @@ void main() {
     r.memory.setWord(r.SP, pr);
     r.memory.setWord(r.PR, 0x81 << 8);
 
-    ins.returnFromSubroutine(r);
+    Instruction.returnFromSubroutine(r);
     expect(r.SP, equals(0));
     expect(r.PR, equals(pr));
   });

@@ -12,7 +12,6 @@ void main() {
   group('compare arithmetic memory', () {
     test('without base r>adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r(+) > adr(-)
       for (var i = 0; i < 4; i++) {
@@ -29,7 +28,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -49,7 +48,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -69,7 +68,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -77,7 +76,6 @@ void main() {
 
     test('with base r>adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r(+) > adr(-)
       for (var i = 0; i < 4; i++) {
@@ -97,7 +95,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -120,7 +118,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -143,7 +141,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -151,7 +149,6 @@ void main() {
 
     test('without base r=adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
@@ -167,7 +164,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -175,7 +172,6 @@ void main() {
 
     test('with base r=adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
@@ -194,7 +190,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -202,7 +198,6 @@ void main() {
 
     test('without base r<adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r(-) < adr(+)
       for (var i = 0; i < 4; i++) {
@@ -219,7 +214,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -239,7 +234,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -259,7 +254,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -267,7 +262,6 @@ void main() {
 
     test('with base r<adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r(-) < adr(+)
       for (var i = 0; i < 4; i++) {
@@ -287,7 +281,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -310,7 +304,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -333,7 +327,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareArithmeticMemory(r);
+        Instruction.compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -343,7 +337,6 @@ void main() {
   group('compare arithmetic', () {
     test('r1 > r2', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r1(+) > r2(-)
       for (var i = 0; i < 4; i++) {
@@ -359,7 +352,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareArithmetic(r);
+        Instruction.compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -378,7 +371,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareArithmetic(r);
+        Instruction.compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -397,7 +390,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareArithmetic(r);
+        Instruction.compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -405,7 +398,6 @@ void main() {
 
     test('r1 = r2', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final r1 = rand.nextInt(8);
@@ -420,7 +412,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareArithmetic(r);
+        Instruction.compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -428,7 +420,6 @@ void main() {
 
     test('r1 < r2', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r1(-) < r2(+)
       for (var i = 0; i < 4; i++) {
@@ -444,7 +435,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareArithmetic(r);
+        Instruction.compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -463,7 +454,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareArithmetic(r);
+        Instruction.compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -482,7 +473,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareArithmetic(r);
+        Instruction.compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -492,7 +483,6 @@ void main() {
   group('compare logical memory', () {
     test('without base r>adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r > adr
       for (var i = 0; i < 4; i++) {
@@ -509,7 +499,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareLogicalMemory(r);
+        Instruction.compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -517,7 +507,6 @@ void main() {
 
     test('with base r>adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r > adr
       for (var i = 0; i < 4; i++) {
@@ -537,7 +526,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareLogicalMemory(r);
+        Instruction.compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -545,7 +534,6 @@ void main() {
 
     test('without base r=adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
@@ -561,7 +549,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareLogicalMemory(r);
+        Instruction.compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -569,7 +557,6 @@ void main() {
 
     test('with base r=adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
@@ -588,7 +575,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareLogicalMemory(r);
+        Instruction.compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -596,7 +583,6 @@ void main() {
 
     test('without base r<adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r < adr
       for (var i = 0; i < 4; i++) {
@@ -613,7 +599,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        ins.compareLogicalMemory(r);
+        Instruction.compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -621,7 +607,6 @@ void main() {
 
     test('with base r<adr', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r < adr
       for (var i = 0; i < 4; i++) {
@@ -641,7 +626,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        ins.compareLogicalMemory(r);
+        Instruction.compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -651,7 +636,6 @@ void main() {
   group('compare logical', () {
     test('r1 > r2', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r1 > r2
       for (var i = 0; i < 4; i++) {
@@ -667,7 +651,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareLogical(r);
+        Instruction.compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -675,7 +659,6 @@ void main() {
 
     test('r1 = r2', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final r1 = rand.nextInt(8);
@@ -690,7 +673,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareLogical(r);
+        Instruction.compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -698,7 +681,6 @@ void main() {
 
     test('r1 < r2', () {
       final r = Resource();
-      final ins = Instruction();
 
       // r1 < r2
       for (var i = 0; i < 4; i++) {
@@ -714,7 +696,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.compareLogical(r);
+        Instruction.compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(2));
       }

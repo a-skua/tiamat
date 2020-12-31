@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:tiamat/src/casl2.dart';
-import 'package:tiamat/src/instruction.dart';
+import 'package:tiamat/src/comet2.dart';
 import 'package:tiamat/src/resource.dart';
 import 'package:test/test.dart';
 
@@ -92,11 +92,11 @@ void main() {
         equals([0x6400, 4, 0x1210, 0x1111, 0x1401, 0x1210, 1111, 0x8100]));
 
     final r = Resource();
-    final ins = Instruction();
+    final c = Comet2();
     for (var i = 0; i < code.length; i++) {
       r.memory.setWord(r.PR + i, code[i]);
     }
-    ins.exec(r);
+    c.exec(r);
     expect(r.getGR(0), equals(0));
     expect(r.getGR(1), equals(1111));
     expect(r.getGR(2), equals(0));

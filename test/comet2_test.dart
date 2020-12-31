@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:tiamat/src/instruction.dart';
+import 'package:tiamat/src/comet2.dart';
 import 'package:tiamat/src/resource.dart';
 import 'package:test/test.dart';
 
@@ -11,7 +11,7 @@ void main() {
   test('exec', () {
     for (var i = 0; i < 4; i++) {
       final r = Resource();
-      final ins = Instruction();
+      final c = Comet2();
       const maskBits = 0xffff;
 
       final gr = rand.nextInt(8);
@@ -29,7 +29,7 @@ void main() {
       r.memory.setWord(pr + 2, ret);
       r.memory.setWord(adr, v2);
 
-      ins.exec(r);
+      c.exec(r);
       expect(r.getGR(gr), equals((v1 + v2) & maskBits));
       expect(r.PR, equals(0));
       expect(r.SP, equals(0));

@@ -12,7 +12,6 @@ void main() {
   group('push', () {
     test('push GR', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 1; i < 8; i++) {
         final v = rand.nextInt(0x10000);
@@ -25,7 +24,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord(r.PR + 1, adr);
 
-        ins.push(r);
+        Instruction.push(r);
         expect(r.SP, equals(sp - 1));
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(r.SP), equals(v));
@@ -34,7 +33,6 @@ void main() {
 
     test('push address', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final op = 0x7000;
@@ -45,7 +43,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord(r.PR + 1, adr);
 
-        ins.push(r);
+        Instruction.push(r);
         expect(r.SP, equals(sp - 1));
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(r.SP), equals(adr));
@@ -54,7 +52,6 @@ void main() {
 
     test('default', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final x = getX(0);
@@ -68,7 +65,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord(r.PR + 1, adr);
 
-        ins.push(r);
+        Instruction.push(r);
         expect(r.SP, equals(sp - 1));
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(r.SP), equals(base + adr));
@@ -79,7 +76,6 @@ void main() {
   group('pop', () {
     test('default', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final gr = rand.nextInt(8);
@@ -92,7 +88,7 @@ void main() {
         r.memory.setWord(r.SP, v);
         r.memory.setWord(r.PR, op);
 
-        ins.pop(r);
+        Instruction.pop(r);
         expect(r.SP, equals(sp));
         expect(r.PR, equals(pr));
         expect(r.getGR(gr), equals(v));

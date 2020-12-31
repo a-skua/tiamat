@@ -9,30 +9,28 @@ void main() {
 
   test('no operation', () {
     final r = Resource();
-    final ins = Instruction();
 
     expect(r.PR, equals(0));
-    ins.noOperation(r);
+    Instruction.noOperation(r);
     expect(r.PR, equals(1));
 
     for (var i = 0; i < 8; i++) {
       r.PR = 0;
       final count = rand.nextInt(1 << 16);
       for (var j = 0; j < count; j++) {
-        ins.noOperation(r);
+        Instruction.noOperation(r);
       }
       expect(r.PR, equals(count));
     }
 
     r.PR = (1 << 16) - 1;
-    ins.noOperation(r);
+    Instruction.noOperation(r);
     expect(r.PR, equals(0));
   });
 
   group('load memory', () {
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final reg = rand.nextInt(8);
@@ -48,7 +46,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        ins.loadMemory(r);
+        Instruction.loadMemory(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(data));
       }
@@ -56,7 +54,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final reg = rand.nextInt(8);
@@ -75,7 +72,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        ins.loadMemory(r);
+        Instruction.loadMemory(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(data));
       }
@@ -83,7 +80,6 @@ void main() {
 
     test('flags', () {
       final r = Resource();
-      final ins = Instruction();
 
       var op = (0x10 << 0x8);
       var base = 0;
@@ -93,7 +89,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(r.PR + 1, addr);
       r.memory.setWord(addr + base, data);
-      ins.loadMemory(r);
+      Instruction.loadMemory(r);
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
       expect(r.ZF, equals(true));
@@ -108,7 +104,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(r.PR + 1, addr);
       r.memory.setWord(addr + base, data);
-      ins.loadMemory(r);
+      Instruction.loadMemory(r);
       expect(r.OF, equals(false));
       expect(r.SF, equals(true));
       expect(r.ZF, equals(false));
@@ -123,7 +119,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(r.PR + 1, addr);
       r.memory.setWord(addr + base, data);
-      ins.loadMemory(r);
+      Instruction.loadMemory(r);
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
       expect(r.ZF, equals(false));
@@ -134,7 +130,6 @@ void main() {
   group('load', () {
     test('default', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final r1 = rand.nextInt(8);
@@ -149,7 +144,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.PR = pr;
 
-        ins.load(r);
+        Instruction.load(r);
         expect(r.PR, equals(pr + 1));
         expect(r.getGR(r1), equals(data));
       }
@@ -157,7 +152,6 @@ void main() {
 
     test('flags', () {
       final r = Resource();
-      final ins = Instruction();
 
       var r1 = rand.nextInt(8);
       var r2 = rand.nextInt(8);
@@ -167,7 +161,7 @@ void main() {
       r.setGR(r2, data);
       r.FR = 6;
       r.memory.setWord(r.PR, op);
-      ins.load(r);
+      Instruction.load(r);
       expect(r.getGR(r1), equals(data));
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
@@ -181,7 +175,7 @@ void main() {
       r.setGR(r2, data);
       r.FR = 5;
       r.memory.setWord(r.PR, op);
-      ins.load(r);
+      Instruction.load(r);
       expect(r.getGR(r1), equals(data));
       expect(r.OF, equals(false));
       expect(r.SF, equals(true));
@@ -195,7 +189,7 @@ void main() {
       r.setGR(r2, data);
       r.FR = 7;
       r.memory.setWord(r.PR, op);
-      ins.load(r);
+      Instruction.load(r);
       expect(r.getGR(r1), equals(data));
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
@@ -206,7 +200,6 @@ void main() {
   group('store', () {
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final reg = rand.nextInt(8);
@@ -222,7 +215,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        ins.store(r);
+        Instruction.store(r);
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(addr), equals(data));
       }
@@ -230,7 +223,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final reg = rand.nextInt(8);
@@ -252,7 +244,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        ins.store(r);
+        Instruction.store(r);
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(base + addr), equals(data));
       }
@@ -262,7 +254,6 @@ void main() {
   group('load address', () {
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final reg = rand.nextInt(8);
@@ -275,7 +266,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        ins.loadAddress(r);
+        Instruction.loadAddress(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(addr));
       }
@@ -283,7 +274,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final reg = rand.nextInt(8);
@@ -299,7 +289,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        ins.loadAddress(r);
+        Instruction.loadAddress(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(base + addr));
       }
@@ -310,7 +300,6 @@ void main() {
   // group('supervisor call', () {
   //   test('default', () {
   //     final r = Resource();
-  //     final ins = Instruction();
 
   //     final op = 0xf000;
 
@@ -319,7 +308,7 @@ void main() {
   //       r.memory.setWord(r.PR, op);
   //       r.memory.setWord(r.PR + 1, 1);
 
-  //       ins.supervisorCall(r);
+  //       Instruction.supervisorCall(r);
   //     }
   //   });
   // });

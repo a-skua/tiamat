@@ -1,83 +1,39 @@
 import 'resource.dart';
 
 class Instruction {
-  final _map = List.filled(1 << 8, _noOperation);
+  static final noOperation = _noOperation;
 
-  Instruction() {
-    this._map[0x10] = this.loadMemory;
-    this._map[0x11] = this.store;
-    this._map[0x12] = this.loadAddress;
-    this._map[0x14] = this.load;
+  static final loadMemory = _loadMemory;
+  static final store = _store;
+  static final loadAddress = _loadAddress;
+  static final load = _load;
 
-    this._map[0x20] = this.addArithmeticMemory;
-    this._map[0x21] = this.subtractArithmeticMemory;
-    this._map[0x22] = this.addLogicalMemory;
-    this._map[0x23] = this.subtractLogicalMemory;
-    this._map[0x24] = this.addArithmetic;
-    this._map[0x25] = this.subtractArithmetic;
-    this._map[0x26] = this.addLogical;
-    this._map[0x27] = this.subtractLogical;
+  static final addArithmeticMemory = _addArithmeticMemory;
+  static final subtractArithmeticMemory = _subtractArithmeticMemory;
+  static final addLogicalMemory = _addLogicalMemory;
+  static final subtractLogicalMemory = _subtractLogicalMemory;
+  static final addArithmetic = _addArithmetic;
+  static final subtractArithmetic = _subtractArithmetic;
+  static final addLogical = _addLogical;
+  static final subtractLogical = _subtractLogical;
 
-    this._map[0x40] = this.compareArithmeticMemory;
-    this._map[0x41] = this.compareLogicalMemory;
-    this._map[0x44] = this.compareArithmetic;
-    this._map[0x45] = this.compareLogical;
+  static final compareArithmeticMemory = _compareArithmeticMemory;
+  static final compareLogicalMemory = _compareLogicalMemory;
+  static final compareArithmetic = _compareArithmetic;
+  static final compareLogical = _compareLogical;
 
-    this._map[0x61] = this.jumpOnMinus;
-    this._map[0x62] = this.jumpOnNonZero;
-    this._map[0x62] = this.jumpOnZero;
-    this._map[0x64] = this.unconditionalJump;
-    this._map[0x65] = this.jumpOnPlus;
-    this._map[0x66] = this.jumpOnOverflow;
+  static final jumpOnMinus = _jumpOnMinus;
+  static final jumpOnNonZero = _jumpOnNonZero;
+  static final jumpOnZero = _jumpOnZero;
+  static final unconditionalJump = _unconditionalJump;
+  static final jumpOnPlus = _jumpOnPlus;
+  static final jumpOnOverflow = _jumpOnOverflow;
 
-    this._map[0x70] = this.push;
-    this._map[0x71] = this.pop;
+  static final push = _push;
+  static final pop = _pop;
 
-    this._map[0x80] = this.callSubroutine;
-    this._map[0x81] = this.returnFromSubroutine;
-  }
-
-  void exec(final Resource r) {
-    // FIXME conditional
-    while (r.SP != 0) {
-      final op = (r.memory.getWord(r.PR) >> 8) & 0xff;
-      this._map[op](r);
-    }
-  }
-
-  final noOperation = _noOperation;
-
-  final loadMemory = _loadMemory;
-  final store = _store;
-  final loadAddress = _loadAddress;
-  final load = _load;
-
-  final addArithmeticMemory = _addArithmeticMemory;
-  final subtractArithmeticMemory = _subtractArithmeticMemory;
-  final addLogicalMemory = _addLogicalMemory;
-  final subtractLogicalMemory = _subtractLogicalMemory;
-  final addArithmetic = _addArithmetic;
-  final subtractArithmetic = _subtractArithmetic;
-  final addLogical = _addLogical;
-  final subtractLogical = _subtractLogical;
-
-  final compareArithmeticMemory = _compareArithmeticMemory;
-  final compareLogicalMemory = _compareLogicalMemory;
-  final compareArithmetic = _compareArithmetic;
-  final compareLogical = _compareLogical;
-
-  final jumpOnMinus = _jumpOnMinus;
-  final jumpOnNonZero = _jumpOnNonZero;
-  final jumpOnZero = _jumpOnZero;
-  final unconditionalJump = _unconditionalJump;
-  final jumpOnPlus = _jumpOnPlus;
-  final jumpOnOverflow = _jumpOnOverflow;
-
-  final push = _push;
-  final pop = _pop;
-
-  final callSubroutine = _callSubroutine;
-  final returnFromSubroutine = _returnFromSubroutine;
+  static final callSubroutine = _callSubroutine;
+  static final returnFromSubroutine = _returnFromSubroutine;
 }
 
 /// NOP

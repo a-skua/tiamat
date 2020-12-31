@@ -12,7 +12,6 @@ void main() {
   group('subtract arithmetic memory', () {
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
@@ -28,7 +27,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, addr);
         r.memory.setWord(addr, v2);
-        ins.subtractArithmeticMemory(r);
+        Instruction.subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
       }
@@ -36,7 +35,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
@@ -55,7 +53,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, addr);
         r.memory.setWord(base + addr, v2);
-        ins.subtractArithmeticMemory(r);
+        Instruction.subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
       }
@@ -64,7 +62,6 @@ void main() {
     group('flags', () {
       test('overflow', () {
         final r = Resource();
-        final ins = Instruction();
 
         // (+) - (-)
         for (var i = 0; i < 4; i++) {
@@ -81,7 +78,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          ins.subtractArithmeticMemory(r);
+          Instruction.subtractArithmeticMemory(r);
           expect(r.OF, equals(true));
           expect(r.SF, equals((result & (1 << 15)) > 0));
           expect(r.ZF, equals(result == 0));
@@ -102,7 +99,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          ins.subtractArithmeticMemory(r);
+          Instruction.subtractArithmeticMemory(r);
           expect(r.getGR(gr), equals(result));
           expect(r.OF, equals(true));
           expect(r.SF, equals((result & (1 << 15)) > 0));
@@ -112,7 +109,6 @@ void main() {
 
       test('sign', () {
         final r = Resource();
-        final ins = Instruction();
 
         var addr = rand.nextInt(1 << 16) | (1 << 15);
         var gr = rand.nextInt(8);
@@ -126,7 +122,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        ins.subtractArithmeticMemory(r);
+        Instruction.subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.OF, equals(false));
         expect(r.SF, equals(true));
@@ -144,7 +140,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        ins.subtractArithmeticMemory(r);
+        Instruction.subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -153,7 +149,6 @@ void main() {
 
       test('zero', () {
         final r = Resource();
-        final ins = Instruction();
 
         var addr = rand.nextInt(1 << 16) | (1 << 15);
         var v1 = rand.nextInt(15);
@@ -166,7 +161,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        ins.subtractArithmeticMemory(r);
+        Instruction.subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(0));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -183,7 +178,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        ins.subtractArithmeticMemory(r);
+        Instruction.subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(0));
         expect(r.OF, equals(true));
         expect(r.SF, equals(false));
@@ -199,7 +194,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        ins.subtractArithmeticMemory(r);
+        Instruction.subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(0));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -212,7 +207,6 @@ void main() {
     test('default', () {
       const maskBits = 0xffff;
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final r1 = rand.nextInt(8);
@@ -229,7 +223,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.subtractArithmetic(r);
+        Instruction.subtractArithmetic(r);
         expect(r.getGR(r1), equals(result));
         expect(r.PR, equals(pr + 1));
       }
@@ -239,7 +233,6 @@ void main() {
       test('overflow', () {
         const maskBits = 0xffff;
         final r = Resource();
-        final ins = Instruction();
 
         // (-) - (+)
         for (var i = 0; i < 4; i++) {
@@ -257,7 +250,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          ins.subtractArithmetic(r);
+          Instruction.subtractArithmetic(r);
           expect(r.getGR(r1), equals(result));
           expect(r.PR, equals(pr + 1));
           expect(r.OF, equals(true));
@@ -281,7 +274,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          ins.subtractArithmetic(r);
+          Instruction.subtractArithmetic(r);
           expect(r.getGR(r1), equals(result));
           expect(r.PR, equals(pr + 1));
           expect(r.OF, equals(true));
@@ -293,7 +286,6 @@ void main() {
       test('sign', () {
         const maskBits = 0xffff;
         final r = Resource();
-        final ins = Instruction();
 
         var r1 = rand.nextInt(8);
         var r2 = getX(r1, base: 0);
@@ -306,7 +298,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        ins.subtractArithmetic(r);
+        Instruction.subtractArithmetic(r);
         expect(r.getGR(r1), equals(result));
         expect(r.OF, equals(false));
         expect(r.SF, equals(true));
@@ -323,7 +315,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        ins.subtractArithmetic(r);
+        Instruction.subtractArithmetic(r);
         expect(r.getGR(r1), equals(result));
         expect(r.OF, equals(false));
         expect(r.SF, equals(true));
@@ -333,7 +325,6 @@ void main() {
       test('zero', () {
         const maskBits = 0xffff;
         final r = Resource();
-        final ins = Instruction();
 
         var r1 = rand.nextInt(8);
         var r2 = getX(r1, base: 0);
@@ -345,7 +336,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        ins.subtractArithmetic(r);
+        Instruction.subtractArithmetic(r);
         expect(r.getGR(r1), equals(0));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -361,7 +352,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        ins.subtractArithmetic(r);
+        Instruction.subtractArithmetic(r);
         expect(r.getGR(r1), equals(0));
         expect(r.OF, equals(true));
         expect(r.SF, equals(false));
@@ -377,7 +368,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        ins.subtractArithmetic(r);
+        Instruction.subtractArithmetic(r);
         expect(r.getGR(r1), equals(0));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -391,7 +382,6 @@ void main() {
 
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
@@ -409,7 +399,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.memory.setWord(addr, v2);
 
-        ins.subtractLogicalMemory(r);
+        Instruction.subtractLogicalMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
         expect(r.OF, equals(raw < 0));
@@ -420,7 +410,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final gr = rand.nextInt(8);
@@ -441,7 +430,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.memory.setWord(base + addr, v2);
 
-        ins.subtractLogicalMemory(r);
+        Instruction.subtractLogicalMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
         expect(r.OF, equals(raw < 0));
@@ -453,7 +442,6 @@ void main() {
     group('flags', () {
       test('overflow', () {
         final r = Resource();
-        final ins = Instruction();
 
         for (var i = 0; i < 4; i++) {
           final gr = rand.nextInt(8);
@@ -468,7 +456,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          ins.subtractLogicalMemory(r);
+          Instruction.subtractLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
           expect(r.OF, equals(true));
           expect(r.SF, equals((result & (1 << 15)) > 0));
@@ -478,7 +466,6 @@ void main() {
 
       test('sign', () {
         final r = Resource();
-        final ins = Instruction();
 
         for (var i = 0; i < 4; i++) {
           final gr = rand.nextInt(8);
@@ -493,7 +480,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          ins.subtractLogicalMemory(r);
+          Instruction.subtractLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
           expect(r.OF, equals(false));
           expect(r.SF, equals(true));
@@ -503,7 +490,6 @@ void main() {
 
       test('zero', () {
         final r = Resource();
-        final ins = Instruction();
 
         for (var i = 0; i < 4; i++) {
           final gr = rand.nextInt(8);
@@ -518,7 +504,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          ins.subtractLogicalMemory(r);
+          Instruction.subtractLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
           expect(r.OF, equals(false));
           expect(r.SF, equals(false));
@@ -533,7 +519,6 @@ void main() {
 
     test('default', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final r1 = rand.nextInt(8);
@@ -550,7 +535,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        ins.subtractLogical(r);
+        Instruction.subtractLogical(r);
         expect(r.getGR(r1), equals(result));
         expect(r.PR, equals((pr + 1) & maskBits));
         expect(r.OF, equals(raw < 0));
@@ -562,7 +547,6 @@ void main() {
     group('flags', () {
       test('overflow', () {
         final r = Resource();
-        final ins = Instruction();
 
         for (var i = 0; i < 4; i++) {
           final r1 = rand.nextInt(8);
@@ -578,7 +562,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          ins.subtractLogical(r);
+          Instruction.subtractLogical(r);
           expect(r.getGR(r1), equals(result));
           expect(r.PR, equals((pr + 1) & maskBits));
           expect(r.OF, equals(true));
@@ -589,7 +573,6 @@ void main() {
 
       test('sign', () {
         final r = Resource();
-        final ins = Instruction();
 
         for (var i = 0; i < 4; i++) {
           final r1 = rand.nextInt(8);
@@ -605,7 +588,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          ins.subtractLogical(r);
+          Instruction.subtractLogical(r);
           expect(r.getGR(r1), equals(result));
           expect(r.PR, equals((pr + 1) & maskBits));
           expect(r.OF, equals(true));
@@ -616,7 +599,6 @@ void main() {
 
       test('zero', () {
         final r = Resource();
-        final ins = Instruction();
 
         for (var i = 0; i < 4; i++) {
           final r1 = rand.nextInt(8);
@@ -631,7 +613,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          ins.subtractLogical(r);
+          Instruction.subtractLogical(r);
           expect(r.getGR(r1), equals(0));
           expect(r.PR, equals((pr + 1) & maskBits));
           expect(r.OF, equals(false));

@@ -12,7 +12,6 @@ void main() {
   group('unconditional jump', () {
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final op = 0x6400;
@@ -21,14 +20,13 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.unconditionalJump(r);
+        Instruction.unconditionalJump(r);
         expect(r.PR, equals(adr));
       }
     });
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 4; i++) {
         final baseGR = getX(0);
@@ -40,7 +38,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.unconditionalJump(r);
+        Instruction.unconditionalJump(r);
         expect(r.PR, equals(base + adr));
       }
     });
@@ -49,7 +47,6 @@ void main() {
   group('jump on plus', () {
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final op = 0x6500;
@@ -60,7 +57,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.jumpOnPlus(r);
+        Instruction.jumpOnPlus(r);
         if (!r.SF && !r.ZF) {
           expect(r.PR, equals(adr));
         } else {
@@ -71,7 +68,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final baseGR = getX(0);
@@ -85,7 +81,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.jumpOnPlus(r);
+        Instruction.jumpOnPlus(r);
         final e = (r.SF || r.ZF ? pr + 2 : base + adr) & 0xffff;
         expect(r.PR, equals(e));
       }
@@ -95,7 +91,6 @@ void main() {
   group('jump on minus', () {
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final op = 0x6100;
@@ -106,7 +101,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.jumpOnMinus(r);
+        Instruction.jumpOnMinus(r);
         final e = r.SF ? adr : pr;
         expect(r.PR, equals(e));
       }
@@ -114,7 +109,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
 
       for (var i = 0; i < 8; i++) {
         final baseGR = getX(0);
@@ -128,7 +122,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.jumpOnMinus(r);
+        Instruction.jumpOnMinus(r);
         final e = r.SF ? (base + adr) & 0xffff : pr;
         expect(r.PR, equals(e));
       }
@@ -137,7 +131,6 @@ void main() {
     group('jump on non zero', () {
       test('without base', () {
         final r = Resource();
-        final ins = Instruction();
 
         for (var i = 0; i < 8; i++) {
           final op = 0x6200;
@@ -148,7 +141,7 @@ void main() {
           r.memory.setWord(r.PR, op);
           r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-          ins.jumpOnNonZero(r);
+          Instruction.jumpOnNonZero(r);
           final e = r.ZF ? (pr + 2) & 0xffff : adr;
           expect(r.PR, equals(e));
         }
@@ -156,7 +149,6 @@ void main() {
 
       test('with base', () {
         final r = Resource();
-        final ins = Instruction();
         for (var i = 0; i < 8; i++) {
           final baseGR = getX(0);
           final op = 0x6200 | baseGR;
@@ -169,7 +161,7 @@ void main() {
           r.memory.setWord(r.PR, op);
           r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-          ins.jumpOnNonZero(r);
+          Instruction.jumpOnNonZero(r);
           final e = (r.ZF ? pr + 2 : base + adr) & 0xffff;
           expect(r.PR, equals(e));
         }
@@ -180,7 +172,6 @@ void main() {
   group('jump on zero', () {
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
       for (var i = 0; i < 8; i++) {
         final op = 0x6300;
         final adr = rand.nextInt(0x10000);
@@ -190,7 +181,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.jumpOnZero(r);
+        Instruction.jumpOnZero(r);
         final e = r.ZF ? adr : (pr + 2) & 0xffff;
         expect(r.PR, equals(e));
       }
@@ -198,7 +189,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
       for (var i = 0; i < 8; i++) {
         final baseGR = getX(0);
         final op = 0x6300 | baseGR;
@@ -211,7 +201,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.jumpOnZero(r);
+        Instruction.jumpOnZero(r);
         final e = (r.ZF ? base + adr : pr + 2) & 0xffff;
         expect(r.PR, equals(e));
       }
@@ -221,7 +211,6 @@ void main() {
   group('jump on overflow', () {
     test('without base', () {
       final r = Resource();
-      final ins = Instruction();
       for (var i = 0; i < 8; i++) {
         final op = 0x6600;
         final adr = rand.nextInt(0x10000);
@@ -231,7 +220,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.jumpOnOverflow(r);
+        Instruction.jumpOnOverflow(r);
         final e = r.OF ? adr : (pr + 2) & 0xffff;
         expect(r.PR, equals(e));
       }
@@ -239,7 +228,6 @@ void main() {
 
     test('with base', () {
       final r = Resource();
-      final ins = Instruction();
       for (var i = 0; i < 8; i++) {
         final baseGR = getX(0);
         final op = 0x6600 | baseGR;
@@ -252,7 +240,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        ins.jumpOnOverflow(r);
+        Instruction.jumpOnOverflow(r);
         final e = (r.OF ? base + adr : pr + 2) & 0xffff;
         expect(r.PR, equals(e));
       }
