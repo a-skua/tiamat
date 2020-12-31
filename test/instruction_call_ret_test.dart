@@ -26,7 +26,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, adr);
 
-        Instruction.callSubroutine(r);
+        callSubroutine(r);
         expect(r.SP, equals((sp - 1) & maskBits));
         expect(r.memory.getWord(r.SP), equals((pr + 2) & maskBits));
         expect(r.PR, equals(adr));
@@ -50,7 +50,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, adr);
 
-        Instruction.callSubroutine(r);
+        callSubroutine(r);
         expect(r.SP, equals((sp - 1) & maskBits));
         expect(r.memory.getWord(r.SP), equals((pr + 2) & maskBits));
         expect(r.PR, equals((adr + base) & maskBits));
@@ -71,7 +71,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(sp, pr);
 
-      Instruction.returnFromSubroutine(r);
+      returnFromSubroutine(r);
       expect(r.SP, equals((sp + 1) & maskBits));
       expect(r.PR, equals(pr));
     }
@@ -82,7 +82,7 @@ void main() {
     r.memory.setWord(r.SP, pr);
     r.memory.setWord(r.PR, 0x81 << 8);
 
-    Instruction.returnFromSubroutine(r);
+    returnFromSubroutine(r);
     expect(r.SP, equals(0));
     expect(r.PR, equals(pr));
   });

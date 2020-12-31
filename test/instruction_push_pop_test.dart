@@ -24,7 +24,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord(r.PR + 1, adr);
 
-        Instruction.push(r);
+        push(r);
         expect(r.SP, equals(sp - 1));
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(r.SP), equals(v));
@@ -43,7 +43,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord(r.PR + 1, adr);
 
-        Instruction.push(r);
+        push(r);
         expect(r.SP, equals(sp - 1));
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(r.SP), equals(adr));
@@ -65,7 +65,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord(r.PR + 1, adr);
 
-        Instruction.push(r);
+        push(r);
         expect(r.SP, equals(sp - 1));
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(r.SP), equals(base + adr));
@@ -88,7 +88,7 @@ void main() {
         r.memory.setWord(r.SP, v);
         r.memory.setWord(r.PR, op);
 
-        Instruction.pop(r);
+        pop(r);
         expect(r.SP, equals(sp));
         expect(r.PR, equals(pr));
         expect(r.getGR(gr), equals(v));

@@ -20,7 +20,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.unconditionalJump(r);
+        unconditionalJump(r);
         expect(r.PR, equals(adr));
       }
     });
@@ -38,7 +38,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.unconditionalJump(r);
+        unconditionalJump(r);
         expect(r.PR, equals(base + adr));
       }
     });
@@ -57,7 +57,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.jumpOnPlus(r);
+        jumpOnPlus(r);
         if (!r.SF && !r.ZF) {
           expect(r.PR, equals(adr));
         } else {
@@ -81,7 +81,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.jumpOnPlus(r);
+        jumpOnPlus(r);
         final e = (r.SF || r.ZF ? pr + 2 : base + adr) & 0xffff;
         expect(r.PR, equals(e));
       }
@@ -101,7 +101,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.jumpOnMinus(r);
+        jumpOnMinus(r);
         final e = r.SF ? adr : pr;
         expect(r.PR, equals(e));
       }
@@ -122,7 +122,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.jumpOnMinus(r);
+        jumpOnMinus(r);
         final e = r.SF ? (base + adr) & 0xffff : pr;
         expect(r.PR, equals(e));
       }
@@ -141,7 +141,7 @@ void main() {
           r.memory.setWord(r.PR, op);
           r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-          Instruction.jumpOnNonZero(r);
+          jumpOnNonZero(r);
           final e = r.ZF ? (pr + 2) & 0xffff : adr;
           expect(r.PR, equals(e));
         }
@@ -161,7 +161,7 @@ void main() {
           r.memory.setWord(r.PR, op);
           r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-          Instruction.jumpOnNonZero(r);
+          jumpOnNonZero(r);
           final e = (r.ZF ? pr + 2 : base + adr) & 0xffff;
           expect(r.PR, equals(e));
         }
@@ -181,7 +181,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.jumpOnZero(r);
+        jumpOnZero(r);
         final e = r.ZF ? adr : (pr + 2) & 0xffff;
         expect(r.PR, equals(e));
       }
@@ -201,7 +201,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.jumpOnZero(r);
+        jumpOnZero(r);
         final e = (r.ZF ? base + adr : pr + 2) & 0xffff;
         expect(r.PR, equals(e));
       }
@@ -220,7 +220,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.jumpOnOverflow(r);
+        jumpOnOverflow(r);
         final e = r.OF ? adr : (pr + 2) & 0xffff;
         expect(r.PR, equals(e));
       }
@@ -240,7 +240,7 @@ void main() {
         r.memory.setWord(r.PR, op);
         r.memory.setWord((r.PR + 1) & 0xffff, adr);
 
-        Instruction.jumpOnOverflow(r);
+        jumpOnOverflow(r);
         final e = (r.OF ? base + adr : pr + 2) & 0xffff;
         expect(r.PR, equals(e));
       }

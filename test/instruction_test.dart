@@ -11,20 +11,20 @@ void main() {
     final r = Resource();
 
     expect(r.PR, equals(0));
-    Instruction.noOperation(r);
+    noOperation(r);
     expect(r.PR, equals(1));
 
     for (var i = 0; i < 8; i++) {
       r.PR = 0;
       final count = rand.nextInt(1 << 16);
       for (var j = 0; j < count; j++) {
-        Instruction.noOperation(r);
+        noOperation(r);
       }
       expect(r.PR, equals(count));
     }
 
     r.PR = (1 << 16) - 1;
-    Instruction.noOperation(r);
+    noOperation(r);
     expect(r.PR, equals(0));
   });
 
@@ -46,7 +46,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        Instruction.loadMemory(r);
+        loadMemory(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(data));
       }
@@ -72,7 +72,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        Instruction.loadMemory(r);
+        loadMemory(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(data));
       }
@@ -89,7 +89,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(r.PR + 1, addr);
       r.memory.setWord(addr + base, data);
-      Instruction.loadMemory(r);
+      loadMemory(r);
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
       expect(r.ZF, equals(true));
@@ -104,7 +104,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(r.PR + 1, addr);
       r.memory.setWord(addr + base, data);
-      Instruction.loadMemory(r);
+      loadMemory(r);
       expect(r.OF, equals(false));
       expect(r.SF, equals(true));
       expect(r.ZF, equals(false));
@@ -119,7 +119,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(r.PR + 1, addr);
       r.memory.setWord(addr + base, data);
-      Instruction.loadMemory(r);
+      loadMemory(r);
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
       expect(r.ZF, equals(false));
@@ -144,7 +144,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.PR = pr;
 
-        Instruction.load(r);
+        load(r);
         expect(r.PR, equals(pr + 1));
         expect(r.getGR(r1), equals(data));
       }
@@ -161,7 +161,7 @@ void main() {
       r.setGR(r2, data);
       r.FR = 6;
       r.memory.setWord(r.PR, op);
-      Instruction.load(r);
+      load(r);
       expect(r.getGR(r1), equals(data));
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
@@ -175,7 +175,7 @@ void main() {
       r.setGR(r2, data);
       r.FR = 5;
       r.memory.setWord(r.PR, op);
-      Instruction.load(r);
+      load(r);
       expect(r.getGR(r1), equals(data));
       expect(r.OF, equals(false));
       expect(r.SF, equals(true));
@@ -189,7 +189,7 @@ void main() {
       r.setGR(r2, data);
       r.FR = 7;
       r.memory.setWord(r.PR, op);
-      Instruction.load(r);
+      load(r);
       expect(r.getGR(r1), equals(data));
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
@@ -215,7 +215,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        Instruction.store(r);
+        store(r);
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(addr), equals(data));
       }
@@ -244,7 +244,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        Instruction.store(r);
+        store(r);
         expect(r.PR, equals(pr + 2));
         expect(r.memory.getWord(base + addr), equals(data));
       }
@@ -266,7 +266,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        Instruction.loadAddress(r);
+        loadAddress(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(addr));
       }
@@ -289,7 +289,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        Instruction.loadAddress(r);
+        loadAddress(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(base + addr));
       }
@@ -308,7 +308,7 @@ void main() {
   //       r.memory.setWord(r.PR, op);
   //       r.memory.setWord(r.PR + 1, 1);
 
-  //       Instruction.supervisorCall(r);
+  //       supervisorCall(r);
   //     }
   //   });
   // });

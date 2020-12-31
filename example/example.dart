@@ -31,8 +31,8 @@ void main() {
     r.memory.setWord(i, bin[i]);
   }
 
-  final ins = Instruction();
-  ins.exec(r);
+  final c = Comet2();
+  c.exec(r);
   print('');
   print('result:');
   for (var i = 0; i < 8; i++) {

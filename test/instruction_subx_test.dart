@@ -27,7 +27,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, addr);
         r.memory.setWord(addr, v2);
-        Instruction.subtractArithmeticMemory(r);
+        subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
       }
@@ -53,7 +53,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.memory.setWord(pr + 1, addr);
         r.memory.setWord(base + addr, v2);
-        Instruction.subtractArithmeticMemory(r);
+        subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
       }
@@ -78,7 +78,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          Instruction.subtractArithmeticMemory(r);
+          subtractArithmeticMemory(r);
           expect(r.OF, equals(true));
           expect(r.SF, equals((result & (1 << 15)) > 0));
           expect(r.ZF, equals(result == 0));
@@ -99,7 +99,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          Instruction.subtractArithmeticMemory(r);
+          subtractArithmeticMemory(r);
           expect(r.getGR(gr), equals(result));
           expect(r.OF, equals(true));
           expect(r.SF, equals((result & (1 << 15)) > 0));
@@ -122,7 +122,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        Instruction.subtractArithmeticMemory(r);
+        subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.OF, equals(false));
         expect(r.SF, equals(true));
@@ -140,7 +140,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        Instruction.subtractArithmeticMemory(r);
+        subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -161,7 +161,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        Instruction.subtractArithmeticMemory(r);
+        subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(0));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -178,7 +178,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        Instruction.subtractArithmeticMemory(r);
+        subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(0));
         expect(r.OF, equals(true));
         expect(r.SF, equals(false));
@@ -194,7 +194,7 @@ void main() {
         r.memory.setWord(r.PR + 1, addr);
         r.memory.setWord(addr, v2);
 
-        Instruction.subtractArithmeticMemory(r);
+        subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(0));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -223,7 +223,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.subtractArithmetic(r);
+        subtractArithmetic(r);
         expect(r.getGR(r1), equals(result));
         expect(r.PR, equals(pr + 1));
       }
@@ -250,7 +250,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          Instruction.subtractArithmetic(r);
+          subtractArithmetic(r);
           expect(r.getGR(r1), equals(result));
           expect(r.PR, equals(pr + 1));
           expect(r.OF, equals(true));
@@ -274,7 +274,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          Instruction.subtractArithmetic(r);
+          subtractArithmetic(r);
           expect(r.getGR(r1), equals(result));
           expect(r.PR, equals(pr + 1));
           expect(r.OF, equals(true));
@@ -298,7 +298,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        Instruction.subtractArithmetic(r);
+        subtractArithmetic(r);
         expect(r.getGR(r1), equals(result));
         expect(r.OF, equals(false));
         expect(r.SF, equals(true));
@@ -315,7 +315,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        Instruction.subtractArithmetic(r);
+        subtractArithmetic(r);
         expect(r.getGR(r1), equals(result));
         expect(r.OF, equals(false));
         expect(r.SF, equals(true));
@@ -336,7 +336,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        Instruction.subtractArithmetic(r);
+        subtractArithmetic(r);
         expect(r.getGR(r1), equals(0));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -352,7 +352,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        Instruction.subtractArithmetic(r);
+        subtractArithmetic(r);
         expect(r.getGR(r1), equals(0));
         expect(r.OF, equals(true));
         expect(r.SF, equals(false));
@@ -368,7 +368,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(r.PR, op);
 
-        Instruction.subtractArithmetic(r);
+        subtractArithmetic(r);
         expect(r.getGR(r1), equals(0));
         expect(r.OF, equals(false));
         expect(r.SF, equals(false));
@@ -399,7 +399,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.memory.setWord(addr, v2);
 
-        Instruction.subtractLogicalMemory(r);
+        subtractLogicalMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
         expect(r.OF, equals(raw < 0));
@@ -430,7 +430,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.memory.setWord(base + addr, v2);
 
-        Instruction.subtractLogicalMemory(r);
+        subtractLogicalMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
         expect(r.OF, equals(raw < 0));
@@ -456,7 +456,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          Instruction.subtractLogicalMemory(r);
+          subtractLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
           expect(r.OF, equals(true));
           expect(r.SF, equals((result & (1 << 15)) > 0));
@@ -480,7 +480,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          Instruction.subtractLogicalMemory(r);
+          subtractLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
           expect(r.OF, equals(false));
           expect(r.SF, equals(true));
@@ -504,7 +504,7 @@ void main() {
           r.memory.setWord(r.PR + 1, addr);
           r.memory.setWord(addr, v2);
 
-          Instruction.subtractLogicalMemory(r);
+          subtractLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
           expect(r.OF, equals(false));
           expect(r.SF, equals(false));
@@ -535,7 +535,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.subtractLogical(r);
+        subtractLogical(r);
         expect(r.getGR(r1), equals(result));
         expect(r.PR, equals((pr + 1) & maskBits));
         expect(r.OF, equals(raw < 0));
@@ -562,7 +562,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          Instruction.subtractLogical(r);
+          subtractLogical(r);
           expect(r.getGR(r1), equals(result));
           expect(r.PR, equals((pr + 1) & maskBits));
           expect(r.OF, equals(true));
@@ -588,7 +588,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          Instruction.subtractLogical(r);
+          subtractLogical(r);
           expect(r.getGR(r1), equals(result));
           expect(r.PR, equals((pr + 1) & maskBits));
           expect(r.OF, equals(true));
@@ -613,7 +613,7 @@ void main() {
           r.setGR(r2, v2);
           r.memory.setWord(pr, op);
 
-          Instruction.subtractLogical(r);
+          subtractLogical(r);
           expect(r.getGR(r1), equals(0));
           expect(r.PR, equals((pr + 1) & maskBits));
           expect(r.OF, equals(false));

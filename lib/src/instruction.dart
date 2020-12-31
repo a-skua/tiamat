@@ -1,48 +1,12 @@
 import 'resource.dart';
 
-class Instruction {
-  static final noOperation = _noOperation;
-
-  static final loadMemory = _loadMemory;
-  static final store = _store;
-  static final loadAddress = _loadAddress;
-  static final load = _load;
-
-  static final addArithmeticMemory = _addArithmeticMemory;
-  static final subtractArithmeticMemory = _subtractArithmeticMemory;
-  static final addLogicalMemory = _addLogicalMemory;
-  static final subtractLogicalMemory = _subtractLogicalMemory;
-  static final addArithmetic = _addArithmetic;
-  static final subtractArithmetic = _subtractArithmetic;
-  static final addLogical = _addLogical;
-  static final subtractLogical = _subtractLogical;
-
-  static final compareArithmeticMemory = _compareArithmeticMemory;
-  static final compareLogicalMemory = _compareLogicalMemory;
-  static final compareArithmetic = _compareArithmetic;
-  static final compareLogical = _compareLogical;
-
-  static final jumpOnMinus = _jumpOnMinus;
-  static final jumpOnNonZero = _jumpOnNonZero;
-  static final jumpOnZero = _jumpOnZero;
-  static final unconditionalJump = _unconditionalJump;
-  static final jumpOnPlus = _jumpOnPlus;
-  static final jumpOnOverflow = _jumpOnOverflow;
-
-  static final push = _push;
-  static final pop = _pop;
-
-  static final callSubroutine = _callSubroutine;
-  static final returnFromSubroutine = _returnFromSubroutine;
-}
-
 /// NOP
-void _noOperation(final Resource r) {
+void noOperation(final Resource r) {
   r.PR += 1;
 }
 
 /// LD r,adr,x
-void _loadMemory(final Resource r) {
+void loadMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -65,7 +29,7 @@ void _loadMemory(final Resource r) {
 }
 
 /// LD r1,r2
-void _load(final Resource r) {
+void load(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -85,7 +49,7 @@ void _load(final Resource r) {
 }
 
 /// ST r,adr,x
-void _store(final Resource r) {
+void store(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -99,7 +63,7 @@ void _store(final Resource r) {
 }
 
 /// LAD r, adr, x
-void _loadAddress(final Resource r) {
+void loadAddress(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -113,7 +77,7 @@ void _loadAddress(final Resource r) {
 }
 
 /// ADDA r,adr,x
-void _addArithmeticMemory(final Resource r) {
+void addArithmeticMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -135,7 +99,7 @@ void _addArithmeticMemory(final Resource r) {
 }
 
 /// ADDA r1,r2
-void _addArithmetic(final Resource r) {
+void addArithmetic(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -155,7 +119,7 @@ void _addArithmetic(final Resource r) {
 }
 
 /// ADDL r,addr,x
-void _addLogicalMemory(final Resource r) {
+void addLogicalMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -177,7 +141,7 @@ void _addLogicalMemory(final Resource r) {
 }
 
 /// ALLD r1,r2
-void _addLogical(final Resource r) {
+void addLogical(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -195,7 +159,7 @@ void _addLogical(final Resource r) {
 }
 
 /// SUBA r,adr,x
-void _subtractArithmeticMemory(final Resource r) {
+void subtractArithmeticMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -216,7 +180,7 @@ void _subtractArithmeticMemory(final Resource r) {
 }
 
 /// SUBA r1,r2
-void _subtractArithmetic(final Resource r) {
+void subtractArithmetic(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -233,7 +197,7 @@ void _subtractArithmetic(final Resource r) {
 }
 
 /// SUBL r,adr,x
-void _subtractLogicalMemory(final Resource r) {
+void subtractLogicalMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -255,7 +219,7 @@ void _subtractLogicalMemory(final Resource r) {
 }
 
 /// SUBL r1,r2
-void _subtractLogical(final Resource r) {
+void subtractLogical(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -273,7 +237,7 @@ void _subtractLogical(final Resource r) {
 }
 
 /// CPA r,adr,x
-void _compareArithmeticMemory(final Resource r) {
+void compareArithmeticMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -288,7 +252,7 @@ void _compareArithmeticMemory(final Resource r) {
 }
 
 /// CPA r1,r2
-void _compareArithmetic(final Resource r) {
+void compareArithmetic(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -302,7 +266,7 @@ void _compareArithmetic(final Resource r) {
 }
 
 /// CPL r,adr,x
-void _compareLogicalMemory(final Resource r) {
+void compareLogicalMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -317,7 +281,7 @@ void _compareLogicalMemory(final Resource r) {
 }
 
 /// CPL r1,r2
-void _compareLogical(final Resource r) {
+void compareLogical(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -331,7 +295,7 @@ void _compareLogical(final Resource r) {
 }
 
 /// JUMP adr,x
-void _unconditionalJump(final Resource r) {
+void unconditionalJump(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
@@ -343,7 +307,7 @@ void _unconditionalJump(final Resource r) {
 }
 
 /// JPL adr,x
-void _jumpOnPlus(final Resource r) {
+void jumpOnPlus(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
@@ -357,7 +321,7 @@ void _jumpOnPlus(final Resource r) {
 }
 
 /// JMI adr,x
-void _jumpOnMinus(final Resource r) {
+void jumpOnMinus(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
@@ -371,7 +335,7 @@ void _jumpOnMinus(final Resource r) {
 }
 
 /// JNZ adr,x
-void _jumpOnNonZero(final Resource r) {
+void jumpOnNonZero(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
@@ -385,7 +349,7 @@ void _jumpOnNonZero(final Resource r) {
 }
 
 /// JZE adr,x
-void _jumpOnZero(final Resource r) {
+void jumpOnZero(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
@@ -399,7 +363,7 @@ void _jumpOnZero(final Resource r) {
 }
 
 /// JOV adr,x
-void _jumpOnOverflow(final Resource r) {
+void jumpOnOverflow(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
@@ -413,7 +377,7 @@ void _jumpOnOverflow(final Resource r) {
 }
 
 /// PUSH adr,x
-void _push(final Resource r) {
+void push(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
@@ -424,7 +388,7 @@ void _push(final Resource r) {
 }
 
 /// POP r
-void _pop(final Resource r) {
+void pop(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -436,7 +400,7 @@ void _pop(final Resource r) {
 }
 
 /// CALL adr,x
-void _callSubroutine(final Resource r) {
+void callSubroutine(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
@@ -448,7 +412,7 @@ void _callSubroutine(final Resource r) {
 }
 
 /// RET
-void _returnFromSubroutine(final Resource r) {
+void returnFromSubroutine(final Resource r) {
   r.PR = r.memory.getWord(r.SP);
   r.SP += 1;
 }

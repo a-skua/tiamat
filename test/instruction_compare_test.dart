@@ -28,7 +28,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -48,7 +48,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -68,7 +68,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -95,7 +95,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -118,7 +118,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -141,7 +141,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -164,7 +164,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -190,7 +190,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -214,7 +214,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -234,7 +234,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -254,7 +254,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -281,7 +281,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -304,7 +304,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -327,7 +327,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareArithmeticMemory(r);
+        compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -352,7 +352,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareArithmetic(r);
+        compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -371,7 +371,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareArithmetic(r);
+        compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -390,7 +390,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareArithmetic(r);
+        compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -412,7 +412,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareArithmetic(r);
+        compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -435,7 +435,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareArithmetic(r);
+        compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -454,7 +454,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareArithmetic(r);
+        compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -473,7 +473,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareArithmetic(r);
+        compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -499,7 +499,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareLogicalMemory(r);
+        compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -526,7 +526,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareLogicalMemory(r);
+        compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -549,7 +549,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareLogicalMemory(r);
+        compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -575,7 +575,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareLogicalMemory(r);
+        compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -599,7 +599,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord(adr, v2);
 
-        Instruction.compareLogicalMemory(r);
+        compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -626,7 +626,7 @@ void main() {
         r.memory.setWord((pr + 1) & 0xffff, adr);
         r.memory.setWord((base + adr) & 0xffff, v2);
 
-        Instruction.compareLogicalMemory(r);
+        compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
         expect(r.FR, equals(2));
       }
@@ -651,7 +651,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareLogical(r);
+        compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(0));
       }
@@ -673,7 +673,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareLogical(r);
+        compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(1));
       }
@@ -696,7 +696,7 @@ void main() {
         r.setGR(r2, v2);
         r.memory.setWord(pr, op);
 
-        Instruction.compareLogical(r);
+        compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
         expect(r.FR, equals(2));
       }
