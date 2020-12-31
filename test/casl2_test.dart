@@ -650,4 +650,64 @@ void main() {
       ]),
     );
   });
+
+  test('DC', () {
+    final cc = Casl2();
+
+    // TODO bug: multi-ref-label
+    expect(
+      cc.dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').code,
+      equals([
+        0xffff,
+        123,
+        0x41,
+        0x42,
+        0x43,
+        0x64,
+        0x65,
+        0x66,
+        0x31,
+        0x32,
+        0x33,
+        0,
+      ]),
+    );
+    expect(cc.dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').label, equals('ZZZ'));
+    expect(cc.dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').refLabel,
+        equals('LABEL'));
+    expect(cc.dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').refIndex, equals(11));
+
+    const asm = ';dc test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR7,0\n'
+        '\tLD\tGR0,TEXT,GR7\n'
+        '\tLAD\tGR7,1,GR7\n'
+        '\tLD\tGR1,TEXT,GR7\n'
+        '\tLAD\tGR7,1,GR7\n'
+        '\tLD\tGR2,TEXT,GR7\n'
+        '\tRET\n'
+        'TEXT\tDC\t\'ABC\'\n'
+        '\tEND\n';
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1270,
+        0,
+        0x1007,
+        13,
+        0x1277,
+        1,
+        0x1017,
+        13,
+        0x1277,
+        1,
+        0x1027,
+        13,
+        0x8100,
+        0x41,
+        0x42,
+        0x43,
+      ]),
+    );
+  });
 }

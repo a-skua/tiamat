@@ -2,11 +2,12 @@
 //
 // LABEL ADDA GR0,GR1
 //       RET
-final _expLine = RegExp(r'([A-Z0-9]*)[\t ]+([A-Z]{1,8})[\t ]*([A-Z0-9,#]*)');
+final _expLine = RegExp(r'([A-Z0-9]*)[\t ]+([A-Z]{1,8})[\t ]*(\S*)');
 final _expCommonOperand = RegExp(r'(GR[0-7]),?([A-Z0-9#]+)?,?(GR[1-7])?');
 final _expADRX = RegExp(r'([A-Z0-9#]+),?(GR[1-7])?');
 final _expGR = RegExp(r'^GR([0-7])$');
 final _expADR = RegExp(r'^(#?[0-9A-F]+)$');
+final _expStr = RegExp('\'([^\']*)\'');
 
 class Token {
   final List<int> _code;
@@ -27,6 +28,104 @@ class Token {
   List<int> get code => this._code;
   void setLabel(final int label) => this._code[this.refIndex] = label;
 }
+
+const char2bin = <String, int>{
+  ' ': 0x20,
+  '!': 0x21,
+  '"': 0x22,
+  '#': 0x23,
+  '\$': 0x24,
+  '%': 0x25,
+  '&': 0x26,
+  '\'': 0x27,
+  '(': 0x28,
+  ')': 0x29,
+  '*': 0x2a,
+  '+': 0x2b,
+  ',': 0x2c,
+  '-': 0x2d,
+  '.': 0x2e,
+  '/': 0x2f,
+  '0': 0x30,
+  '1': 0x31,
+  '2': 0x32,
+  '3': 0x33,
+  '4': 0x34,
+  '5': 0x35,
+  '6': 0x36,
+  '7': 0x37,
+  '8': 0x38,
+  '9': 0x39,
+  ':': 0x3a,
+  ';': 0x3b,
+  '<': 0x3c,
+  '=': 0x3d,
+  '>': 0x3e,
+  '?': 0x3f,
+  '@': 0x40,
+  'A': 0x41,
+  'B': 0x42,
+  'C': 0x43,
+  'D': 0x44,
+  'E': 0x45,
+  'F': 0x46,
+  'G': 0x47,
+  'H': 0x48,
+  'I': 0x49,
+  'J': 0x4a,
+  'K': 0x4b,
+  'L': 0x4c,
+  'M': 0x4d,
+  'N': 0x4e,
+  'O': 0x4f,
+  'P': 0x50,
+  'Q': 0x51,
+  'R': 0x52,
+  'S': 0x53,
+  'T': 0x54,
+  'U': 0x55,
+  'V': 0x56,
+  'W': 0x57,
+  'X': 0x58,
+  'Y': 0x59,
+  'Z': 0x5a,
+  '[': 0x5b,
+  '¥': 0x5c,
+  ']': 0x5d,
+  '^': 0x5e,
+  '_': 0x5f,
+  '`': 0x60,
+  'a': 0x61,
+  'b': 0x62,
+  'c': 0x63,
+  'd': 0x64,
+  'e': 0x65,
+  'f': 0x66,
+  'g': 0x67,
+  'h': 0x68,
+  'i': 0x69,
+  'j': 0x6a,
+  'k': 0x6b,
+  'l': 0x6c,
+  'm': 0x6d,
+  'n': 0x6e,
+  'o': 0x6f,
+  'p': 0x70,
+  'q': 0x71,
+  'r': 0x72,
+  's': 0x73,
+  't': 0x74,
+  'u': 0x75,
+  'v': 0x76,
+  'w': 0x77,
+  'x': 0x78,
+  'y': 0x79,
+  'z': 0x7a,
+  '{': 0x7b,
+  '|': 0x7c,
+  '}': 0x7d,
+  '~': 0x7e,
+};
 
 class Casl2 {
   List<int> compile(final String s) {
@@ -54,6 +153,9 @@ class Casl2 {
           break;
         case 'DS':
           token = this.ds(label, operand);
+          break;
+        case 'DC':
+          token = this.dc(label, operand);
           break;
         case 'LD':
           token = this.ld(label, operand);
@@ -147,6 +249,7 @@ class Casl2 {
   final start = _start;
   final end = _end;
   final ds = _ds;
+  final dc = _dc;
   final nop = _nop;
   final ret = _ret;
   final ld = _ld;
@@ -202,6 +305,41 @@ Token _ds(final String label, final String operand) {
   return Token(
     [],
     label: label,
+  );
+}
+
+Token _dc(final String label, final String operand) {
+  final ops = <int>[];
+  // TODO multi references
+  var refL = '';
+  var refI = 0;
+
+  {
+    final o = operand.split(',');
+    for (var i = 0; i < o.length; i++) {
+      final op = o[i];
+      if (_expADR.hasMatch(op)) {
+        final a = _expADR.firstMatch(op)?.group(1) ?? '0';
+        final adr = a.replaceFirst('#', '0x');
+        ops.add(int.parse(adr));
+      } else if (_expStr.hasMatch(op)) {
+        final str = _expStr.firstMatch(op)?.group(1) ?? '';
+        for (var c in str.split('')) {
+          ops.add(char2bin[c] ?? 0);
+        }
+      } else {
+        refI = ops.length;
+        refL = op;
+        ops.add(0);
+      }
+    }
+  }
+
+  return Token(
+    ops,
+    label: label,
+    refLabel: refL,
+    refIndex: refI,
   );
 }
 
