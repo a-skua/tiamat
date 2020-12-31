@@ -12,9 +12,7 @@ void loadMemory(final Resource r) {
 
   final x = cache & 0xf;
   final gr = (cache >> 4) & 0xf;
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   final data = r.memory.getWord(adr);
   var flag = 0;
@@ -55,9 +53,7 @@ void store(final Resource r) {
 
   final x = cache & 0xf;
   final gr = (cache >> 4) & 0xf;
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   r.memory.setWord(adr, r.getGR(gr));
 }
@@ -69,9 +65,7 @@ void loadAddress(final Resource r) {
 
   final x = cache & 0xf;
   final gr = (cache >> 4) & 0xf;
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   r.setGR(gr, adr);
 }
@@ -83,9 +77,7 @@ void addArithmeticMemory(final Resource r) {
 
   final x = cache & 0xf;
   final gr = (cache >> 4) & 0xf;
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   const maskBits = (1 << wordSize) - 1;
 
@@ -127,9 +119,7 @@ void addLogicalMemory(final Resource r) {
 
   final x = cache & 0xf;
   final gr = (cache >> 4) & 0xf;
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   final v1 = r.getGR(gr);
   final v2 = r.memory.getWord(adr);
@@ -165,9 +155,7 @@ void subtractArithmeticMemory(final Resource r) {
 
   final x = cache & 0xf;
   final gr = (cache >> 4) & 0xf;
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   const maskBits = (1 << wordSize) - 1;
 
@@ -203,9 +191,7 @@ void subtractLogicalMemory(final Resource r) {
 
   final x = cache & 0xf;
   final gr = (cache >> 4) & 0xf;
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   const maskBits = (1 << wordSize) - 1;
 
@@ -299,9 +285,7 @@ void unconditionalJump(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   r.PR = adr;
 }
@@ -311,9 +295,7 @@ void jumpOnPlus(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   if (!r.SF && !r.ZF) {
     r.PR = adr;
@@ -325,9 +307,7 @@ void jumpOnMinus(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   if (r.SF) {
     r.PR = adr;
@@ -339,9 +319,7 @@ void jumpOnNonZero(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   if (!r.ZF) {
     r.PR = adr;
@@ -353,9 +331,7 @@ void jumpOnZero(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   if (r.ZF) {
     r.PR = adr;
@@ -367,9 +343,7 @@ void jumpOnOverflow(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
-  final adr =
-      x == 0 ? r.memory.getWord(r.PR) : r.memory.getWord(r.PR) + r.getGR(x);
-  r.PR += 1;
+  final adr = _getADR(r, x);
 
   if (r.OF) {
     r.PR = adr;
