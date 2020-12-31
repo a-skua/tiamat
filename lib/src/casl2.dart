@@ -59,6 +59,7 @@ class Casl2 {
           token = this.ds(label, operand);
           break;
         case 'DC':
+          // TODO bug; DC 'hello, world!'
           token = this.dc(label, operand);
           break;
         case 'LD':
@@ -118,6 +119,9 @@ class Casl2 {
         case 'RET':
           token = this.ret(label);
           break;
+        case 'SVC':
+          token = this.svc(label, operand);
+          break;
         // case 'NOP':
         // default:
         //   token = _nop(label);
@@ -174,6 +178,7 @@ class Casl2 {
   final push = _push;
   final pop = _pop;
   final call = _call;
+  final svc = _svc;
 }
 
 Token _start(final String label, final String operand) {
@@ -380,6 +385,10 @@ Token _pop(final String label, final String operand) {
 
 Token _call(final String label, final String operand) {
   return _pattern2(label, operand, 0x8000);
+}
+
+Token _svc(final String label, final String operand) {
+  return _pattern2(label, operand, 0xf000);
 }
 
 Token _pattern2(final String label, final String operand, final int code) {

@@ -54,7 +54,7 @@ void main() {
     expect(actual.label, equals(expected.label));
     expect(actual.refLabel, equals(expected.refLabel));
 
-    const asm = '; ld test'
+    const asm = '; ld test\n'
         '\tLD GR0,GR1\n'
         '\tLD GR2,#7777\n'
         '\tLD GR3,9999,GR4\n'
@@ -80,7 +80,7 @@ void main() {
     expect(a.refLabel, equals(e.refLabel));
     expect(a.refIndex, equals(e.refIndex));
 
-    const asm = '; lad test'
+    const asm = '; lad test\n'
         'TEST\tSTART XXX\n'
         '\tLAD GR1,#1111\n'
         'XXX\tLD GR0,GR1\n'
@@ -122,7 +122,7 @@ void main() {
     expect(a.refLabel, equals(e.refLabel));
     expect(a.refIndex, equals(e.refIndex));
 
-    const asm = '; start test'
+    const asm = '; start test\n'
         'TEST\tSTART XXX\n'
         '\tLD GR0,1\n'
         'XXX\tLD GR1,GR0\n'
@@ -135,7 +135,7 @@ void main() {
 
     expect(p.end().code, equals([]));
 
-    const asm = '; end test'
+    const asm = '; end test\n'
         'TEST\tSTART\n'
         '\tLD GR0,GR1\n'
         '\tRET\n'
@@ -149,7 +149,7 @@ void main() {
     expect(cc.st('', 'GR1,#12FF').code, equals([0x1110, 0x12ff]));
     expect(cc.st('', 'GR0,12,GR1').code, equals([0x1101, 12]));
 
-    const asm = '; st test'
+    const asm = '; st test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,#1234\n'
         '\tST\tGR0,#2345\n'
@@ -166,7 +166,7 @@ void main() {
     expect(cc.cpa('', 'GR1,#FF22').code, equals([0x4010, 0xff22]));
     expect(cc.cpa('', 'GR5,#ABCD,GR2').code, equals([0x4052, 0xabcd]));
 
-    const asm = '; cpa test'
+    const asm = '; cpa test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,1234\n'
         '\tLAD\tGR1,#1234\n'
@@ -196,7 +196,7 @@ void main() {
     expect(cc.cpl('', 'GR7,#ABCD').code, equals([0x4170, 0xabcd]));
     expect(cc.cpl('', 'GR6,1234,GR5').code, equals([0x4165, 1234]));
 
-    const asm = '; cpl test'
+    const asm = '; cpl test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,1234\n'
         '\tLAD\tGR1,#1234\n'
@@ -226,7 +226,7 @@ void main() {
     expect(cc.adda('', 'GR7,#CCCC').code, equals([0x2070, 0xcccc]));
     expect(cc.adda('', 'GR1,#EEEE,GR2').code, equals([0x2012, 0xeeee]));
 
-    const asm = '; adda test'
+    const asm = '; adda test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,1234\n'
         '\tLAD\tGR1,#1234\n'
@@ -256,7 +256,7 @@ void main() {
     expect(cc.addl('', 'GR7,#CCCC').code, equals([0x2270, 0xcccc]));
     expect(cc.addl('', 'GR1,#EEEE,GR2').code, equals([0x2212, 0xeeee]));
 
-    const asm = '; addl test'
+    const asm = '; addl test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,1234\n'
         '\tLAD\tGR1,#1234\n'
@@ -286,7 +286,7 @@ void main() {
     expect(cc.suba('', 'GR7,#CCCC').code, equals([0x2170, 0xcccc]));
     expect(cc.suba('', 'GR1,#EEEE,GR2').code, equals([0x2112, 0xeeee]));
 
-    const asm = '; suba test'
+    const asm = '; suba test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,1234\n'
         '\tLAD\tGR1,#1234\n'
@@ -316,7 +316,7 @@ void main() {
     expect(cc.subl('', 'GR7,#CCCC').code, equals([0x2370, 0xcccc]));
     expect(cc.subl('', 'GR1,#EEEE,GR2').code, equals([0x2312, 0xeeee]));
 
-    const asm = '; subl test'
+    const asm = '; subl test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,1234\n'
         '\tLAD\tGR1,#1234\n'
@@ -346,7 +346,7 @@ void main() {
     expect(cc.jump('', '1234,GR5').code, equals([0x6405, 1234]));
     expect(cc.jump('FOO', '#FFFF').label, equals('FOO'));
 
-    const asm = ';jump test'
+    const asm = ';jump test\n'
         'TEST\tSTART\n'
         '\tJUMP\tEND\n'
         '\tNOP\n'
@@ -377,7 +377,7 @@ void main() {
     expect(cc.jmi('XXX', '2345').label, equals('XXX'));
     expect(cc.jmi('', '#2345,GR5').code, equals([0x6105, 0x2345]));
 
-    const asm = ';jmi test'
+    const asm = ';jmi test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,100\n'
         '\tLAD\tGR1,200\n'
@@ -411,7 +411,7 @@ void main() {
     expect(cc.jnz('XXX', '2345').label, equals('XXX'));
     expect(cc.jnz('', '#2345,GR5').code, equals([0x6205, 0x2345]));
 
-    const asm = ';jnz test'
+    const asm = ';jnz test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,100\n'
         '\tLAD\tGR1,200\n'
@@ -445,7 +445,7 @@ void main() {
     expect(cc.jze('XXX', '2345').label, equals('XXX'));
     expect(cc.jze('', '#2345,GR5').code, equals([0x6305, 0x2345]));
 
-    const asm = ';jne test'
+    const asm = ';jne test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,100\n'
         '\tLAD\tGR1,200\n'
@@ -479,7 +479,7 @@ void main() {
     expect(cc.jpl('XXX', '2345').label, equals('XXX'));
     expect(cc.jpl('', '#2345,GR5').code, equals([0x6505, 0x2345]));
 
-    const asm = ';jpl test'
+    const asm = ';jpl test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,100\n'
         '\tLAD\tGR1,200\n'
@@ -513,7 +513,7 @@ void main() {
     expect(cc.jov('XXX', '2345').label, equals('XXX'));
     expect(cc.jov('', '#2345,GR5').code, equals([0x6605, 0x2345]));
 
-    const asm = ';jov test'
+    const asm = ';jov test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,#FFFF\n'
         '\tLAD\tGR1,#FFFF\n'
@@ -547,7 +547,7 @@ void main() {
     expect(cc.push('FOO', '#3333').label, equals('FOO'));
     expect(cc.push('', '4321,GR3').code, equals([0x7003, 4321]));
 
-    const asm = ';push test'
+    const asm = ';push test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR1,#CCCC\n'
         '\tPUSH 0,GR1\n'
@@ -572,7 +572,7 @@ void main() {
     expect(cc.pop('BAR', 'GR3').label, equals('BAR'));
     expect(cc.pop('', 'GR4').code, equals([0x7140]));
 
-    const asm = ';pop test'
+    const asm = ';pop test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR1,1234\n'
         '\tPUSH\t0,GR1\n'
@@ -599,7 +599,7 @@ void main() {
     expect(cc.call('XXX', '#1233,GR2').label, equals('XXX'));
     expect(cc.call('', '200').code, equals([0x8000, 200]));
 
-    const asm = ';call test'
+    const asm = ';call test\n'
         'TEST\tSTART\n'
         '\tCALL\tSUB\n'
         '\tLAD\tGR1,300\n'
@@ -630,7 +630,7 @@ void main() {
     expect(cc.ds('YYY', '#0003').label, equals('YYY'));
     expect(cc.ds('', '24').code, equals(List.filled(24, 0)));
 
-    const asm = ';ds test'
+    const asm = ';ds test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR0,10\n'
         '\tST\tGR0,BUF\n'
@@ -677,7 +677,7 @@ void main() {
         equals('LABEL'));
     expect(cc.dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').refIndex, equals(11));
 
-    const asm = ';dc test'
+    const asm = ';dc test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR7,0\n'
         '\tLD\tGR0,TEXT,GR7\n'
@@ -707,6 +707,39 @@ void main() {
         0x41,
         0x42,
         0x43,
+      ]),
+    );
+  });
+
+  test('SVC', () {
+    final cc = Casl2();
+
+    expect(cc.svc('FOO', '1,GR1').code, equals([0xf001, 1]));
+    expect(cc.svc('FOO', '1,GR1').label, equals('FOO'));
+    expect(cc.svc('', '2').code, equals([0xf000, 2]));
+
+    const asm = 'svc test\n'
+        'TEST\tSTART\n'
+        '\tLAD\tGR1,TEXT\n'
+        '\tLAD\tGR2,3\n'
+        '\tSVC\t2\n'
+        '\tRET\n'
+        'TEXT\tDC\t\'xxx\'\n'
+        '\tEND\n';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1210,
+        7,
+        0x1220,
+        3,
+        0xf000,
+        2,
+        0x8100,
+        0x78,
+        0x78,
+        0x78,
       ]),
     );
   });
