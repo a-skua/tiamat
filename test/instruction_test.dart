@@ -305,4 +305,22 @@ void main() {
       }
     });
   });
+
+  /// TODO
+  // group('supervisor call', () {
+  //   test('default', () {
+  //     final r = Resource();
+  //     final ins = Instruction();
+
+  //     final op = 0xf000;
+
+  //     {
+  //       final pr = r.PR;
+  //       r.memory.setWord(r.PR, op);
+  //       r.memory.setWord(r.PR + 1, 1);
+
+  //       ins.supervisorCall(r);
+  //     }
+  //   });
+  // });
 }

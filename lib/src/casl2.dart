@@ -52,6 +52,9 @@ class Casl2 {
         case 'END':
           token = this.end();
           break;
+        case 'DS':
+          token = this.ds(label, operand);
+          break;
         case 'LD':
           token = this.ld(label, operand);
           break;
@@ -143,6 +146,7 @@ class Casl2 {
 
   final start = _start;
   final end = _end;
+  final ds = _ds;
   final nop = _nop;
   final ret = _ret;
   final ld = _ld;
@@ -186,6 +190,20 @@ Token _start(final String label, final String operand) {
 }
 
 Token _end() => Token([]);
+
+Token _ds(final String label, final String operand) {
+  if (_expADR.hasMatch(operand)) {
+    final adr = operand.replaceFirst('#', '0x');
+    return Token(
+      List.filled(int.parse(adr), 0),
+      label: label,
+    );
+  }
+  return Token(
+    [],
+    label: label,
+  );
+}
 
 Token _ret(final String label) => Token([0x8100], label: label);
 

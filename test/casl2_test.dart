@@ -622,4 +622,32 @@ void main() {
       ]),
     );
   });
+
+  test('DS', () {
+    final cc = Casl2();
+
+    expect(cc.ds('YYY', '#0003').code, equals([0, 0, 0]));
+    expect(cc.ds('YYY', '#0003').label, equals('YYY'));
+    expect(cc.ds('', '24').code, equals(List.filled(24, 0)));
+
+    const asm = ';ds test'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,10\n'
+        '\tST\tGR0,BUF\n'
+        '\tRET\n'
+        'BUF\tDS\t1\n'
+        '\tEND';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        10,
+        0x1100,
+        5,
+        0x8100,
+        0,
+      ]),
+    );
+  });
 }
