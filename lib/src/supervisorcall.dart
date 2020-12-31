@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'resource.dart';
 import 'charcode.dart';
 
@@ -5,7 +6,7 @@ typedef Read = String Function();
 typedef Write = void Function(String s);
 
 class Supervisor {
-  Read read = () => '';
+  Read read = () => stdin.readLineSync() ?? '';
   Write write = (s) {
     print(s);
   };
