@@ -1,8 +1,11 @@
 import 'instruction.dart';
 import 'resource.dart';
+import 'supervisorcall.dart';
 
 class Comet2 {
   final _map = List.filled(1 << 8, noOperation);
+
+  final svc = SVC();
 
   Comet2() {
     this._map[0x10] = loadMemory;
@@ -36,6 +39,8 @@ class Comet2 {
 
     this._map[0x80] = callSubroutine;
     this._map[0x81] = returnFromSubroutine;
+
+    this._map[0xf0] = this._supervisorCall;
   }
 
   void exec(final Resource r) {
@@ -44,5 +49,9 @@ class Comet2 {
       final op = (r.memory.getWord(r.PR) >> 8) & 0xff;
       this._map[op](r);
     }
+  }
+
+  void _supervisorCall(final Resource r) {
+    supervisorCall(r, this.svc);
   }
 }

@@ -1,4 +1,5 @@
 import 'resource.dart';
+import 'supervisorcall.dart';
 
 /// NOP
 void noOperation(final Resource r) {
@@ -389,6 +390,16 @@ void callSubroutine(final Resource r) {
 void returnFromSubroutine(final Resource r) {
   r.PR = r.memory.getWord(r.SP);
   r.SP += 1;
+}
+
+/// SVC adr,x
+void supervisorCall(final Resource r, SVC svc) {
+  final x = r.memory.getWord(r.PR) & 0xf;
+  r.PR += 1;
+
+  final adr = _getADR(r, x);
+
+  svc.exec(r, adr);
 }
 
 int _getADR(final Resource r, final int x) {
