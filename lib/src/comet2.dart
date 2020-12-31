@@ -5,7 +5,7 @@ import 'supervisorcall.dart';
 class Comet2 {
   final _map = List.filled(1 << 8, noOperation);
 
-  final svc = SVC();
+  final sv = Supervisor();
 
   Comet2() {
     this._map[0x10] = loadMemory;
@@ -52,6 +52,6 @@ class Comet2 {
   }
 
   void _supervisorCall(final Resource r) {
-    supervisorCall(r, this.svc);
+    supervisorCall(r, this.sv);
   }
 }

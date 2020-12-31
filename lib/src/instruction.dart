@@ -393,13 +393,13 @@ void returnFromSubroutine(final Resource r) {
 }
 
 /// SVC adr,x
-void supervisorCall(final Resource r, SVC svc) {
+void supervisorCall(final Resource r, Supervisor s) {
   final x = r.memory.getWord(r.PR) & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
 
-  svc.exec(r, adr);
+  s.call(r, adr);
 }
 
 int _getADR(final Resource r, final int x) {

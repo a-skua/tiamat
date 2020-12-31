@@ -4,13 +4,13 @@ import 'charcode.dart';
 typedef Read = String Function();
 typedef Write = void Function(String s);
 
-class SVC {
+class Supervisor {
   Read read = () => '';
   Write write = (s) {
     print(s);
   };
 
-  void exec(final Resource r, final int i) {
+  void call(final Resource r, final int i) {
     switch (i) {
       case 1:
         _read(r, this.read);
@@ -35,4 +35,11 @@ void _read(final Resource r, final Read read) {
   }
 }
 
-void _write(final Resource r, final Write write) {}
+void _write(final Resource r, final Write write) {
+  var s = '';
+  final p = r.getGR(1);
+  for (var i = 0; i < r.getGR(2); i++) {
+    s += code2char[r.memory.getWord(p + i)] ?? '';
+  }
+  write(s);
+}
