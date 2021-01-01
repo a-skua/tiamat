@@ -281,6 +281,76 @@ void compareLogical(final Resource r) {
   r.FR = _cplFlag(v1, v2);
 }
 
+/// SLA r,adr,x
+void shiftLeftArithmetic(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr = _getADR(r, x);
+
+  final v = r.getGR(gr);
+  final result = (v << adr) & 0xffff;
+  r.setGR(gr, result);
+  // TODO bug; adr == 0
+  r.FR = _shiftFlag(result, ((v << (adr - 1)) >> (wordSize - 1)) & 1);
+}
+
+/// SRA r,adr,x
+void shiftRightArithmetic(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr = _getADR(r, x);
+
+  final v = r.getGR(gr);
+  final f = (final int adr) {
+    if ((v & 0x8000) > 0) {
+      return ((-_complement2(v)) >> adr) & 0xffff;
+    }
+    return (v >> adr) & 0xffff;
+  };
+  final result = f(adr);
+  r.setGR(gr, result);
+  // TODO bug; adr == 0
+  r.FR = _shiftFlag(result, f(adr - 1) & 1);
+}
+
+/// SLL r,adr,x
+void shiftLeftLogical(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr = _getADR(r, x);
+
+  final v = r.getGR(gr);
+  final result = (v << adr) & 0xffff;
+  r.setGR(gr, result);
+  // TODO bug; adr == 0
+  r.FR = _shiftFlag(result, ((v << (adr - 1)) >> (wordSize - 1)) & 1);
+}
+
+/// SRL r,adr,x
+void shiftRightLogical(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr = _getADR(r, x);
+
+  final v = r.getGR(gr);
+  final result = (v >> adr) & 0xffff;
+  r.setGR(gr, result);
+  // TODO bug; adr == 0
+  r.FR = _shiftFlag(result, (v >> (adr - 1)) & 1);
+}
+
 /// JUMP adr,x
 void unconditionalJump(final Resource r) {
   final x = r.memory.getWord(r.PR) & 0xf;
@@ -413,6 +483,23 @@ int _getADR(final Resource r, final int x) {
 int _complement2(final int v) {
   const maskBits = (1 << wordSize) - 1;
   return ((v ^ -1) + 1) & maskBits;
+}
+
+int _shiftFlag(final int v, final int of) {
+  const signMask = 1 << (wordSize - 1);
+  var flag = 0;
+
+  if (of > 0) {
+    flag |= overflowFlag;
+  }
+  if ((v & signMask) > 0) {
+    flag |= signFlag;
+  }
+  if (v == 0) {
+    flag |= zeroFlag;
+  }
+
+  return flag;
 }
 
 int _addaFlag(final int v1, final int v2) {

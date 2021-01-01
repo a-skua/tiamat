@@ -17,7 +17,7 @@ void main() {
       final sv = Supervisor();
 
       const text = 'Hello, World';
-      sv.read = () => text;
+      sv.read = () => text + ' foo';
       r.setGR(1, 0x8000);
       r.setGR(2, text.length);
 
@@ -52,7 +52,7 @@ void main() {
       final sv = Supervisor();
 
       const text = 'Hello, World';
-      sv.read = () => text;
+      sv.read = () => text + ' foo';
       r.setGR(1, 0x8000);
       r.setGR(2, text.length);
 
@@ -96,7 +96,7 @@ void main() {
         e = s;
       };
       r.setGR(1, 0x8000);
-      r.setGR(2, text.length);
+      r.setGR(2, text.length - 1);
 
       r.memory.setWord(r.PR, 0xf000);
       r.memory.setWord(r.PR + 1, 2);
@@ -109,7 +109,7 @@ void main() {
       }
 
       supervisorCall(r, sv);
-      expect(e, equals(text));
+      expect(e, equals('hello, world'));
     });
 
     test('with base', () {
@@ -123,7 +123,7 @@ void main() {
         e = s;
       };
       r.setGR(1, 0x8000);
-      r.setGR(2, text.length);
+      r.setGR(2, text.length - 1);
 
       r.setGR(7, 1);
       r.memory.setWord(r.PR, 0xf007);
@@ -137,7 +137,7 @@ void main() {
       }
 
       supervisorCall(r, sv);
-      expect(e, equals(text));
+      expect(e, equals('hello, world'));
     });
   });
 }
