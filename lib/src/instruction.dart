@@ -1,6 +1,8 @@
 import 'resource.dart';
 import 'supervisorcall.dart';
 
+typedef Instruction = void Function(Resource r);
+
 /// NOP
 void noOperation(final Resource r) {
   r.PR += 1;

@@ -7,7 +7,7 @@ const zeroFlag = 1 << 2;
 
 class Memory {
   final _size = memorySize;
-  final List<int> _values = List.filled((memorySize ~/ 2) + 1, 0);
+  final List<int> _values = List.filled(memorySize, 0);
 
   int get size => this._size;
 
@@ -22,30 +22,14 @@ class Memory {
     if (!this._isWithin(addr)) {
       return 0;
     }
-
-    const int maskBits = (1 << wordSize) - 1;
-    final i = addr ~/ 2;
-    if (addr % 2 > 0) {
-      return (this._values[i] >> wordSize) & maskBits;
-    } else {
-      return this._values[i] & maskBits;
-    }
+    return this._values[addr];
   }
 
   bool setWord(final int addr, final int value) {
     if (!this._isWithin(addr)) {
       return false;
     }
-
-    const int maskBits = (1 << wordSize) - 1;
-    final i = addr ~/ 2;
-    if (addr % 2 > 0) {
-      this._values[i] &= maskBits;
-      this._values[i] |= (value & maskBits) << wordSize;
-    } else {
-      this._values[i] &= maskBits << wordSize;
-      this._values[i] |= value & maskBits;
-    }
+    this._values[addr] = value;
     return true;
   }
 }

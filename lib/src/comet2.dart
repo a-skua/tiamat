@@ -3,7 +3,7 @@ import 'resource.dart';
 import 'supervisorcall.dart';
 
 class Comet2 {
-  final _map = List.filled(1 << 8, noOperation);
+  final _map = <int, Instruction>{};
 
   final sv = Supervisor();
 
@@ -21,6 +21,13 @@ class Comet2 {
     this._map[0x25] = subtractArithmetic;
     this._map[0x26] = addLogical;
     this._map[0x27] = subtractLogical;
+
+    this._map[0x30] = andMemory;
+    this._map[0x31] = orMemory;
+    this._map[0x32] = exclusiveOrMemory;
+    this._map[0x34] = and;
+    this._map[0x35] = or;
+    this._map[0x36] = exclusiveOr;
 
     this._map[0x40] = compareArithmeticMemory;
     this._map[0x41] = compareLogicalMemory;
@@ -52,7 +59,8 @@ class Comet2 {
     // FIXME conditional
     while (r.SP != 0) {
       final op = (r.memory.getWord(r.PR) >> 8) & 0xff;
-      this._map[op](r);
+      final ins = this._map[op] ?? noOperation;
+      ins(r);
     }
   }
 
