@@ -339,6 +339,110 @@ void main() {
         ]));
   });
 
+  test('SLA', () {
+    final cc = Casl2();
+
+    expect(cc.sla('FOO', 'GR2,1,GR3').code, equals([0x5023, 1]));
+    expect(cc.sla('FOO', 'GR2,1,GR3').label, equals('FOO'));
+    expect(cc.sla('', 'GR7,2').code, equals([0x5070, 2]));
+
+    const asm = '; sla test\n'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,#000F\n'
+        '\tSLA\tGR0,#000F\n'
+        '\tRET\n'
+        '\tEND\n';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        0xf,
+        0x5000,
+        0xf,
+        0x8100,
+      ]),
+    );
+  });
+
+  test('SRA', () {
+    final cc = Casl2();
+
+    expect(cc.sra('FOO', 'GR2,1,GR3').code, equals([0x5123, 1]));
+    expect(cc.sra('FOO', 'GR2,1,GR3').label, equals('FOO'));
+    expect(cc.sra('', 'GR7,2').code, equals([0x5170, 2]));
+
+    const asm = '; sla test\n'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,#00F0\n'
+        '\tSRA\tGR0,#000F\n'
+        '\tRET\n'
+        '\tEND\n';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        0xf0,
+        0x5100,
+        0xf,
+        0x8100,
+      ]),
+    );
+  });
+
+  test('SLL', () {
+    final cc = Casl2();
+
+    expect(cc.sll('FOO', 'GR2,1,GR3').code, equals([0x5223, 1]));
+    expect(cc.sll('FOO', 'GR2,1,GR3').label, equals('FOO'));
+    expect(cc.sll('', 'GR7,2').code, equals([0x5270, 2]));
+
+    const asm = '; sla test\n'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,#000F\n'
+        '\tSLL\tGR0,#000F\n'
+        '\tRET\n'
+        '\tEND\n';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        0xf,
+        0x5200,
+        0xf,
+        0x8100,
+      ]),
+    );
+  });
+
+  test('SRL', () {
+    final cc = Casl2();
+
+    expect(cc.srl('FOO', 'GR2,1,GR3').code, equals([0x5323, 1]));
+    expect(cc.srl('FOO', 'GR2,1,GR3').label, equals('FOO'));
+    expect(cc.srl('', 'GR7,2').code, equals([0x5370, 2]));
+
+    const asm = '; sla test\n'
+        'TEST\tSTART\n'
+        '\tLAD\tGR0,#00F0\n'
+        '\tSRL\tGR0,#000F\n'
+        '\tRET\n'
+        '\tEND\n';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1200,
+        0xf0,
+        0x5300,
+        0xf,
+        0x8100,
+      ]),
+    );
+  });
+
   test('JUMP', () {
     final cc = Casl2();
 

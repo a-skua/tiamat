@@ -27,6 +27,11 @@ class Comet2 {
     this._map[0x44] = compareArithmetic;
     this._map[0x45] = compareLogical;
 
+    this._map[0x50] = shiftLeftArithmetic;
+    this._map[0x51] = shiftRightArithmetic;
+    this._map[0x52] = shiftLeftLogical;
+    this._map[0x53] = shiftRightLogical;
+
     this._map[0x61] = jumpOnMinus;
     this._map[0x62] = jumpOnNonZero;
     this._map[0x62] = jumpOnZero;

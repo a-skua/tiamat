@@ -89,6 +89,18 @@ class Casl2 {
         case 'CPL':
           token = this.cpl(label, operand);
           break;
+        case 'SLA':
+          token = this.sla(label, operand);
+          break;
+        case 'SRA':
+          token = this.sra(label, operand);
+          break;
+        case 'SLL':
+          token = this.sll(label, operand);
+          break;
+        case 'SRL':
+          token = this.srl(label, operand);
+          break;
         case 'JMI':
           token = this.jmi(label, operand);
           break;
@@ -169,6 +181,10 @@ class Casl2 {
   final subl = _subl;
   final cpa = _cpa;
   final cpl = _cpl;
+  final sla = _sla;
+  final sra = _sra;
+  final sll = _sll;
+  final srl = _srl;
   final jmi = _jmi;
   final jnz = _jnz;
   final jze = _jze;
@@ -346,6 +362,42 @@ Token _cpa(final String label, final String operand) {
 
 Token _cpl(final String label, final String operand) {
   return _pattern(label, operand, 0x4500, 0x4100);
+}
+
+Token _sla(final String label, final String operand) {
+  // TODO
+  final t = _pattern(label, operand, 0, 0x5000);
+  if (t.size == 1) {
+    t.code[0] = 0;
+  }
+  return t;
+}
+
+Token _sra(final String label, final String operand) {
+  // TODO
+  final t = _pattern(label, operand, 0, 0x5100);
+  if (t.size == 1) {
+    t.code[0] = 0;
+  }
+  return t;
+}
+
+Token _sll(final String label, final String operand) {
+  // TODO
+  final t = _pattern(label, operand, 0, 0x5200);
+  if (t.size == 1) {
+    t.code[0] = 0;
+  }
+  return t;
+}
+
+Token _srl(final String label, final String operand) {
+  // TODO
+  final t = _pattern(label, operand, 0, 0x5300);
+  if (t.size == 1) {
+    t.code[0] = 0;
+  }
+  return t;
 }
 
 Token _jmi(final String label, final String operand) {

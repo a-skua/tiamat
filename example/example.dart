@@ -14,6 +14,7 @@ void main() {
       '\tPUSH\t400\n'
       '\tCALL\tSUB\n'
       '\tLAD\tGR3,300\n'
+      '\tSLL\tGR1,8\n'
       '\tRET\n'
       'SUB\tPOP\tGR7\n'
       '\tPOP\tGR4\n'
