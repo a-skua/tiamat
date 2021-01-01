@@ -83,6 +83,15 @@ class Casl2 {
         case 'SUBL':
           token = this.subl(label, operand);
           break;
+        case 'AND':
+          token = this.and(label, operand);
+          break;
+        case 'OR':
+          token = this.or(label, operand);
+          break;
+        case 'XOR':
+          token = this.xor(label, operand);
+          break;
         case 'CPA':
           token = this.cpa(label, operand);
           break;
@@ -179,6 +188,9 @@ class Casl2 {
   final addl = _addl;
   final suba = _suba;
   final subl = _subl;
+  final and = _and;
+  final or = _or;
+  final xor = _xor;
   final cpa = _cpa;
   final cpl = _cpl;
   final sla = _sla;
@@ -354,6 +366,18 @@ Token _suba(final String label, final String operand) {
 
 Token _subl(final String label, final String operand) {
   return _pattern(label, operand, 0x2700, 0x2300);
+}
+
+Token _and(final String label, final String operand) {
+  return _pattern(label, operand, 0x3400, 0x3000);
+}
+
+Token _or(final String label, final String operand) {
+  return _pattern(label, operand, 0x3500, 0x3100);
+}
+
+Token _xor(final String label, final String operand) {
+  return _pattern(label, operand, 0x3600, 0x3200);
 }
 
 Token _cpa(final String label, final String operand) {

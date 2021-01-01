@@ -822,7 +822,7 @@ void main() {
     expect(cc.svc('FOO', '1,GR1').label, equals('FOO'));
     expect(cc.svc('', '2').code, equals([0xf000, 2]));
 
-    const asm = 'svc test\n'
+    const asm = '; svc test\n'
         'TEST\tSTART\n'
         '\tLAD\tGR1,TEXT\n'
         '\tLAD\tGR2,3\n'
@@ -844,6 +844,105 @@ void main() {
         0x78,
         0x78,
         0x78,
+      ]),
+    );
+  });
+
+  test('AND', () {
+    final cc = Casl2();
+
+    expect(cc.and('FOO', 'GR1,100,GR2').code, equals([0x3012, 100]));
+    expect(cc.and('FOO', 'GR1,100,GR2').label, equals('FOO'));
+    expect(cc.and('', 'GR3,GR4').code, equals([0x3434]));
+
+    const asm = '; and test\n'
+        'TEST\tSTART\n'
+        '\tLAD\tGR1,100\n'
+        '\tLAD\tGR2,200\n'
+        '\tAND\tGR1,GR2\n'
+        '\tAND\tGR2,BUF\n'
+        '\tRET\n'
+        'BUF\tDC\t200\n'
+        '\tEND\n';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1210,
+        100,
+        0x1220,
+        200,
+        0x3412,
+        0x3020,
+        8,
+        0x8100,
+        200,
+      ]),
+    );
+  });
+
+  test('OR', () {
+    final cc = Casl2();
+
+    expect(cc.or('FOO', 'GR1,100,GR2').code, equals([0x3112, 100]));
+    expect(cc.or('FOO', 'GR1,100,GR2').label, equals('FOO'));
+    expect(cc.or('', 'GR3,GR4').code, equals([0x3534]));
+
+    const asm = '; and test\n'
+        'TEST\tSTART\n'
+        '\tLAD\tGR1,100\n'
+        '\tLAD\tGR2,200\n'
+        '\tOR\tGR1,GR2\n'
+        '\tOR\tGR2,BUF\n'
+        '\tRET\n'
+        'BUF\tDC\t200\n'
+        '\tEND\n';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1210,
+        100,
+        0x1220,
+        200,
+        0x3512,
+        0x3120,
+        8,
+        0x8100,
+        200,
+      ]),
+    );
+  });
+
+  test('XOR', () {
+    final cc = Casl2();
+
+    expect(cc.xor('FOO', 'GR1,100,GR2').code, equals([0x3212, 100]));
+    expect(cc.xor('FOO', 'GR1,100,GR2').label, equals('FOO'));
+    expect(cc.xor('', 'GR3,GR4').code, equals([0x3634]));
+
+    const asm = '; and test\n'
+        'TEST\tSTART\n'
+        '\tLAD\tGR1,100\n'
+        '\tLAD\tGR2,200\n'
+        '\tXOR\tGR1,GR2\n'
+        '\tXOR\tGR2,BUF\n'
+        '\tRET\n'
+        'BUF\tDC\t200\n'
+        '\tEND\n';
+
+    expect(
+      cc.compile(asm),
+      equals([
+        0x1210,
+        100,
+        0x1220,
+        200,
+        0x3612,
+        0x3220,
+        8,
+        0x8100,
+        200,
       ]),
     );
   });
