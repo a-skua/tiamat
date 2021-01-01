@@ -30,7 +30,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
 
       // r(+) > adr(+)
@@ -50,7 +52,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
 
       // r(-) > adr(-)
@@ -70,7 +74,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -97,7 +103,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
 
       // r(+) > adr(+)
@@ -120,7 +128,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
 
       // r(-) > adr(-)
@@ -143,7 +153,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -166,7 +178,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(1));
+        expect(r.ZF, equals(true));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -192,7 +206,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(1));
+        expect(r.ZF, equals(true));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -216,7 +232,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
 
       // r(+) < adr(+)
@@ -236,7 +254,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
 
       // r(-) < adr(-)
@@ -256,7 +276,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -283,7 +305,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
 
       // r(+) < adr(+)
@@ -306,7 +330,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
 
       // r(-) < adr(-)
@@ -329,7 +355,9 @@ void main() {
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
     });
   });
@@ -354,7 +382,9 @@ void main() {
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
 
       // r1(+) > r2(+)
@@ -373,7 +403,9 @@ void main() {
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
 
       // r1(-) > r2(-)
@@ -392,7 +424,9 @@ void main() {
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -414,7 +448,9 @@ void main() {
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(1));
+        expect(r.ZF, equals(true));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -437,7 +473,9 @@ void main() {
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
 
       // r1(+) < r2(+)
@@ -456,7 +494,9 @@ void main() {
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
 
       // r(-) < adr(-)
@@ -475,7 +515,9 @@ void main() {
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
     });
   });
@@ -501,7 +543,9 @@ void main() {
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -528,7 +572,9 @@ void main() {
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -551,7 +597,9 @@ void main() {
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(1));
+        expect(r.ZF, equals(true));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -577,7 +625,9 @@ void main() {
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(1));
+        expect(r.ZF, equals(true));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -601,7 +651,9 @@ void main() {
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -628,7 +680,9 @@ void main() {
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
     });
   });
@@ -653,7 +707,9 @@ void main() {
 
         compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(0));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -675,7 +731,9 @@ void main() {
 
         compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(1));
+        expect(r.ZF, equals(true));
+        expect(r.SF, equals(false));
+        expect(r.OF, equals(false));
       }
     });
 
@@ -698,7 +756,9 @@ void main() {
 
         compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
-        expect(r.FR, equals(2));
+        expect(r.ZF, equals(false));
+        expect(r.SF, equals(true));
+        expect(r.OF, equals(false));
       }
     });
   });

@@ -223,6 +223,23 @@ void subtractLogical(final Resource r) {
   r.FR = flag;
 }
 
+/// AND r,adr,x
+void andMemory(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr = _getADR(r, x);
+
+  final v1 = r.getGR(gr);
+  final v2 = r.memory.getWord(adr);
+
+  final result = v1 & v2;
+  r.setGR(gr, result);
+  r.FR = _andFlag(result);
+}
+
 /// CPA r,adr,x
 void compareArithmeticMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
@@ -485,6 +502,16 @@ int _complement2(final int v) {
   return ((v ^ -1) + 1) & maskBits;
 }
 
+int _andFlag(final int result) {
+  if ((result & (1 << (wordSize - 1))) > 0) {
+    return signFlag;
+  }
+  if (result == 0) {
+    return zeroFlag;
+  }
+  return 0;
+}
+
 int _shiftFlag(final int v, final int of) {
   const signMask = 1 << (wordSize - 1);
   var flag = 0;
@@ -494,8 +521,7 @@ int _shiftFlag(final int v, final int of) {
   }
   if ((v & signMask) > 0) {
     flag |= signFlag;
-  }
-  if (v == 0) {
+  } else if (v == 0) {
     flag |= zeroFlag;
   }
 
@@ -520,8 +546,7 @@ int _addaFlag(final int v1, final int v2) {
   }
   if ((result & signMask) > 0) {
     flag |= signFlag;
-  }
-  if (result == 0) {
+  } else if (result == 0) {
     flag |= zeroFlag;
   }
   return flag;
@@ -541,8 +566,7 @@ int _addlFlag(final int v1, final int v2) {
   }
   if ((result & signMask) > 0) {
     flag |= signFlag;
-  }
-  if (result == 0) {
+  } else if (result == 0) {
     flag |= zeroFlag;
   }
   return flag;
@@ -560,8 +584,7 @@ int _sublFlag(final int v1, final int v2) {
   }
   if ((result & signMask) > 0) {
     flag |= signFlag;
-  }
-  if (result == 0) {
+  } else if (result == 0) {
     flag |= zeroFlag;
   }
   return flag;
@@ -569,7 +592,7 @@ int _sublFlag(final int v1, final int v2) {
 
 int _cpaFlag(final int v1, final int v2) {
   if (v1 == v2) {
-    return 1;
+    return zeroFlag;
   }
 
   const signMask = 0x8000;
@@ -578,10 +601,10 @@ int _cpaFlag(final int v1, final int v2) {
     if (v1 > v2) {
       return 0;
     } else {
-      return 2;
+      return signFlag;
     }
   } else if (v1 & signMask > 0 && v2 & signMask == 0) {
-    return 2;
+    return signFlag;
   } else {
     // v1 & signMask == 0 && v2 & signMask > 0
     return 0;
@@ -594,9 +617,9 @@ int _cplFlag(final int v1, final int v2) {
   }
 
   if (v1 == v2) {
-    return 1;
+    return zeroFlag;
   }
 
   // v1 < v2
-  return 2;
+  return signFlag;
 }
