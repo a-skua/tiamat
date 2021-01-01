@@ -289,6 +289,39 @@ void or(final Resource r) {
   r.FR = _andFlag(result);
 }
 
+/// XOR r,adr,x
+void exclusiveOrMemory(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final x = cache & 0xf;
+  final gr = (cache >> 4) & 0xf;
+  final adr = _getADR(r, x);
+
+  final v1 = r.getGR(gr);
+  final v2 = r.memory.getWord(adr);
+
+  final result = v1 ^ v2;
+  r.setGR(gr, result);
+  r.FR = _andFlag(result);
+}
+
+/// XOR r1,r2
+void exclusiveOr(final Resource r) {
+  final cache = r.memory.getWord(r.PR);
+  r.PR += 1;
+
+  final r2 = cache & 0xf;
+  final r1 = (cache >> 4) & 0xf;
+
+  final v1 = r.getGR(r1);
+  final v2 = r.getGR(r2);
+  final result = v1 ^ v2;
+
+  r.setGR(r1, result);
+  r.FR = _andFlag(result);
+}
+
 /// CPA r,adr,x
 void compareArithmeticMemory(final Resource r) {
   final cache = r.memory.getWord(r.PR);
