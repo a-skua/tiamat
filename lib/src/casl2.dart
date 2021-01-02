@@ -62,6 +62,18 @@ class Casl2 {
           // TODO bug; DC 'hello, world!'
           token = this.dc(label, operand);
           break;
+        case 'IN':
+          token = this.input(label, operand);
+          break;
+        case 'OUT':
+          token = this.output(label, operand);
+          break;
+        case 'RPUSH':
+          token = this.rpush(label);
+          break;
+        case 'RPOP':
+          token = this.rpop(label);
+          break;
         case 'LD':
           token = this.ld(label, operand);
           break;
@@ -179,6 +191,10 @@ class Casl2 {
   final end = _end;
   final ds = _ds;
   final dc = _dc;
+  final input = _input;
+  final output = _output;
+  final rpush = _rpush;
+  final rpop = _rpop;
   final nop = _nop;
   final ret = _ret;
   final ld = _ld;
@@ -279,6 +295,133 @@ Token _dc(final String label, final String operand) {
     refIndex: refI,
   );
 }
+
+Token _input(final String label, final String operand) {
+  final s = operand.split(',');
+  if (s.length != 2) {
+    return _nop(label);
+  }
+  final buf = s[0];
+  final len = s[1];
+  // TODO bug
+  if (!_expADR.hasMatch(len)) {
+    return _nop(label);
+  }
+
+  final op = [
+    0x7001,
+    0,
+    0x7002,
+    0,
+  ];
+  var refLabel = '';
+  var refIndex = 0;
+
+  if (_expADR.hasMatch(buf)) {
+    final adr = buf.replaceFirst('#', '0x');
+    op.addAll([0x1210, int.parse(adr)]);
+  } else {
+    op.addAll([0x1210, 0]);
+    refLabel = buf;
+    refIndex = 5;
+  }
+
+  {
+    final adr = len.replaceFirst('#', '0x');
+    op.addAll([0x1220, int.parse(adr)]);
+  }
+
+  op.addAll([
+    0xf000,
+    1,
+    0x7120,
+    0x7110,
+  ]);
+
+  return Token(
+    op,
+    label: label,
+    refLabel: refLabel,
+    refIndex: refIndex,
+  );
+}
+
+Token _output(final String label, final String operand) {
+  final s = operand.split(',');
+  if (s.length != 2) {
+    return _nop(label);
+  }
+  final buf = s[0];
+  final len = s[1];
+  // TODO bug
+  if (!_expADR.hasMatch(len)) {
+    return _nop(label);
+  }
+
+  final op = [
+    0x7001,
+    0,
+    0x7002,
+    0,
+  ];
+  var refLabel = '';
+  var refIndex = 0;
+
+  if (_expADR.hasMatch(buf)) {
+    final adr = buf.replaceFirst('#', '0x');
+    op.addAll([0x1210, int.parse(adr)]);
+  } else {
+    op.addAll([0x1210, 0]);
+    refLabel = buf;
+    refIndex = 5;
+  }
+
+  {
+    final adr = len.replaceFirst('#', '0x');
+    op.addAll([0x1220, int.parse(adr)]);
+  }
+
+  op.addAll([
+    0xf000,
+    2,
+    0x7120,
+    0x7110,
+  ]);
+
+  return Token(
+    op,
+    label: label,
+    refLabel: refLabel,
+    refIndex: refIndex,
+  );
+}
+
+Token _rpush(final String label) => Token([
+      0x7001,
+      0,
+      0x7002,
+      0,
+      0x7003,
+      0,
+      0x7004,
+      0,
+      0x7005,
+      0,
+      0x7006,
+      0,
+      0x7007,
+      0,
+    ], label: label);
+
+Token _rpop(final String label) => Token([
+      0x7170,
+      0x7160,
+      0x7150,
+      0x7140,
+      0x7130,
+      0x7120,
+      0x7110,
+    ], label: label);
 
 Token _ret(final String label) => Token([0x8100], label: label);
 

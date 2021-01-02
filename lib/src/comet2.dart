@@ -41,7 +41,7 @@ class Comet2 {
 
     this._map[0x61] = jumpOnMinus;
     this._map[0x62] = jumpOnNonZero;
-    this._map[0x62] = jumpOnZero;
+    this._map[0x63] = jumpOnZero;
     this._map[0x64] = unconditionalJump;
     this._map[0x65] = jumpOnPlus;
     this._map[0x66] = jumpOnOverflow;
