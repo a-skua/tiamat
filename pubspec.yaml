@@ -1,8 +1,6 @@
 name: tiamat
-version: 0.1.0
-authors:
-- asuka y <yagi.asuka.0x06@gmail.com>
-descriptions: This is an emulator of the COMET2 and a compiler of the CASL2.
+version: 0.1.0-nullsafety
+description: This is an emulator of the COMET2 and a compiler of the CASL2.
 repository: https://github.com/a-skua/tiamat
 
 environment:
