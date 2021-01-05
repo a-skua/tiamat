@@ -3,3 +3,6 @@ fmt:
 
 tests:
 	pub run test
+
+webserve:
+	webdev serve
