@@ -2,44 +2,16 @@ import 'dart:html';
 
 import 'package:tiamat/tiamat.dart';
 
+import './component/register.dart';
+
 Element app() {
   final cc = Casl2();
   final r = Resource();
   final c = Comet2();
 
-  final registers = Element.ul();
-  // GR
-  for (var i = 0; i < 8; i++) {
-    final li = Element.li();
-    for (var b = 0; b < wordSize; b++) {
-      final gr = CheckboxInputElement()
-        ..id = 'gr$i.$b'
-        ..onInput.listen((e) {
-          final target = e.target;
-          if (target != null && target is CheckboxInputElement) {
-            final p = target.id.replaceFirst('gr', '').split('.');
-            if (p.length != 2) {
-              return;
-            }
-            final gr = int.parse(p[0]);
-            final maskBit = 1 << int.parse(p[1]);
-            final v = r.getGR(gr);
-            if (target.checked ?? false) {
-              r.setGR(gr, v | maskBit);
-            } else {
-              r.setGR(gr, v & (maskBit ^ -1));
-            }
-            print(r.getGR(gr));
-          }
-        });
-      li.nodes.insert(0, gr);
-    }
-    li.nodes.insert(0, Element.span()..text = 'GR$i:');
-    registers.nodes.add(li);
-  }
-
   final textarea = TextAreaElement()..nodes.add(Text(asm));
   final output = TextAreaElement()..disabled = true;
+
   c.sv
     ..write = (s) {
       output.nodes.add(Text(s + '\n'));
@@ -53,23 +25,44 @@ Element app() {
       var x = 0;
       return () => s[x++ % s.length];
     }();
-  final execute = ButtonElement()
-    ..nodes.add(Text('execute'))
-    ..onClick.listen((_) {
-      r.PR = 0;
-      r.SP = -1; // TODO bug
-      final code = cc.compile(textarea.value ?? '');
-      for (var i = 0; i < code.length; i++) {
-        r.memory.setWord(r.PR + i, code[i]);
-      }
-      c.exec(r);
-    });
+  final registers = [
+    for (var i = 0; i < 8; i++)
+      Register(
+        'GR$i',
+        () => r.getGR(i),
+        (v) => r.setGR(i, v),
+      ),
+    Register(
+      'SP',
+      () => r.SP,
+      (v) => r.SP = v,
+    ),
+    Register(
+      'PR',
+      () => r.PR,
+      (v) => r.PR = v,
+    ),
+  ];
+
   return Element.div()
     ..nodes = [
-      registers,
       textarea,
       output,
-      execute,
+      ButtonElement()
+        ..nodes.add(Text('execute'))
+        ..onClick.listen((_) {
+          r.PR = 0;
+          r.SP = -1; // TODO bug
+          final code = cc.compile(textarea.value ?? '');
+          for (var i = 0; i < code.length; i++) {
+            r.memory.setWord(r.PR + i, code[i]);
+          }
+          c.exec(r);
+          for (final r in registers) {
+            r.update();
+          }
+        }),
+      for (final r in registers) r.render(),
     ];
 }
 
