@@ -9,12 +9,21 @@ class Register {
   final String name;
   final GetR getR;
   final SetR setR;
-  Register(this.name, this.getR, this.setR);
+  final int bits;
+  final bool hasSigned;
+  Register(
+    this.name,
+    this.getR,
+    this.setR, {
+    this.bits = wordSize,
+    this.hasSigned = true,
+  });
 
   final _volumes = [];
+  final value = Text('');
 
   Element render() {
-    for (var i = 0; i < wordSize; i++) {
+    for (var i = 0; i < this.bits; i++) {
       this._volumes.add(CheckboxInputElement()
         ..id = '$name.$i'
         ..onInput.listen((e) {
@@ -28,22 +37,30 @@ class Register {
             } else {
               this.setR(v & (maskBit ^ -1));
             }
-            print(this.getR());
           }
+          this.update();
         }));
     }
     ;
-    return Element.div()
+    final element = Element.div()
       ..nodes = [
         Text(name),
         ...this._volumes.reversed,
+        this.value,
       ];
+    this.update();
+    return element;
   }
 
   void update() {
     final v = this.getR();
 
-    for (var i = 0; i < wordSize; i++) {
+    var text = v.toString();
+    if (this.hasSigned) {
+      text += ', ${v.toSigned(this.bits)}';
+    }
+    this.value.text = text;
+    for (var i = 0; i < this.bits; i++) {
       final maskBit = 1 << i;
       this._volumes[i].checked = (v & maskBit) > 0;
     }

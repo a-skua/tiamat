@@ -11,17 +11,15 @@ Element app() {
 
   final textarea = TextAreaElement()..nodes.add(Text(asm));
   final output = TextAreaElement()..disabled = true;
+  final input = TextAreaElement();
+  final inputValues = <String>[];
 
   c.sv
     ..write = (s) {
       output.nodes.add(Text(s + '\n'));
     }
     ..read = () {
-      final s = [
-        'hello, world',
-        'foo bar baz',
-        'exit',
-      ];
+      final s = inputValues;
       var x = 0;
       return () => s[x++ % s.length];
     }();
@@ -42,15 +40,39 @@ Element app() {
       () => r.PR,
       (v) => r.PR = v,
     ),
+    Register(
+      'OF',
+      () => r.OF ? 1 : 0,
+      (v) => r.OF = v > 0,
+      bits: 1,
+      hasSigned: false,
+    ),
+    Register(
+      'SF',
+      () => r.SF ? 1 : 0,
+      (v) => r.SF = v > 0,
+      bits: 1,
+      hasSigned: false,
+    ),
+    Register(
+      'ZF',
+      () => r.ZF ? 1 : 0,
+      (v) => r.ZF = v > 0,
+      bits: 1,
+      hasSigned: false,
+    ),
   ];
 
   return Element.div()
     ..nodes = [
       textarea,
       output,
+      input,
       ButtonElement()
         ..nodes.add(Text('execute'))
         ..onClick.listen((_) {
+          inputValues.clear();
+          inputValues.addAll((input.value ?? '').split('\n'));
           r.PR = 0;
           r.SP = -1; // TODO bug
           final code = cc.compile(textarea.value ?? '');
