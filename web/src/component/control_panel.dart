@@ -6,6 +6,7 @@ typedef OnPreExecute = void Function();
 typedef OnUpdate = void Function();
 typedef GetCode = String Function();
 typedef ClearAll = void Function();
+typedef ClearIO = void Function();
 
 class ControlPanel {
   var _element = Element.div();
@@ -18,15 +19,19 @@ class ControlPanel {
     required OnUpdate onUpdate,
     required GetCode getCode,
     required ClearAll clearAll,
+    required ClearIO clearIO,
   }) {
     this._element = Element.div()
       ..nodes = [
         ButtonElement()
           ..classes.add('button')
-          ..nodes.add(Text('clear'.toUpperCase()))
+          ..nodes.add(Text('clear io'.toUpperCase()))
+          ..onClick.listen((_) => clearIO()),
+        ButtonElement()
+          ..classes.add('button')
+          ..nodes.add(Text('clear all'.toUpperCase()))
           ..onClick.listen((_) => clearAll()),
         ButtonElement()
-          ..style.marginLeft = '1em'
           ..classes.add('button')
           ..nodes.add(Text('execute'.toUpperCase()))
           ..onClick.listen((_) {

@@ -3,28 +3,35 @@ import 'dart:html';
 import 'package:tiamat/tiamat.dart';
 
 import './register.dart';
+import './content_box.dart';
 
 class ResourceState {
-  final _registers = <Register>[];
+  final _generalRegisters = <Register>[];
+  final _flagRegister = <Register>[];
+  var _stackPointer = Register('', () => 0, (_) {});
+  var _programRegister = Register('', () => 0, (_) {});
 
   ResourceState(Resource r) {
-    this._registers.addAll([
+    this._generalRegisters.addAll([
       for (var i = 0; i < 8; i++)
         Register(
           'GR$i',
           () => r.getGR(i),
           (v) => r.setGR(i, v),
         ),
-      Register(
-        'SP',
-        () => r.SP,
-        (v) => r.SP = v,
-      ),
-      Register(
-        'PR',
-        () => r.PR,
-        (v) => r.PR = v,
-      ),
+    ]);
+
+    this._stackPointer = Register(
+      'SP',
+      () => r.SP,
+      (v) => r.SP = v,
+    );
+    this._programRegister = Register(
+      'PR',
+      () => r.PR,
+      (v) => r.PR = v,
+    );
+    this._flagRegister.addAll([
       Register(
         'OF',
         () => r.OF ? 1 : 0,
@@ -50,15 +57,36 @@ class ResourceState {
   }
 
   void update() {
-    for (final r in this._registers) {
+    for (final r in this._generalRegisters) {
+      r.update();
+    }
+    this._stackPointer.update();
+    this._programRegister.update();
+    for (final r in this._flagRegister) {
       r.update();
     }
   }
 
-  Element render() {
-    return DivElement()
-      ..nodes = [
-        for (final r in this._registers) r.render(),
-      ];
+  List<Element> render() {
+    return [
+      contentBox(
+        'general registers',
+        Element.div()
+          ..nodes = [
+            for (final r in this._generalRegisters) r.render(),
+          ],
+      )..id = 'general-registers',
+      contentBox('stack pointer', this._stackPointer.render())
+        ..id = 'stack-pointer',
+      contentBox('program register', this._programRegister.render())
+        ..id = 'program-register',
+      contentBox(
+        'flag register',
+        Element.div()
+          ..nodes = [
+            for (final r in this._flagRegister) r.render(),
+          ],
+      )..id = 'flag-register',
+    ];
   }
 }

@@ -20,46 +20,63 @@ class Register {
   });
 
   final _volumes = [];
-  final value = Text('');
+  final values = Element.div()..classes.add('register-values');
 
   Element render() {
     for (var i = 0; i < this.bits; i++) {
-      this._volumes.add(CheckboxInputElement()
-        ..id = '$name.$i'
-        ..onInput.listen((e) {
-          final target = e.target;
-          if (target != null && target is CheckboxInputElement) {
-            final p = target.id.replaceFirst('$name.', '');
-            final maskBit = 1 << int.parse(p);
-            final v = this.getR();
-            if (target.checked ?? false) {
-              this.setR(v | maskBit);
-            } else {
-              this.setR(v & (maskBit ^ -1));
-            }
-          }
-          this.update();
-        }));
+      this._volumes.add(CheckboxInputElement()..id = '$name.$i');
     }
-    ;
     final element = Element.div()
+      ..classes.add('register')
       ..nodes = [
-        Text(name),
-        ...this._volumes.reversed,
-        this.value,
+        Element.div()..classes.add('register-name')..nodes.add(Text(name)),
+        Element.div()
+          ..classes.add('register-bits')
+          ..nodes = [
+            for (final checkbox in this._volumes.reversed)
+              Element.div()
+                ..classes.add('register-bit')
+                ..nodes = [
+                  checkbox,
+                  Element.div()
+                    ..onClick.listen((_) {
+                      final checked = !checkbox.checked;
+                      checkbox.checked = checked;
+
+                      {
+                        final p = checkbox.id.replaceFirst('$name.', '');
+                        final maskBit = 1 << int.parse(p);
+                        final v = this.getR();
+                        if (checked) {
+                          this.setR(v | maskBit);
+                        } else {
+                          this.setR(v & (maskBit ^ -1));
+                        }
+                      }
+                      this.update();
+                    }),
+                ]
+          ],
+        this.values,
       ];
     this.update();
+
     return element;
   }
 
   void update() {
     final v = this.getR();
 
-    var text = v.toString();
-    if (this.hasSigned) {
-      text += ', ${v.toSigned(this.bits)}';
-    }
-    this.value.text = text;
+    this.values.nodes = [
+      Element.div()
+        ..classes.add('register-value')
+        ..nodes.add(Text(v.toString())),
+      Element.div()
+        ..classes.add('register-value-signed')
+        ..nodes = [
+          if (hasSigned) Text(v.toSigned(this.bits).toString()),
+        ],
+    ];
     for (var i = 0; i < this.bits; i++) {
       final maskBit = 1 << i;
       this._volumes[i].checked = (v & maskBit) > 0;
