@@ -1,4 +1,9 @@
 .dart_tool
 .packages
 pubspec.lock
+build
 .DS_Store
+
+# gh-pages
+.build.manifest
+packages
