@@ -1,6 +1,9 @@
 # tiamat
-virtual computer COMET2 emulator and virtual language CASL2 compiler.  
-[pub.dev](https://pub.dev/packages/tiamat)
+virtual computer COMET2 emulator and virtual language CASL2 compiler.
+
+## links
+- [pub.dev](https://pub.dev/packages/tiamat)
+- [web app](https://a-skua.github.io/tiamat/)
 
 ## supervisor call
 
