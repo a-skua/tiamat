@@ -23,6 +23,7 @@ class ControlPanel {
   }) {
     this._element = Element.div()
       ..nodes = [
+        Element.tag('h1')..nodes.add(Text('COMET2/CASL2 Emulator.')),
         ButtonElement()
           ..classes.add('button')
           ..nodes.add(Text('clear io'.toUpperCase()))
