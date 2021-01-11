@@ -6,6 +6,7 @@ import './component/resource_state.dart';
 import './component/control_panel.dart';
 import './component/content_box.dart';
 import './component/editor.dart';
+import './component/information.dart';
 
 const version = '0.1.1+nullsafety';
 
@@ -58,22 +59,12 @@ Element app() {
   return Element.div()
     ..id = 'wrap'
     ..nodes = [
-      contentBox('control panel', control.render())..id = 'control-panel',
+      control.render()..id = 'control-panel',
       contentBox('casl2', editor.render())..id = 'editor',
       contentBox('input', input)..id = 'input',
       contentBox('output', output)..id = 'output',
       ...state.render(),
-      contentBox(
-        'information',
-        Element.div()
-          ..nodes.addAll([
-            Text('$version/'),
-            AnchorElement()
-              ..target = '_blank'
-              ..href = 'https://github.com/a-skua/tiamat'
-              ..nodes.add(Text('repository')),
-          ]),
-      )..id = 'information',
+      information(version)..id = 'information',
     ];
 }
 
