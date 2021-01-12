@@ -1,10 +1,10 @@
-import 'charcode.dart';
+import './charcode.dart';
+import './casl2/node.dart' as node;
 
 // FIXME
 //
 // LABEL ADDA GR0,GR1
 //       RET
-final _expLine = RegExp(r'([A-Z0-9]*)[\t ]+([A-Z]{1,8})[\t ]*(\S*)');
 final _expCommonOperand = RegExp(r'(GR[0-7]),?([A-Z0-9#]+)?,?(GR[1-7])?');
 final _expADRX = RegExp(r'([A-Z0-9#]+),?(GR[1-7])?');
 final _expGR = RegExp(r'^GR([0-7])$');
@@ -41,10 +41,10 @@ class Casl2 {
     final List<Token> t = [];
     var count = 0;
 
-    for (var m in _expLine.allMatches(s)) {
-      final label = m.group(1) ?? '';
-      final code = m.group(2) ?? '';
-      final operand = m.group(3) ?? '';
+    for (final n in node.parse(s)) {
+      final label = n.label;
+      final code = n.instruction;
+      final operand = n.operand;
 
       var token = this.nop(label);
       // FIXME
@@ -155,9 +155,10 @@ class Casl2 {
         case 'SVC':
           token = this.svc(label, operand);
           break;
-        // case 'NOP':
-        // default:
-        //   token = _nop(label);
+        case 'NOP':
+          break;
+        default:
+          continue;
       }
       if (token.hasLabel) {
         l[token.label] = count;
