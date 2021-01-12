@@ -97,6 +97,11 @@ List<Token> parse(String s) {
           tokens.add(Token(c, State.comment));
           break;
         }
+        if (c == quote) {
+          state = _State.string;
+          tokens.add(Token(c, State.operand));
+          break;
+        }
         if (c != tab && c != space) {
           state = _State.operand;
           tokens.add(Token(c, State.operand));

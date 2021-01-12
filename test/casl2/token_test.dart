@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:tiamat/src/casl2/token.dart';
 import 'package:test/test.dart';
 
@@ -347,7 +345,7 @@ void main() {
       });
 
       test('all', () {
-        const s = ' \tDC \t#FFFF,\'text string\\\',\',1,2 comment!\n'
+        const s = ' \tDC \t\'\\\'hello, world!\',#FFFF,1,2 comment!\n'
             ';MSG DC \'hello, world\'\n'
             ' \t CALL\tSUB\t; call subroutine\n'
             'SUB\tLAD\tGR0,0\n'
@@ -356,28 +354,29 @@ void main() {
         final e = [
           Token('D'.runes.first, State.instruction),
           Token('C'.runes.first, State.instruction),
+          Token('\''.runes.first, State.operand),
+          Token('\\'.runes.first, State.operand),
+          Token('\''.runes.first, State.operand),
+          Token('h'.runes.first, State.operand),
+          Token('e'.runes.first, State.operand),
+          Token('l'.runes.first, State.operand),
+          Token('l'.runes.first, State.operand),
+          Token('o'.runes.first, State.operand),
+          Token(','.runes.first, State.operand),
+          Token(' '.runes.first, State.operand),
+          Token('w'.runes.first, State.operand),
+          Token('o'.runes.first, State.operand),
+          Token('r'.runes.first, State.operand),
+          Token('l'.runes.first, State.operand),
+          Token('d'.runes.first, State.operand),
+          Token('!'.runes.first, State.operand),
+          Token('\''.runes.first, State.operand),
+          Token(','.runes.first, State.operand),
           Token('#'.runes.first, State.operand),
           Token('F'.runes.first, State.operand),
           Token('F'.runes.first, State.operand),
           Token('F'.runes.first, State.operand),
           Token('F'.runes.first, State.operand),
-          Token(','.runes.first, State.operand),
-          Token('\''.runes.first, State.operand),
-          Token('t'.runes.first, State.operand),
-          Token('e'.runes.first, State.operand),
-          Token('x'.runes.first, State.operand),
-          Token('t'.runes.first, State.operand),
-          Token(' '.runes.first, State.operand),
-          Token('s'.runes.first, State.operand),
-          Token('t'.runes.first, State.operand),
-          Token('r'.runes.first, State.operand),
-          Token('i'.runes.first, State.operand),
-          Token('n'.runes.first, State.operand),
-          Token('g'.runes.first, State.operand),
-          Token('\\'.runes.first, State.operand),
-          Token('\''.runes.first, State.operand),
-          Token(','.runes.first, State.operand),
-          Token('\''.runes.first, State.operand),
           Token(','.runes.first, State.operand),
           Token('1'.runes.first, State.operand),
           Token(','.runes.first, State.operand),
