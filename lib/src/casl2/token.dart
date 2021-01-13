@@ -151,6 +151,11 @@ List<Token> parse(String s) {
           tokens.add(Token(c, State.operand));
           break;
         }
+        if (c == newline) {
+          state = _State.label;
+          tokens.add(Token(c, State.newline));
+          break;
+        }
         if (c == tab || c == space) {
           state = _State.endOperand;
           break;

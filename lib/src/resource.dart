@@ -29,7 +29,7 @@ class Memory {
     if (!this._isWithin(addr)) {
       return false;
     }
-    this._values[addr] = value;
+    this._values[addr] = value & 0xffff;
     return true;
   }
 }

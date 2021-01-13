@@ -31,7 +31,6 @@ class Casl2 {
           token = ds(label, operand);
           break;
         case 'DC':
-          // TODO bug; DC 'hello, world!'
           token = dc(label, operand);
           break;
         case 'IN':
