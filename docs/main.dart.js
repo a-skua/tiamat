@@ -2542,7 +2542,7 @@ j=H.e([m,k,n,j],i)
 C.a.w(j,q.P())
 n=g.createElement("div")
 n.toString
-k=g.createTextNode("0.1.1+nullsafety / ")
+k=g.createTextNode("0.1.2+nullsafety / ")
 k.toString
 h=g.createElement("a")
 h.target="_blank"
