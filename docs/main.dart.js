@@ -2482,22 +2482,19 @@ g.l(0,129,N.iw())
 g.l(0,240,s.gaG())
 r=H.d([],u.s)
 q=N.fH(f)
-p=E.fq("MAIN\tSTART\n\tIN\tIBUF,255\n\tOUT\tOBUF,255\n\tRET\nOBUF\tDC\t'input:'\nIBUF\tDS\t255\nEOF\tDC\t#FFFF\n\tEND\n")
+p=E.fq("MAIN\tSTART\n\tOUT\tMSG,255\n\tRET\nMSG\tDC\t'hello, world!'\nEOF\tDC\t-1\n\tEND\n")
 g=document
 o=g.createElement("textarea")
 o.disabled=!0
 n=g.createElement("textarea")
 n.toString
-m=g.createTextNode("hello, world!")
-m.toString
-n.appendChild(m).toString
-l=X.fp(f,s,new L.c9(),new S.dp(n,o,p,f,q),new S.dq(n,o),new S.dr(p),new S.ds(r,n,f),new S.dt(q))
+m=X.fp(f,s,new L.c9(),new S.dp(n,o,p,f,q),new S.dq(n,o),new S.dr(p),new S.ds(r,n,f),new S.dt(q))
 t.saZ(new S.du(o))
 t.saR(new S.dv(r).$0())
 t=g.createElement("div")
 t.id="wrap"
-m=l.a
-m.id="control-panel"
+l=m.a
+l.id="control-panel"
 k=T.as("casl2",p.a)
 k.id="editor"
 n=T.as("input",n)
@@ -2505,7 +2502,7 @@ n.id="input"
 j=T.as("output",o)
 j.id="output"
 i=u.g
-j=H.d([m,k,n,j],i)
+j=H.d([l,k,n,j],i)
 C.a.w(j,q.N())
 n=g.createElement("div")
 n.toString
