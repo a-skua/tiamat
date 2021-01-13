@@ -1,11 +1,13 @@
+// FIXME
 import 'dart:math';
 
 import 'package:tiamat/src/casl2.dart';
+import 'package:tiamat/src/casl2/instruction.dart';
 import 'package:tiamat/src/comet2.dart';
 import 'package:tiamat/src/resource.dart';
 import 'package:test/test.dart';
 
-import 'util.dart';
+import '../util.dart';
 
 void main() {
   test('NOP and RET', () {
@@ -13,15 +15,15 @@ void main() {
         '\tNOP\t; comment\n'
         '\tRET\n';
 
-    final p = Casl2();
-    final code = p.compile(asm);
+    final cc = Casl2();
+    final code = cc.compile(asm);
 
     expect(code, equals([0, 0x8100]));
   });
 
   test('NOP', () {
-    final p = Casl2();
-    final actual = p.nop('LABEL');
+    final cc = Casl2();
+    final actual = nop('LABEL');
     final expected = Token([0], label: 'LABEL');
 
     expect(actual.code, equals(expected.code));
@@ -30,8 +32,7 @@ void main() {
   });
 
   test('RET', () {
-    final p = Casl2();
-    final actual = p.ret('LABEL');
+    final actual = ret('LABEL');
     final expected = Token([0x8100], label: 'LABEL');
 
     expect(actual.code, equals(expected.code));
@@ -40,15 +41,15 @@ void main() {
   });
 
   test('LD', () {
-    final p = Casl2();
+    final cc = Casl2();
 
-    expect(p.ld('', 'GR0,GR1').code, equals([0x1401]));
-    expect(p.ld('', 'GR2,GR0').code, equals([0x1420]));
-    expect(p.ld('', 'GR7,1234').code, equals([0x1070, 1234]));
-    expect(p.ld('', 'GR6,#1234').code, equals([0x1060, 0x1234]));
-    expect(p.ld('', 'GR4,#4321,GR5').code, equals([0x1045, 0x4321]));
+    expect(ld('', 'GR0,GR1').code, equals([0x1401]));
+    expect(ld('', 'GR2,GR0').code, equals([0x1420]));
+    expect(ld('', 'GR7,1234').code, equals([0x1070, 1234]));
+    expect(ld('', 'GR6,#1234').code, equals([0x1060, 0x1234]));
+    expect(ld('', 'GR4,#4321,GR5').code, equals([0x1045, 0x4321]));
 
-    final actual = p.ld('LABEL', 'GR4,REF,GR5');
+    final actual = ld('LABEL', 'GR4,REF,GR5');
     final expected = Token([0x1045, 0], label: 'LABEL', refLabel: 'REF');
     expect(actual.code, equals(expected.code));
     expect(actual.label, equals(expected.label));
@@ -61,19 +62,19 @@ void main() {
         '\tNOP ;no operation\n'
         '\tRET ;end of program';
 
-    expect(p.compile(asm),
+    expect(cc.compile(asm),
         equals([0x1401, 0x1020, 0x7777, 0x1034, 9999, 0, 0x8100]));
   });
 
   test('LAD', () {
-    final p = Casl2();
+    final cc = Casl2();
 
-    expect(p.lad('', 'GR3,#1234').code, equals([0x1230, 0x1234]));
-    expect(p.lad('', 'GR2,1234,GR1').code, equals([0x1221, 1234]));
-    expect(p.lad('', 'GR0,FOO,GR2').code, equals([0x1202, 0]));
-    expect(p.lad('', 'GR1,#4321,GR7').code, equals([0x1217, 0x4321]));
+    expect(lad('', 'GR3,#1234').code, equals([0x1230, 0x1234]));
+    expect(lad('', 'GR2,1234,GR1').code, equals([0x1221, 1234]));
+    expect(lad('', 'GR0,FOO,GR2').code, equals([0x1202, 0]));
+    expect(lad('', 'GR1,#4321,GR7').code, equals([0x1217, 0x4321]));
 
-    final a = p.lad('LABEL', 'GR0,ADDR,GR5');
+    final a = lad('LABEL', 'GR0,ADDR,GR5');
     final e = Token([0x1205, 0], label: 'LABEL', refLabel: 'ADDR', refIndex: 1);
     expect(a.code, equals(e.code));
     expect(a.label, equals(e.label));
@@ -87,7 +88,7 @@ void main() {
         '\tLAD GR1,1111\n'
         '\tRET\n'
         '\tEND\n';
-    final code = p.compile(asm);
+    final code = cc.compile(asm);
     expect(code,
         equals([0x6400, 4, 0x1210, 0x1111, 0x1401, 0x1210, 1111, 0x8100]));
 
@@ -110,12 +111,12 @@ void main() {
   });
 
   test('START', () {
-    final p = Casl2();
+    final cc = Casl2();
 
-    expect(p.start('', '#1234').code, equals([0x6400, 0x1234]));
-    expect(p.start('', '').code, equals([]));
+    expect(start('', '#1234').code, equals([0x6400, 0x1234]));
+    expect(start('', '').code, equals([]));
 
-    final a = p.start('FOO', 'BAR');
+    final a = start('FOO', 'BAR');
     final e = Token([0x6400, 0], label: 'FOO', refLabel: 'BAR', refIndex: 1);
     expect(a.code, equals(e.code));
     expect(a.label, equals(e.label));
@@ -127,27 +128,27 @@ void main() {
         '\tLD GR0,1\n'
         'XXX\tLD GR1,GR0\n'
         '\tRET';
-    expect(p.compile(asm), equals([0x6400, 4, 0x1000, 1, 0x1410, 0x8100]));
+    expect(cc.compile(asm), equals([0x6400, 4, 0x1000, 1, 0x1410, 0x8100]));
   });
 
   test('END', () {
-    final p = Casl2();
+    final cc = Casl2();
 
-    expect(p.end().code, equals([]));
+    expect(end().code, equals([]));
 
     const asm = '; end test\n'
         'TEST\tSTART\n'
         '\tLD GR0,GR1\n'
         '\tRET\n'
         '\tEND\n';
-    expect(p.compile(asm), equals([0x1401, 0x8100]));
+    expect(cc.compile(asm), equals([0x1401, 0x8100]));
   });
 
   test('ST', () {
     final cc = Casl2();
 
-    expect(cc.st('', 'GR1,#12FF').code, equals([0x1110, 0x12ff]));
-    expect(cc.st('', 'GR0,12,GR1').code, equals([0x1101, 12]));
+    expect(st('', 'GR1,#12FF').code, equals([0x1110, 0x12ff]));
+    expect(st('', 'GR0,12,GR1').code, equals([0x1101, 12]));
 
     const asm = '; st test\n'
         'TEST\tSTART\n'
@@ -162,9 +163,9 @@ void main() {
   test('CPA', () {
     final cc = Casl2();
 
-    expect(cc.cpa('', 'GR1,GR2').code, equals([0x4412]));
-    expect(cc.cpa('', 'GR1,#FF22').code, equals([0x4010, 0xff22]));
-    expect(cc.cpa('', 'GR5,#ABCD,GR2').code, equals([0x4052, 0xabcd]));
+    expect(cpa('', 'GR1,GR2').code, equals([0x4412]));
+    expect(cpa('', 'GR1,#FF22').code, equals([0x4010, 0xff22]));
+    expect(cpa('', 'GR5,#ABCD,GR2').code, equals([0x4052, 0xabcd]));
 
     const asm = '; cpa test\n'
         'TEST\tSTART\n'
@@ -192,9 +193,9 @@ void main() {
   test('CPL', () {
     final cc = Casl2();
 
-    expect(cc.cpl('', 'GR1,GR2').code, equals([0x4512]));
-    expect(cc.cpl('', 'GR7,#ABCD').code, equals([0x4170, 0xabcd]));
-    expect(cc.cpl('', 'GR6,1234,GR5').code, equals([0x4165, 1234]));
+    expect(cpl('', 'GR1,GR2').code, equals([0x4512]));
+    expect(cpl('', 'GR7,#ABCD').code, equals([0x4170, 0xabcd]));
+    expect(cpl('', 'GR6,1234,GR5').code, equals([0x4165, 1234]));
 
     const asm = '; cpl test\n'
         'TEST\tSTART\n'
@@ -222,9 +223,9 @@ void main() {
   test('ADDA', () {
     final cc = Casl2();
 
-    expect(cc.adda('', 'GR2,GR4').code, equals([0x2424]));
-    expect(cc.adda('', 'GR7,#CCCC').code, equals([0x2070, 0xcccc]));
-    expect(cc.adda('', 'GR1,#EEEE,GR2').code, equals([0x2012, 0xeeee]));
+    expect(adda('', 'GR2,GR4').code, equals([0x2424]));
+    expect(adda('', 'GR7,#CCCC').code, equals([0x2070, 0xcccc]));
+    expect(adda('', 'GR1,#EEEE,GR2').code, equals([0x2012, 0xeeee]));
 
     const asm = '; adda test\n'
         'TEST\tSTART\n'
@@ -252,9 +253,9 @@ void main() {
   test('ADDL', () {
     final cc = Casl2();
 
-    expect(cc.addl('', 'GR2,GR4').code, equals([0x2624]));
-    expect(cc.addl('', 'GR7,#CCCC').code, equals([0x2270, 0xcccc]));
-    expect(cc.addl('', 'GR1,#EEEE,GR2').code, equals([0x2212, 0xeeee]));
+    expect(addl('', 'GR2,GR4').code, equals([0x2624]));
+    expect(addl('', 'GR7,#CCCC').code, equals([0x2270, 0xcccc]));
+    expect(addl('', 'GR1,#EEEE,GR2').code, equals([0x2212, 0xeeee]));
 
     const asm = '; addl test\n'
         'TEST\tSTART\n'
@@ -282,9 +283,9 @@ void main() {
   test('SUBA', () {
     final cc = Casl2();
 
-    expect(cc.suba('', 'GR2,GR4').code, equals([0x2524]));
-    expect(cc.suba('', 'GR7,#CCCC').code, equals([0x2170, 0xcccc]));
-    expect(cc.suba('', 'GR1,#EEEE,GR2').code, equals([0x2112, 0xeeee]));
+    expect(suba('', 'GR2,GR4').code, equals([0x2524]));
+    expect(suba('', 'GR7,#CCCC').code, equals([0x2170, 0xcccc]));
+    expect(suba('', 'GR1,#EEEE,GR2').code, equals([0x2112, 0xeeee]));
 
     const asm = '; suba test\n'
         'TEST\tSTART\n'
@@ -312,9 +313,9 @@ void main() {
   test('SUBL', () {
     final cc = Casl2();
 
-    expect(cc.subl('', 'GR2,GR4').code, equals([0x2724]));
-    expect(cc.subl('', 'GR7,#CCCC').code, equals([0x2370, 0xcccc]));
-    expect(cc.subl('', 'GR1,#EEEE,GR2').code, equals([0x2312, 0xeeee]));
+    expect(subl('', 'GR2,GR4').code, equals([0x2724]));
+    expect(subl('', 'GR7,#CCCC').code, equals([0x2370, 0xcccc]));
+    expect(subl('', 'GR1,#EEEE,GR2').code, equals([0x2312, 0xeeee]));
 
     const asm = '; subl test\n'
         'TEST\tSTART\n'
@@ -342,9 +343,9 @@ void main() {
   test('SLA', () {
     final cc = Casl2();
 
-    expect(cc.sla('FOO', 'GR2,1,GR3').code, equals([0x5023, 1]));
-    expect(cc.sla('FOO', 'GR2,1,GR3').label, equals('FOO'));
-    expect(cc.sla('', 'GR7,2').code, equals([0x5070, 2]));
+    expect(sla('FOO', 'GR2,1,GR3').code, equals([0x5023, 1]));
+    expect(sla('FOO', 'GR2,1,GR3').label, equals('FOO'));
+    expect(sla('', 'GR7,2').code, equals([0x5070, 2]));
 
     const asm = '; sla test\n'
         'TEST\tSTART\n'
@@ -368,9 +369,9 @@ void main() {
   test('SRA', () {
     final cc = Casl2();
 
-    expect(cc.sra('FOO', 'GR2,1,GR3').code, equals([0x5123, 1]));
-    expect(cc.sra('FOO', 'GR2,1,GR3').label, equals('FOO'));
-    expect(cc.sra('', 'GR7,2').code, equals([0x5170, 2]));
+    expect(sra('FOO', 'GR2,1,GR3').code, equals([0x5123, 1]));
+    expect(sra('FOO', 'GR2,1,GR3').label, equals('FOO'));
+    expect(sra('', 'GR7,2').code, equals([0x5170, 2]));
 
     const asm = '; sla test\n'
         'TEST\tSTART\n'
@@ -394,9 +395,9 @@ void main() {
   test('SLL', () {
     final cc = Casl2();
 
-    expect(cc.sll('FOO', 'GR2,1,GR3').code, equals([0x5223, 1]));
-    expect(cc.sll('FOO', 'GR2,1,GR3').label, equals('FOO'));
-    expect(cc.sll('', 'GR7,2').code, equals([0x5270, 2]));
+    expect(sll('FOO', 'GR2,1,GR3').code, equals([0x5223, 1]));
+    expect(sll('FOO', 'GR2,1,GR3').label, equals('FOO'));
+    expect(sll('', 'GR7,2').code, equals([0x5270, 2]));
 
     const asm = '; sla test\n'
         'TEST\tSTART\n'
@@ -420,9 +421,9 @@ void main() {
   test('SRL', () {
     final cc = Casl2();
 
-    expect(cc.srl('FOO', 'GR2,1,GR3').code, equals([0x5323, 1]));
-    expect(cc.srl('FOO', 'GR2,1,GR3').label, equals('FOO'));
-    expect(cc.srl('', 'GR7,2').code, equals([0x5370, 2]));
+    expect(srl('FOO', 'GR2,1,GR3').code, equals([0x5323, 1]));
+    expect(srl('FOO', 'GR2,1,GR3').label, equals('FOO'));
+    expect(srl('', 'GR7,2').code, equals([0x5370, 2]));
 
     const asm = '; sla test\n'
         'TEST\tSTART\n'
@@ -446,9 +447,9 @@ void main() {
   test('JUMP', () {
     final cc = Casl2();
 
-    expect(cc.jump('', '#FFFF').code, equals([0x6400, 0xffff]));
-    expect(cc.jump('', '1234,GR5').code, equals([0x6405, 1234]));
-    expect(cc.jump('FOO', '#FFFF').label, equals('FOO'));
+    expect(jump('', '#FFFF').code, equals([0x6400, 0xffff]));
+    expect(jump('', '1234,GR5').code, equals([0x6405, 1234]));
+    expect(jump('FOO', '#FFFF').label, equals('FOO'));
 
     const asm = ';jump test\n'
         'TEST\tSTART\n'
@@ -477,9 +478,9 @@ void main() {
 
   test('JMI', () {
     final cc = Casl2();
-    expect(cc.jmi('', '2345').code, equals([0x6100, 2345]));
-    expect(cc.jmi('XXX', '2345').label, equals('XXX'));
-    expect(cc.jmi('', '#2345,GR5').code, equals([0x6105, 0x2345]));
+    expect(jmi('', '2345').code, equals([0x6100, 2345]));
+    expect(jmi('XXX', '2345').label, equals('XXX'));
+    expect(jmi('', '#2345,GR5').code, equals([0x6105, 0x2345]));
 
     const asm = ';jmi test\n'
         'TEST\tSTART\n'
@@ -511,9 +512,9 @@ void main() {
 
   test('JNZ', () {
     final cc = Casl2();
-    expect(cc.jnz('', '2345').code, equals([0x6200, 2345]));
-    expect(cc.jnz('XXX', '2345').label, equals('XXX'));
-    expect(cc.jnz('', '#2345,GR5').code, equals([0x6205, 0x2345]));
+    expect(jnz('', '2345').code, equals([0x6200, 2345]));
+    expect(jnz('XXX', '2345').label, equals('XXX'));
+    expect(jnz('', '#2345,GR5').code, equals([0x6205, 0x2345]));
 
     const asm = ';jnz test\n'
         'TEST\tSTART\n'
@@ -545,9 +546,9 @@ void main() {
 
   test('JNE', () {
     final cc = Casl2();
-    expect(cc.jze('', '2345').code, equals([0x6300, 2345]));
-    expect(cc.jze('XXX', '2345').label, equals('XXX'));
-    expect(cc.jze('', '#2345,GR5').code, equals([0x6305, 0x2345]));
+    expect(jze('', '2345').code, equals([0x6300, 2345]));
+    expect(jze('XXX', '2345').label, equals('XXX'));
+    expect(jze('', '#2345,GR5').code, equals([0x6305, 0x2345]));
 
     const asm = ';jne test\n'
         'TEST\tSTART\n'
@@ -579,9 +580,9 @@ void main() {
 
   test('JPL', () {
     final cc = Casl2();
-    expect(cc.jpl('', '2345').code, equals([0x6500, 2345]));
-    expect(cc.jpl('XXX', '2345').label, equals('XXX'));
-    expect(cc.jpl('', '#2345,GR5').code, equals([0x6505, 0x2345]));
+    expect(jpl('', '2345').code, equals([0x6500, 2345]));
+    expect(jpl('XXX', '2345').label, equals('XXX'));
+    expect(jpl('', '#2345,GR5').code, equals([0x6505, 0x2345]));
 
     const asm = ';jpl test\n'
         'TEST\tSTART\n'
@@ -613,9 +614,9 @@ void main() {
 
   test('JOV', () {
     final cc = Casl2();
-    expect(cc.jov('', '2345').code, equals([0x6600, 2345]));
-    expect(cc.jov('XXX', '2345').label, equals('XXX'));
-    expect(cc.jov('', '#2345,GR5').code, equals([0x6605, 0x2345]));
+    expect(jov('', '2345').code, equals([0x6600, 2345]));
+    expect(jov('XXX', '2345').label, equals('XXX'));
+    expect(jov('', '#2345,GR5').code, equals([0x6605, 0x2345]));
 
     const asm = ';jov test\n'
         'TEST\tSTART\n'
@@ -647,9 +648,9 @@ void main() {
 
   test('PUSH', () {
     final cc = Casl2();
-    expect(cc.push('FOO', '#3333').code, equals([0x7000, 0x3333]));
-    expect(cc.push('FOO', '#3333').label, equals('FOO'));
-    expect(cc.push('', '4321,GR3').code, equals([0x7003, 4321]));
+    expect(push('FOO', '#3333').code, equals([0x7000, 0x3333]));
+    expect(push('FOO', '#3333').label, equals('FOO'));
+    expect(push('', '4321,GR3').code, equals([0x7003, 4321]));
 
     const asm = ';push test\n'
         'TEST\tSTART\n'
@@ -672,9 +673,9 @@ void main() {
 
   test('POP', () {
     final cc = Casl2();
-    expect(cc.pop('BAR', 'GR3').code, equals([0x7130]));
-    expect(cc.pop('BAR', 'GR3').label, equals('BAR'));
-    expect(cc.pop('', 'GR4').code, equals([0x7140]));
+    expect(pop('BAR', 'GR3').code, equals([0x7130]));
+    expect(pop('BAR', 'GR3').label, equals('BAR'));
+    expect(pop('', 'GR4').code, equals([0x7140]));
 
     const asm = ';pop test\n'
         'TEST\tSTART\n'
@@ -699,9 +700,9 @@ void main() {
 
   test('CALL', () {
     final cc = Casl2();
-    expect(cc.call('XXX', '#1233,GR2').code, equals([0x8002, 0x1233]));
-    expect(cc.call('XXX', '#1233,GR2').label, equals('XXX'));
-    expect(cc.call('', '200').code, equals([0x8000, 200]));
+    expect(call('XXX', '#1233,GR2').code, equals([0x8002, 0x1233]));
+    expect(call('XXX', '#1233,GR2').label, equals('XXX'));
+    expect(call('', '200').code, equals([0x8000, 200]));
 
     const asm = ';call test\n'
         'TEST\tSTART\n'
@@ -730,9 +731,9 @@ void main() {
   test('DS', () {
     final cc = Casl2();
 
-    expect(cc.ds('YYY', '#0003').code, equals([0, 0, 0]));
-    expect(cc.ds('YYY', '#0003').label, equals('YYY'));
-    expect(cc.ds('', '24').code, equals(List.filled(24, 0)));
+    expect(ds('YYY', '#0003').code, equals([0, 0, 0]));
+    expect(ds('YYY', '#0003').label, equals('YYY'));
+    expect(ds('', '24').code, equals(List.filled(24, 0)));
 
     const asm = ';ds test\n'
         'TEST\tSTART\n'
@@ -760,7 +761,7 @@ void main() {
 
     // TODO bug: multi-ref-label
     expect(
-      cc.dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').code,
+      dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').code,
       equals([
         0xffff,
         123,
@@ -776,10 +777,10 @@ void main() {
         0,
       ]),
     );
-    expect(cc.dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').label, equals('ZZZ'));
-    expect(cc.dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').refLabel,
-        equals('LABEL'));
-    expect(cc.dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').refIndex, equals(11));
+    expect(dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').label, equals('ZZZ'));
+    expect(
+        dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').refLabel, equals('LABEL'));
+    expect(dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').refIndex, equals(11));
 
     const asm = ';dc test\n'
         'TEST\tSTART\n'
@@ -818,9 +819,9 @@ void main() {
   test('SVC', () {
     final cc = Casl2();
 
-    expect(cc.svc('FOO', '1,GR1').code, equals([0xf001, 1]));
-    expect(cc.svc('FOO', '1,GR1').label, equals('FOO'));
-    expect(cc.svc('', '2').code, equals([0xf000, 2]));
+    expect(svc('FOO', '1,GR1').code, equals([0xf001, 1]));
+    expect(svc('FOO', '1,GR1').label, equals('FOO'));
+    expect(svc('', '2').code, equals([0xf000, 2]));
 
     const asm = '; svc test\n'
         'TEST\tSTART\n'
@@ -851,9 +852,9 @@ void main() {
   test('AND', () {
     final cc = Casl2();
 
-    expect(cc.and('FOO', 'GR1,100,GR2').code, equals([0x3012, 100]));
-    expect(cc.and('FOO', 'GR1,100,GR2').label, equals('FOO'));
-    expect(cc.and('', 'GR3,GR4').code, equals([0x3434]));
+    expect(and('FOO', 'GR1,100,GR2').code, equals([0x3012, 100]));
+    expect(and('FOO', 'GR1,100,GR2').label, equals('FOO'));
+    expect(and('', 'GR3,GR4').code, equals([0x3434]));
 
     const asm = '; and test\n'
         'TEST\tSTART\n'
@@ -884,9 +885,9 @@ void main() {
   test('OR', () {
     final cc = Casl2();
 
-    expect(cc.or('FOO', 'GR1,100,GR2').code, equals([0x3112, 100]));
-    expect(cc.or('FOO', 'GR1,100,GR2').label, equals('FOO'));
-    expect(cc.or('', 'GR3,GR4').code, equals([0x3534]));
+    expect(or('FOO', 'GR1,100,GR2').code, equals([0x3112, 100]));
+    expect(or('FOO', 'GR1,100,GR2').label, equals('FOO'));
+    expect(or('', 'GR3,GR4').code, equals([0x3534]));
 
     const asm = '; and test\n'
         'TEST\tSTART\n'
@@ -917,9 +918,9 @@ void main() {
   test('XOR', () {
     final cc = Casl2();
 
-    expect(cc.xor('FOO', 'GR1,100,GR2').code, equals([0x3212, 100]));
-    expect(cc.xor('FOO', 'GR1,100,GR2').label, equals('FOO'));
-    expect(cc.xor('', 'GR3,GR4').code, equals([0x3634]));
+    expect(xor('FOO', 'GR1,100,GR2').code, equals([0x3212, 100]));
+    expect(xor('FOO', 'GR1,100,GR2').label, equals('FOO'));
+    expect(xor('', 'GR3,GR4').code, equals([0x3634]));
 
     const asm = '; and test\n'
         'TEST\tSTART\n'

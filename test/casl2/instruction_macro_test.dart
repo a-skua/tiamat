@@ -1,17 +1,14 @@
 import 'dart:math';
 
-import 'package:tiamat/src/casl2.dart';
-import 'package:tiamat/src/comet2.dart';
-import 'package:tiamat/src/resource.dart';
+import 'package:tiamat/src/casl2/instruction.dart';
 import 'package:test/test.dart';
 
-import 'util.dart';
+import '../util.dart';
 
 void main() {
   test('IN', () {
-    final cc = Casl2();
     expect(
-      cc.input('FOO', '#00F0,10').code,
+      input('FOO', '#00F0,10').code,
       equals([
         0x7001,
         0,
@@ -28,15 +25,14 @@ void main() {
       ]),
     );
     expect(
-      cc.input('FOO', '#00F0,10').label,
+      input('FOO', '#00F0,10').label,
       equals('FOO'),
     );
   });
 
   test('OUT', () {
-    final cc = Casl2();
     expect(
-      cc.output('FOO', '#00F0,10').code,
+      output('FOO', '#00F0,10').code,
       equals([
         0x7001,
         0,
@@ -53,15 +49,14 @@ void main() {
       ]),
     );
     expect(
-      cc.output('FOO', '#00F0,10').label,
+      output('FOO', '#00F0,10').label,
       equals('FOO'),
     );
   });
 
   test('RPUSH', () {
-    final cc = Casl2();
     expect(
-      cc.rpush('FOO').code,
+      rpush('FOO').code,
       equals([
         0x7001,
         0,
@@ -79,13 +74,12 @@ void main() {
         0,
       ]),
     );
-    expect(cc.rpush('FOO').label, equals('FOO'));
+    expect(rpush('FOO').label, equals('FOO'));
   });
 
   test('RPOP', () {
-    final cc = Casl2();
     expect(
-      cc.rpop('FOO').code,
+      rpop('FOO').code,
       equals([
         0x7170,
         0x7160,
@@ -97,7 +91,7 @@ void main() {
       ]),
     );
     expect(
-      cc.rpop('FOO').label,
+      rpop('FOO').label,
       equals('FOO'),
     );
   });

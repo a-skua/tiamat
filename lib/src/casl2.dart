@@ -1,35 +1,5 @@
-import './charcode.dart';
 import './casl2/node.dart' as node;
-
-// FIXME
-//
-// LABEL ADDA GR0,GR1
-//       RET
-final _expCommonOperand = RegExp(r'(GR[0-7]),?([A-Z0-9#]+)?,?(GR[1-7])?');
-final _expADRX = RegExp(r'([A-Z0-9#]+),?(GR[1-7])?');
-final _expGR = RegExp(r'^GR([0-7])$');
-final _expADR = RegExp(r'^(#?[0-9A-F]+)$');
-final _expStr = RegExp('\'([^\']*)\'');
-
-class Token {
-  final List<int> _code;
-  final String label;
-  final String refLabel;
-  final int refIndex;
-
-  Token(
-    this._code, {
-    this.label = '',
-    this.refLabel = '',
-    this.refIndex = 0,
-  });
-
-  int get size => this.code.length;
-  bool get hasLabel => this.label.isNotEmpty;
-  bool get hasReferenceLabel => this.refLabel.isNotEmpty;
-  List<int> get code => this._code;
-  void setLabel(final int label) => this._code[this.refIndex] = label;
-}
+import './casl2/instruction.dart';
 
 class Casl2 {
   List<int> compile(final String s) {
@@ -46,119 +16,119 @@ class Casl2 {
       final code = n.instruction;
       final operand = n.operand;
 
-      var token = this.nop(label);
-      // FIXME
+      if (code.isEmpty) {
+        continue;
+      }
+      var token = nop(label);
       switch (code) {
         case 'START':
-          token = this.start(label, operand);
+          token = start(label, operand);
           break;
         case 'END':
-          token = this.end();
+          token = end();
           break;
         case 'DS':
-          token = this.ds(label, operand);
+          token = ds(label, operand);
           break;
         case 'DC':
           // TODO bug; DC 'hello, world!'
-          token = this.dc(label, operand);
+          token = dc(label, operand);
           break;
         case 'IN':
-          token = this.input(label, operand);
+          token = input(label, operand);
           break;
         case 'OUT':
-          token = this.output(label, operand);
+          token = output(label, operand);
           break;
         case 'RPUSH':
-          token = this.rpush(label);
+          token = rpush(label);
           break;
         case 'RPOP':
-          token = this.rpop(label);
+          token = rpop(label);
           break;
         case 'LD':
-          token = this.ld(label, operand);
+          token = ld(label, operand);
           break;
         case 'LAD':
-          token = this.lad(label, operand);
+          token = lad(label, operand);
           break;
         case 'ST':
-          token = this.st(label, operand);
+          token = st(label, operand);
           break;
         case 'ADDA':
-          token = this.adda(label, operand);
+          token = adda(label, operand);
           break;
         case 'ADDL':
-          token = this.addl(label, operand);
+          token = addl(label, operand);
           break;
         case 'SUBA':
-          token = this.suba(label, operand);
+          token = suba(label, operand);
           break;
         case 'SUBL':
-          token = this.subl(label, operand);
+          token = subl(label, operand);
           break;
         case 'AND':
-          token = this.and(label, operand);
+          token = and(label, operand);
           break;
         case 'OR':
-          token = this.or(label, operand);
+          token = or(label, operand);
           break;
         case 'XOR':
-          token = this.xor(label, operand);
+          token = xor(label, operand);
           break;
         case 'CPA':
-          token = this.cpa(label, operand);
+          token = cpa(label, operand);
           break;
         case 'CPL':
-          token = this.cpl(label, operand);
+          token = cpl(label, operand);
           break;
         case 'SLA':
-          token = this.sla(label, operand);
+          token = sla(label, operand);
           break;
         case 'SRA':
-          token = this.sra(label, operand);
+          token = sra(label, operand);
           break;
         case 'SLL':
-          token = this.sll(label, operand);
+          token = sll(label, operand);
           break;
         case 'SRL':
-          token = this.srl(label, operand);
+          token = srl(label, operand);
           break;
         case 'JMI':
-          token = this.jmi(label, operand);
+          token = jmi(label, operand);
           break;
         case 'JNZ':
-          token = this.jnz(label, operand);
+          token = jnz(label, operand);
           break;
         case 'JZE':
-          token = this.jze(label, operand);
+          token = jze(label, operand);
           break;
         case 'JUMP':
-          token = this.jump(label, operand);
+          token = jump(label, operand);
           break;
         case 'JPL':
-          token = this.jpl(label, operand);
+          token = jpl(label, operand);
           break;
         case 'JOV':
-          token = this.jov(label, operand);
+          token = jov(label, operand);
           break;
         case 'PUSH':
-          token = this.push(label, operand);
+          token = push(label, operand);
           break;
         case 'POP':
-          token = this.pop(label, operand);
+          token = pop(label, operand);
           break;
         case 'CALL':
-          token = this.call(label, operand);
+          token = call(label, operand);
           break;
         case 'RET':
-          token = this.ret(label);
+          token = ret(label);
           break;
         case 'SVC':
-          token = this.svc(label, operand);
+          token = svc(label, operand);
           break;
-        case 'NOP':
-          break;
-        default:
-          continue;
+        // case 'NOP':
+        //   break;
       }
       if (token.hasLabel) {
         l[token.label] = count;
@@ -187,505 +157,4 @@ class Casl2 {
     }
     return c;
   }
-
-  final start = _start;
-  final end = _end;
-  final ds = _ds;
-  final dc = _dc;
-  final input = _input;
-  final output = _output;
-  final rpush = _rpush;
-  final rpop = _rpop;
-  final nop = _nop;
-  final ret = _ret;
-  final ld = _ld;
-  final lad = _lad;
-  final st = _st;
-  final adda = _adda;
-  final addl = _addl;
-  final suba = _suba;
-  final subl = _subl;
-  final and = _and;
-  final or = _or;
-  final xor = _xor;
-  final cpa = _cpa;
-  final cpl = _cpl;
-  final sla = _sla;
-  final sra = _sra;
-  final sll = _sll;
-  final srl = _srl;
-  final jmi = _jmi;
-  final jnz = _jnz;
-  final jze = _jze;
-  final jump = _jump;
-  final jpl = _jpl;
-  final jov = _jov;
-  final push = _push;
-  final pop = _pop;
-  final call = _call;
-  final svc = _svc;
-}
-
-Token _start(final String label, final String operand) {
-  if (_expADR.hasMatch(operand)) {
-    final adr = _expADR.firstMatch(operand)?.group(1) ?? '0';
-    return Token([
-      0x6400,
-      int.parse(adr.replaceFirst('#', '0x')),
-    ], label: label);
-  }
-  if (operand.isEmpty) {
-    return Token([], label: label);
-  }
-  return Token(
-    [0x6400, 0],
-    label: label,
-    refLabel: operand,
-    refIndex: 1,
-  );
-  ;
-}
-
-Token _end() => Token([]);
-
-Token _ds(final String label, final String operand) {
-  if (_expADR.hasMatch(operand)) {
-    final adr = operand.replaceFirst('#', '0x');
-    return Token(
-      List.filled(int.parse(adr), 0),
-      label: label,
-    );
-  }
-  return Token(
-    [],
-    label: label,
-  );
-}
-
-Token _dc(final String label, final String operand) {
-  final ops = <int>[];
-  // TODO multi references
-  var refL = '';
-  var refI = 0;
-
-  {
-    final o = operand.split(',');
-    for (var i = 0; i < o.length; i++) {
-      final op = o[i];
-      if (_expADR.hasMatch(op)) {
-        final a = _expADR.firstMatch(op)?.group(1) ?? '0';
-        final adr = a.replaceFirst('#', '0x');
-        ops.add(int.parse(adr));
-      } else if (_expStr.hasMatch(op)) {
-        final str = _expStr.firstMatch(op)?.group(1) ?? '';
-        for (var c in str.split('')) {
-          ops.add(char2code[c] ?? 0);
-        }
-      } else {
-        refI = ops.length;
-        refL = op;
-        ops.add(0);
-      }
-    }
-  }
-
-  return Token(
-    ops,
-    label: label,
-    refLabel: refL,
-    refIndex: refI,
-  );
-}
-
-Token _input(final String label, final String operand) {
-  final s = operand.split(',');
-  if (s.length != 2) {
-    return _nop(label);
-  }
-  final buf = s[0];
-  final len = s[1];
-  // TODO bug
-  if (!_expADR.hasMatch(len)) {
-    return _nop(label);
-  }
-
-  final op = [
-    0x7001,
-    0,
-    0x7002,
-    0,
-  ];
-  var refLabel = '';
-  var refIndex = 0;
-
-  if (_expADR.hasMatch(buf)) {
-    final adr = buf.replaceFirst('#', '0x');
-    op.addAll([0x1210, int.parse(adr)]);
-  } else {
-    op.addAll([0x1210, 0]);
-    refLabel = buf;
-    refIndex = 5;
-  }
-
-  {
-    final adr = len.replaceFirst('#', '0x');
-    op.addAll([0x1220, int.parse(adr)]);
-  }
-
-  op.addAll([
-    0xf000,
-    1,
-    0x7120,
-    0x7110,
-  ]);
-
-  return Token(
-    op,
-    label: label,
-    refLabel: refLabel,
-    refIndex: refIndex,
-  );
-}
-
-Token _output(final String label, final String operand) {
-  final s = operand.split(',');
-  if (s.length != 2) {
-    return _nop(label);
-  }
-  final buf = s[0];
-  final len = s[1];
-  // TODO bug
-  if (!_expADR.hasMatch(len)) {
-    return _nop(label);
-  }
-
-  final op = [
-    0x7001,
-    0,
-    0x7002,
-    0,
-  ];
-  var refLabel = '';
-  var refIndex = 0;
-
-  if (_expADR.hasMatch(buf)) {
-    final adr = buf.replaceFirst('#', '0x');
-    op.addAll([0x1210, int.parse(adr)]);
-  } else {
-    op.addAll([0x1210, 0]);
-    refLabel = buf;
-    refIndex = 5;
-  }
-
-  {
-    final adr = len.replaceFirst('#', '0x');
-    op.addAll([0x1220, int.parse(adr)]);
-  }
-
-  op.addAll([
-    0xf000,
-    2,
-    0x7120,
-    0x7110,
-  ]);
-
-  return Token(
-    op,
-    label: label,
-    refLabel: refLabel,
-    refIndex: refIndex,
-  );
-}
-
-Token _rpush(final String label) => Token([
-      0x7001,
-      0,
-      0x7002,
-      0,
-      0x7003,
-      0,
-      0x7004,
-      0,
-      0x7005,
-      0,
-      0x7006,
-      0,
-      0x7007,
-      0,
-    ], label: label);
-
-Token _rpop(final String label) => Token([
-      0x7170,
-      0x7160,
-      0x7150,
-      0x7140,
-      0x7130,
-      0x7120,
-      0x7110,
-    ], label: label);
-
-Token _ret(final String label) => Token([0x8100], label: label);
-
-Token _nop(final String label) => Token([0], label: label);
-
-Token _ld(final String label, final String operand) {
-  return _pattern(label, operand, 0x1400, 0x1000);
-}
-
-Token _lad(final String label, final String operand) {
-  final m = _expCommonOperand.firstMatch(operand);
-  final r = m?.group(1) ?? '';
-  final adr = m?.group(2) ?? '';
-  final x = m?.group(3) ?? '';
-
-  var op = 0x1200;
-  if (_expGR.hasMatch(r)) {
-    final gr = _expGR.firstMatch(r)?.group(1) ?? '0';
-    op |= int.parse(gr) << 4;
-  }
-
-  if (_expGR.hasMatch(x)) {
-    final gr = _expGR.firstMatch(x)?.group(1) ?? '0';
-    op |= int.parse(gr);
-  }
-
-  if (_expADR.hasMatch(adr)) {
-    final a = _expADR.firstMatch(adr)?.group(1) ?? '0';
-    return Token([
-      op,
-      int.parse(a.replaceFirst('#', '0x')),
-    ], label: label);
-  }
-  return Token(
-    [op, 0],
-    label: label,
-    refLabel: adr,
-    refIndex: 1,
-  );
-}
-
-Token _st(final String label, final String operand) {
-  final m = _expCommonOperand.firstMatch(operand);
-  final r = m?.group(1) ?? '';
-  final adr = m?.group(2) ?? '';
-  final x = m?.group(3) ?? '';
-
-  var op = 0x1100;
-  if (_expGR.hasMatch(r)) {
-    final gr = _expGR.firstMatch(r)?.group(1) ?? '0';
-    op |= int.parse(gr) << 4;
-  }
-
-  if (_expGR.hasMatch(x)) {
-    final gr = _expGR.firstMatch(x)?.group(1) ?? '0';
-    op |= int.parse(gr);
-  }
-
-  if (_expADR.hasMatch(adr)) {
-    final a = _expADR.firstMatch(adr)?.group(1) ?? '0';
-    return Token([
-      op,
-      int.parse(a.replaceFirst('#', '0x')),
-    ], label: label);
-  }
-  return Token(
-    [op, 0],
-    label: label,
-    refLabel: adr,
-    refIndex: 1,
-  );
-}
-
-Token _adda(final String label, final String operand) {
-  return _pattern(label, operand, 0x2400, 0x2000);
-}
-
-Token _addl(final String label, final String operand) {
-  return _pattern(label, operand, 0x2600, 0x2200);
-}
-
-Token _suba(final String label, final String operand) {
-  return _pattern(label, operand, 0x2500, 0x2100);
-}
-
-Token _subl(final String label, final String operand) {
-  return _pattern(label, operand, 0x2700, 0x2300);
-}
-
-Token _and(final String label, final String operand) {
-  return _pattern(label, operand, 0x3400, 0x3000);
-}
-
-Token _or(final String label, final String operand) {
-  return _pattern(label, operand, 0x3500, 0x3100);
-}
-
-Token _xor(final String label, final String operand) {
-  return _pattern(label, operand, 0x3600, 0x3200);
-}
-
-Token _cpa(final String label, final String operand) {
-  return _pattern(label, operand, 0x4400, 0x4000);
-}
-
-Token _cpl(final String label, final String operand) {
-  return _pattern(label, operand, 0x4500, 0x4100);
-}
-
-Token _sla(final String label, final String operand) {
-  // TODO
-  final t = _pattern(label, operand, 0, 0x5000);
-  if (t.size == 1) {
-    t.code[0] = 0;
-  }
-  return t;
-}
-
-Token _sra(final String label, final String operand) {
-  // TODO
-  final t = _pattern(label, operand, 0, 0x5100);
-  if (t.size == 1) {
-    t.code[0] = 0;
-  }
-  return t;
-}
-
-Token _sll(final String label, final String operand) {
-  // TODO
-  final t = _pattern(label, operand, 0, 0x5200);
-  if (t.size == 1) {
-    t.code[0] = 0;
-  }
-  return t;
-}
-
-Token _srl(final String label, final String operand) {
-  // TODO
-  final t = _pattern(label, operand, 0, 0x5300);
-  if (t.size == 1) {
-    t.code[0] = 0;
-  }
-  return t;
-}
-
-Token _jmi(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6100);
-}
-
-Token _jnz(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6200);
-}
-
-Token _jze(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6300);
-}
-
-Token _jump(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6400);
-}
-
-Token _jpl(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6500);
-}
-
-Token _jov(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6600);
-}
-
-Token _push(final String label, final String operand) {
-  return _pattern2(label, operand, 0x7000);
-}
-
-Token _pop(final String label, final String operand) {
-  final r = _expGR.firstMatch(operand)?.group(1) ?? '0';
-  final op = 0x7100 | (int.parse(r) << 4);
-
-  return Token([op], label: label);
-}
-
-Token _call(final String label, final String operand) {
-  return _pattern2(label, operand, 0x8000);
-}
-
-Token _svc(final String label, final String operand) {
-  return _pattern2(label, operand, 0xf000);
-}
-
-Token _pattern2(final String label, final String operand, final int code) {
-  final m = _expADRX.firstMatch(operand);
-  final adr = m?.group(1) ?? '';
-  final x = m?.group(2) ?? '';
-
-  var op = code;
-  if (_expGR.hasMatch(x)) {
-    final gr = _expGR.firstMatch(x)?.group(1) ?? '0';
-    op |= int.parse(gr);
-  }
-
-  if (_expADR.hasMatch(adr)) {
-    final a = _expADR.firstMatch(adr)?.group(1) ?? '0';
-    return Token([
-      op,
-      int.parse(a.replaceFirst('#', '0x')),
-    ], label: label);
-  }
-  return Token(
-    [op, 0],
-    label: label,
-    refLabel: adr,
-    refIndex: 1,
-  );
-}
-
-Token _pattern(final String label, final String operand, final int codeR1R2,
-    final int codeRAdrX) {
-  final m = _expCommonOperand.firstMatch(operand);
-  final r1 = m?.group(1) ?? '';
-  final r2 = m?.group(2) ?? '';
-  final x = m?.group(3) ?? '';
-
-  // CODE r1,r2
-  if (_expGR.hasMatch(r1) && _expGR.hasMatch(r2)) {
-    var op = codeR1R2;
-    {
-      final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
-      op |= int.parse(r) << 4;
-    }
-
-    {
-      final r = _expGR.firstMatch(r2)?.group(1) ?? '0';
-      op |= int.parse(r);
-    }
-    return Token([op], label: label);
-  }
-
-  // CODE r,adr,x
-  if (_expGR.hasMatch(r1)) {
-    var op = codeRAdrX;
-    {
-      final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
-      op |= int.parse(r) << 4;
-    }
-
-    if (_expGR.hasMatch(x)) {
-      final r = _expGR.firstMatch(x)?.group(1) ?? '0';
-      op |= int.parse(r);
-    }
-
-    if (_expADR.hasMatch(r2)) {
-      final adr = _expADR.firstMatch(r2)?.group(1) ?? '0';
-      final a = adr.replaceFirst('#', '0x');
-      return Token(
-        [op, int.parse(a)],
-        label: label,
-      );
-    }
-    return Token(
-      [op, 0],
-      label: label,
-      refLabel: r2,
-      refIndex: 1,
-    );
-  }
-  return _nop(label);
 }
