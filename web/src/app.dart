@@ -20,7 +20,7 @@ Element app() {
   final state = ResourceState(r);
   final editor = Editor(asm);
   final output = TextAreaElement()..disabled = true;
-  final input = TextAreaElement()..nodes.add(Text('hello, world!'));
+  final input = TextAreaElement();
   final control = ControlPanel(r, c, cc, onPreExecute: () {
     inputValues.clear();
     inputValues.addAll((input.value ?? '').split('\n'));
@@ -69,10 +69,8 @@ Element app() {
 }
 
 const asm = 'MAIN\tSTART\n'
-    '\tIN\tIBUF,255\n'
-    '\tOUT\tOBUF,255\n'
+    '\tOUT\tMSG,255\n'
     '\tRET\n'
-    'OBUF\tDC\t\'input:\'\n'
-    'IBUF\tDS\t255\n'
-    'EOF\tDC\t#FFFF\n'
+    'MSG\tDC\t\'hello, world!\'\n'
+    'EOF\tDC\t-1\n'
     '\tEND\n';
