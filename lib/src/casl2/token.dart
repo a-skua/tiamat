@@ -139,11 +139,6 @@ List<Token> parse(String s) {
         break;
       case _State.string:
         if (c == quote) {
-          state = _State.operand;
-          tokens.add(Token(c, State.operand));
-          break;
-        }
-        if (c == backslash) {
           state = _State.metaChar;
           tokens.add(Token(c, State.operand));
           break;
@@ -151,7 +146,16 @@ List<Token> parse(String s) {
         tokens.add(Token(c, State.operand));
         break;
       case _State.metaChar:
-        state = _State.string;
+        if (c == quote) {
+          state = _State.string;
+          tokens.add(Token(c, State.operand));
+          break;
+        }
+        if (c == tab || c == space) {
+          state = _State.endOperand;
+          break;
+        }
+        state = _State.operand;
         tokens.add(Token(c, State.operand));
         break;
     }

@@ -759,22 +759,24 @@ void main() {
   test('DC', () {
     final cc = Casl2();
 
-    // TODO bug: multi-ref-label
+    // '''hello, world!' -> 'hello, world!
     expect(
-      dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').code,
+      dc('ZZZ', '\'\'\'hello, world!\'').code,
       equals([
-        0xffff,
-        123,
-        0x41,
-        0x42,
-        0x43,
-        0x64,
+        0x27,
+        0x68,
         0x65,
-        0x66,
-        0x31,
-        0x32,
-        0x33,
-        0,
+        0x6c,
+        0x6c,
+        0x6f,
+        0x2c,
+        0x20,
+        0x77,
+        0x6f,
+        0x72,
+        0x6c,
+        0x64,
+        0x21,
       ]),
     );
     expect(dc('ZZZ', '#FFFF,123,\'ABCdef123\',LABEL').label, equals('ZZZ'));

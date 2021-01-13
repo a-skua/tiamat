@@ -345,7 +345,7 @@ void main() {
       });
 
       test('all', () {
-        const s = ' \tDC \t\'\\\'hello, world!\',#FFFF,1,2 comment!\n'
+        const s = ' \tDC \t\'\'\'hello, world!\',#FFFF,1,2 comment!\n'
             ';MSG DC \'hello, world\'\n'
             ' \t CALL\tSUB\t; call subroutine\n'
             'SUB\tLAD\tGR0,0\n'
@@ -355,7 +355,7 @@ void main() {
           Token('D'.runes.first, State.instruction),
           Token('C'.runes.first, State.instruction),
           Token('\''.runes.first, State.operand),
-          Token('\\'.runes.first, State.operand),
+          Token('\''.runes.first, State.operand),
           Token('\''.runes.first, State.operand),
           Token('h'.runes.first, State.operand),
           Token('e'.runes.first, State.operand),
