@@ -8,7 +8,7 @@ import './component/content_box.dart';
 import './component/editor.dart';
 import './component/information.dart';
 
-const version = '0.1.1+nullsafety';
+const version = '0.1.2+nullsafety';
 
 Element app() {
   final cc = Casl2();
