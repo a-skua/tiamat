@@ -1,6 +1,6 @@
-import 'instruction.dart';
-import 'resource.dart';
+import 'instruction/instruction.dart';
 import 'supervisorcall.dart';
+import '../resource/resource.dart';
 
 class Comet2 {
   final _map = <int, Instruction>{};

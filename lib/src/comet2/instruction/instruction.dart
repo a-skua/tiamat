@@ -1,5 +1,5 @@
-import 'resource.dart';
-import 'supervisorcall.dart';
+import '../../resource/resource.dart';
+import '../supervisorcall.dart';
 
 typedef Instruction = void Function(Resource r);
 

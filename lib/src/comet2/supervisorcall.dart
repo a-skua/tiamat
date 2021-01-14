@@ -1,5 +1,5 @@
-import 'resource.dart';
-import 'charcode.dart';
+import '../resource/resource.dart';
+import '../util/charcode.dart';
 
 const eof = 0xffff;
 typedef Read = String Function();

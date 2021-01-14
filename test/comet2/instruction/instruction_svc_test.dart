@@ -1,12 +1,12 @@
 import 'dart:math';
 
-import 'package:tiamat/src/instruction.dart';
-import 'package:tiamat/src/supervisorcall.dart';
-import 'package:tiamat/src/resource.dart';
-import 'package:tiamat/src/charcode.dart';
+import 'package:tiamat/src/comet2/instruction/instruction.dart';
+import 'package:tiamat/src/comet2/supervisorcall.dart';
+import 'package:tiamat/src/resource/resource.dart';
+import 'package:tiamat/src/util/charcode.dart';
 import 'package:test/test.dart';
 
-import 'util.dart';
+import '../../util/util.dart';
 
 void main() {
   final rand = Random();

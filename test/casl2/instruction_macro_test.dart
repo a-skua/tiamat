@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:tiamat/src/casl2/instruction.dart';
 import 'package:test/test.dart';
 
-import '../util.dart';
+import '../util/util.dart';
 
 void main() {
   test('IN', () {

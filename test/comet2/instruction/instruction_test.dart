@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:tiamat/src/instruction.dart';
-import 'package:tiamat/src/resource.dart';
+import 'package:tiamat/src/comet2/instruction/instruction.dart';
+import 'package:tiamat/src/resource/resource.dart';
 import 'package:test/test.dart';
 
 void main() {

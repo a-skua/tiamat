@@ -1,5 +1,5 @@
-import './casl2/node.dart' as node;
-import './casl2/instruction.dart';
+import 'node.dart' as node;
+import 'instruction.dart';
 
 class Casl2 {
   List<int> compile(final String s) {

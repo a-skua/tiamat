@@ -1,4 +1,4 @@
-import '../charcode.dart';
+import '../util/charcode.dart';
 
 // FIXME
 //

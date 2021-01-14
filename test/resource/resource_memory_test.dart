@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:tiamat/src/resource.dart';
+import 'package:tiamat/src/resource/resource.dart';
 import 'package:test/test.dart';
 
 void main() {

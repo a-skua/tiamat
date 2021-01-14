@@ -1,13 +1,13 @@
 // FIXME
 import 'dart:math';
 
-import 'package:tiamat/src/casl2.dart';
+import 'package:tiamat/src/casl2/casl2.dart';
 import 'package:tiamat/src/casl2/instruction.dart';
-import 'package:tiamat/src/comet2.dart';
-import 'package:tiamat/src/resource.dart';
+import 'package:tiamat/src/comet2/comet2.dart';
+import 'package:tiamat/src/resource/resource.dart';
 import 'package:test/test.dart';
 
-import '../util.dart';
+import '../util/util.dart';
 
 void main() {
   test('NOP and RET', () {

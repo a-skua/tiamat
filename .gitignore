@@ -2,6 +2,9 @@
 .packages
 pubspec.lock
 build
+doc/api
+
+# macOS
 .DS_Store
 
 # gh-pages
