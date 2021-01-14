@@ -1,15 +1,15 @@
 import '../../resource/resource.dart';
 import '../supervisorcall.dart';
 
+export 'no_operation.dart';
+
 typedef Instruction = void Function(Resource r);
 
-/// NOP
-void noOperation(final Resource r) {
-  r.PR += 1;
-}
-
-/// LD r,adr,x
-void loadMemory(final Resource r) {
+/// An instruction of CASL2, named LD
+///
+/// That's 2 words instruction, load from effective address to `r`.
+/// Syntax: `LD r,adr,x`
+void load(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 
@@ -29,8 +29,11 @@ void loadMemory(final Resource r) {
   r.FR = flag;
 }
 
-/// LD r1,r2
-void load(final Resource r) {
+/// An instruction of CASL2, named LD
+///
+/// That's 1 word instruction, load from `r2` to `r1`.
+/// Syntax: `LD r1,r2`
+void loadGR(final Resource r) {
   final cache = r.memory.getWord(r.PR);
   r.PR += 1;
 

@@ -8,10 +8,10 @@ class Comet2 {
   final sv = Supervisor();
 
   Comet2() {
-    this._map[0x10] = loadMemory;
+    this._map[0x10] = load;
     this._map[0x11] = store;
     this._map[0x12] = loadAddress;
-    this._map[0x14] = load;
+    this._map[0x14] = loadGR;
 
     this._map[0x20] = addArithmeticMemory;
     this._map[0x21] = subtractArithmeticMemory;

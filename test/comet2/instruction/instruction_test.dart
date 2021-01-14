@@ -46,7 +46,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        loadMemory(r);
+        load(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(data));
       }
@@ -72,7 +72,7 @@ void main() {
         r.memory.setWord(pr + 1, addr);
         r.PR = pr;
 
-        loadMemory(r);
+        load(r);
         expect(r.PR, equals(pr + 2));
         expect(r.getGR(reg), equals(data));
       }
@@ -89,7 +89,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(r.PR + 1, addr);
       r.memory.setWord(addr + base, data);
-      loadMemory(r);
+      load(r);
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
       expect(r.ZF, equals(true));
@@ -104,7 +104,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(r.PR + 1, addr);
       r.memory.setWord(addr + base, data);
-      loadMemory(r);
+      load(r);
       expect(r.OF, equals(false));
       expect(r.SF, equals(true));
       expect(r.ZF, equals(false));
@@ -119,7 +119,7 @@ void main() {
       r.memory.setWord(r.PR, op);
       r.memory.setWord(r.PR + 1, addr);
       r.memory.setWord(addr + base, data);
-      loadMemory(r);
+      load(r);
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
       expect(r.ZF, equals(false));
@@ -144,7 +144,7 @@ void main() {
         r.memory.setWord(pr, op);
         r.PR = pr;
 
-        load(r);
+        loadGR(r);
         expect(r.PR, equals(pr + 1));
         expect(r.getGR(r1), equals(data));
       }
@@ -161,7 +161,7 @@ void main() {
       r.setGR(r2, data);
       r.FR = 6;
       r.memory.setWord(r.PR, op);
-      load(r);
+      loadGR(r);
       expect(r.getGR(r1), equals(data));
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
@@ -175,7 +175,7 @@ void main() {
       r.setGR(r2, data);
       r.FR = 5;
       r.memory.setWord(r.PR, op);
-      load(r);
+      loadGR(r);
       expect(r.getGR(r1), equals(data));
       expect(r.OF, equals(false));
       expect(r.SF, equals(true));
@@ -189,7 +189,7 @@ void main() {
       r.setGR(r2, data);
       r.FR = 7;
       r.memory.setWord(r.PR, op);
-      load(r);
+      loadGR(r);
       expect(r.getGR(r1), equals(data));
       expect(r.OF, equals(false));
       expect(r.SF, equals(false));
