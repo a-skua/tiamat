@@ -2,55 +2,9 @@ import '../../resource/resource.dart';
 import '../supervisorcall.dart';
 
 export 'no_operation.dart';
+export 'load.dart';
 
 typedef Instruction = void Function(Resource r);
-
-/// An instruction of CASL2, named LD
-///
-/// That's 2 words instruction, load from effective address to `r`.
-/// Syntax: `LD r,adr,x`
-void load(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
-  r.PR += 1;
-
-  final x = cache & 0xf;
-  final gr = (cache >> 4) & 0xf;
-  final adr = _getADR(r, x);
-
-  final data = r.memory.getWord(adr);
-  var flag = 0;
-  if (data == 0) {
-    flag |= zeroFlag;
-  }
-  if ((data & (1 << (wordSize - 1))) > 0) {
-    flag |= signFlag;
-  }
-  r.setGR(gr, data);
-  r.FR = flag;
-}
-
-/// An instruction of CASL2, named LD
-///
-/// That's 1 word instruction, load from `r2` to `r1`.
-/// Syntax: `LD r1,r2`
-void loadGR(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
-  r.PR += 1;
-
-  final r2 = cache & 0xf;
-  final r1 = (cache >> 4) & 0xf;
-
-  final data = r.getGR(r2);
-  var flag = 0;
-  if (data == 0) {
-    flag |= zeroFlag;
-  }
-  if ((data & (1 << 15)) > 0) {
-    flag |= signFlag;
-  }
-  r.setGR(r1, data);
-  r.FR = flag;
-}
 
 /// ST r,adr,x
 void store(final Resource r) {
