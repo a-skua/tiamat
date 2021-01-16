@@ -1,24 +1,10 @@
+import 'memory.dart';
+
 const wordSize = 16;
-const memorySize = 1 << 16;
 const generalRegisterSize = 8;
 const overflowFlag = 1 << 0;
 const signFlag = 1 << 1;
 const zeroFlag = 1 << 2;
-
-class Memory {
-  final _size = memorySize;
-  final List<int> _values = List.filled(memorySize, 0);
-
-  int get size => this._size;
-
-  int getWord(final int addr) {
-    return this._values[addr & 0xffff];
-  }
-
-  void setWord(final int addr, final int value) {
-    this._values[addr & 0xffff] = value & 0xffff;
-  }
-}
 
 class Resource {
   final Memory _memory = Memory();
