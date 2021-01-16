@@ -11,26 +11,12 @@ class Memory {
 
   int get size => this._size;
 
-  bool _isWithin(final int addr) {
-    if (addr >= 0 && addr < this._size) {
-      return true;
-    }
-    return false;
-  }
-
   int getWord(final int addr) {
-    if (!this._isWithin(addr)) {
-      return 0;
-    }
-    return this._values[addr];
+    return this._values[addr & 0xffff];
   }
 
-  bool setWord(final int addr, final int value) {
-    if (!this._isWithin(addr)) {
-      return false;
-    }
-    this._values[addr] = value & 0xffff;
-    return true;
+  void setWord(final int addr, final int value) {
+    this._values[addr & 0xffff] = value & 0xffff;
   }
 }
 

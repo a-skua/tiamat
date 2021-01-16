@@ -144,8 +144,7 @@ void main() {
     for (var i = 0; i < 8; i++) {
       final addr = rand.nextInt(r.memory.size);
       final val = rand.nextInt(wordSize);
-      expect(r.memory.setWord(addr, val), equals(true));
-
+      r.memory.setWord(addr, val);
       expect(r.memory.getWord(addr), equals(val));
     }
   });

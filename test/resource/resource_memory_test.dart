@@ -10,15 +10,14 @@ void main() {
     final m = Memory();
     final v = rand.nextInt(1 << 16);
 
-    expect(m.setWord(0, v), equals(true));
+    m.setWord(0, v);
     expect(m.getWord(0), equals(v));
   });
 
   test('set/get boundary max', () {
     final m = Memory();
     final v = rand.nextInt(1 << 16);
-
-    expect(m.setWord(memorySize - 1, v), equals(true));
+    m.setWord(memorySize - 1, v);
     expect(m.getWord(memorySize - 1), equals(v));
   });
 
@@ -26,16 +25,15 @@ void main() {
     final m = Memory();
     final v = rand.nextInt(1 << 16);
 
-    expect(m.setWord(-1, v), equals(false));
-    expect(m.getWord(-1), equals(0));
+    m.setWord(-1, v);
+    expect(m.getWord(-1), equals(v));
   });
 
   test('set/get over boundary of max', () {
     final m = Memory();
     final v = rand.nextInt(1 << 16);
-
-    expect(m.setWord(memorySize, v), equals(false));
-    expect(m.getWord(memorySize), equals(0));
+    m.setWord(memorySize, v);
+    expect(m.getWord(memorySize), equals(v));
   });
 
   test('set/get all', () {
