@@ -3,20 +3,9 @@ import '../supervisorcall.dart';
 
 export 'no_operation.dart';
 export 'load.dart';
+export 'store.dart';
 
 typedef Instruction = void Function(Resource r);
-
-/// ST r,adr,x
-void store(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
-  r.PR += 1;
-
-  final x = cache & 0xf;
-  final gr = (cache >> 4) & 0xf;
-  final adr = _getADR(r, x);
-
-  r.memory.setWord(adr, r.getGR(gr));
-}
 
 /// LAD r, adr, x
 void loadAddress(final Resource r) {

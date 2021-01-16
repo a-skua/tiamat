@@ -1,7 +1,7 @@
 import '../../resource/resource.dart';
 import 'util.dart';
 
-/// An instruction of CASL2, named LD
+/// An instruction of CASL2, named LD.
 ///
 /// That's 2 words instruction, load from effective address to `r`.
 /// Syntax: `LD r,adr,x`
@@ -21,7 +21,7 @@ void load(final Resource r) {
   r.FR = flag.sign | flag.zero;
 }
 
-/// An instruction of CASL2, named LD
+/// An instruction of CASL2, named LD.
 ///
 /// That's 1 word instruction, load from `r2` to `r1`.
 /// Syntax: `LD r1,r2`
