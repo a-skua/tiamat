@@ -1,3 +1,5 @@
+import 'dart:math';
+
 class Entity {
   final int value;
   final int data;
@@ -32,4 +34,14 @@ class TestData {
   Entity get x => this._x;
   Entity get r1 => this._r;
   Entity get r2 => this._x;
+}
+
+int getX(final int r) {
+  const length = 8;
+  final rand = Random();
+  final x = rand.nextInt(length);
+  if (r != x) {
+    return x;
+  }
+  return x == (length - 1) ? 0 : x + 1;
 }

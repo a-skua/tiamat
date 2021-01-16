@@ -81,6 +81,7 @@ void main() {
             Entity(rand.nextInt(8), 0),
             Entity(rand.nextInt(8), rand.nextInt(0x4000)),
             adr: Entity(rand.nextInt(0x4000) | 0x8000, rand.nextInt(0x10000)),
+            pr: rand.nextInt(0x7fff),
           ),
       ];
 
