@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's 2 words instruction, store 'r' to effective address.
 /// Syntax: ST r,adr,x
 void store(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -14,5 +14,5 @@ void store(final Resource r) {
   final adr = getEffectiveAddress(r, x);
   r.PR += 1;
 
-  r.memory.setWord(adr, r.getGR(gr));
+  r.memory[adr] = r.getGR(gr);
 }

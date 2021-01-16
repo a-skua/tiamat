@@ -17,8 +17,8 @@ void main() {
         final op = 0x6400;
         final adr = rand.nextInt(0x10000);
 
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         unconditionalJump(r);
         expect(r.PR, equals(adr));
@@ -35,8 +35,8 @@ void main() {
         final adr = rand.nextInt(0x8000);
 
         r.setGR(baseGR, base);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         unconditionalJump(r);
         expect(r.PR, equals(base + adr));
@@ -54,8 +54,8 @@ void main() {
         final pr = r.PR;
 
         r.FR = i;
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         jumpOnPlus(r);
         if (!r.SF && !r.ZF) {
@@ -78,8 +78,8 @@ void main() {
 
         r.FR = i;
         r.setGR(baseGR, base);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         jumpOnPlus(r);
         final e = (r.SF || r.ZF ? pr + 2 : base + adr) & 0xffff;
@@ -98,8 +98,8 @@ void main() {
         final pr = (r.PR + 2) & 0xffff;
 
         r.FR = i;
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         jumpOnMinus(r);
         final e = r.SF ? adr : pr;
@@ -119,8 +119,8 @@ void main() {
 
         r.FR = i;
         r.setGR(baseGR, base);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         jumpOnMinus(r);
         final e = r.SF ? (base + adr) & 0xffff : pr;
@@ -138,8 +138,8 @@ void main() {
           final pr = r.PR;
 
           r.FR = i;
-          r.memory.setWord(r.PR, op);
-          r.memory.setWord((r.PR + 1) & 0xffff, adr);
+          r.memory[r.PR] = op;
+          r.memory[(r.PR + 1) & 0xffff] = adr;
 
           jumpOnNonZero(r);
           final e = r.ZF ? (pr + 2) & 0xffff : adr;
@@ -158,8 +158,8 @@ void main() {
 
           r.FR = i;
           r.setGR(baseGR, base);
-          r.memory.setWord(r.PR, op);
-          r.memory.setWord((r.PR + 1) & 0xffff, adr);
+          r.memory[r.PR] = op;
+          r.memory[(r.PR + 1) & 0xffff] = adr;
 
           jumpOnNonZero(r);
           final e = (r.ZF ? pr + 2 : base + adr) & 0xffff;
@@ -178,8 +178,8 @@ void main() {
         final pr = r.PR;
 
         r.FR = i;
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         jumpOnZero(r);
         final e = r.ZF ? adr : (pr + 2) & 0xffff;
@@ -198,8 +198,8 @@ void main() {
 
         r.FR = i;
         r.setGR(baseGR, base);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         jumpOnZero(r);
         final e = (r.ZF ? base + adr : pr + 2) & 0xffff;
@@ -217,8 +217,8 @@ void main() {
         final pr = r.PR;
 
         r.FR = i;
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         jumpOnOverflow(r);
         final e = r.OF ? adr : (pr + 2) & 0xffff;
@@ -237,8 +237,8 @@ void main() {
 
         r.FR = i;
         r.setGR(baseGR, base);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord((r.PR + 1) & 0xffff, adr);
+        r.memory[r.PR] = op;
+        r.memory[(r.PR + 1) & 0xffff] = adr;
 
         jumpOnOverflow(r);
         final e = (r.OF ? base + adr : pr + 2) & 0xffff;

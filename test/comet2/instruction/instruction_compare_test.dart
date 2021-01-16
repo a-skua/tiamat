@@ -24,9 +24,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -46,9 +46,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -68,9 +68,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -97,9 +97,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -122,9 +122,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -147,9 +147,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -172,9 +172,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -200,9 +200,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -226,9 +226,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -248,9 +248,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -270,9 +270,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -299,9 +299,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -324,9 +324,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -349,9 +349,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareArithmeticMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -378,7 +378,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
@@ -399,7 +399,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
@@ -420,7 +420,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
@@ -444,7 +444,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
@@ -469,7 +469,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
@@ -490,7 +490,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
@@ -511,7 +511,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareArithmetic(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
@@ -537,9 +537,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -566,9 +566,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -591,9 +591,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -619,9 +619,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -645,9 +645,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[adr] = v2;
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -674,9 +674,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord((pr + 1) & 0xffff, adr);
-        r.memory.setWord((base + adr) & 0xffff, v2);
+        r.memory[pr] = op;
+        r.memory[(pr + 1) & 0xffff] = adr;
+        r.memory[(base + adr) & 0xffff] = v2;
 
         compareLogicalMemory(r);
         expect(r.PR, equals((pr + 2) & 0xffff));
@@ -703,7 +703,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
@@ -727,7 +727,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));
@@ -752,7 +752,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         compareLogical(r);
         expect(r.PR, equals((pr + 1) & 0xffff));

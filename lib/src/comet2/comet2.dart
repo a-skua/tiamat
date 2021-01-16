@@ -58,7 +58,7 @@ class Comet2 {
   void exec(final Resource r) {
     // FIXME conditional
     while (r.SP != 0) {
-      final op = (r.memory.getWord(r.PR) >> 8) & 0xff;
+      final op = (r.memory[r.PR] >> 8) & 0xff;
       final ins = this._map[op] ?? noOperation;
       ins(r);
     }

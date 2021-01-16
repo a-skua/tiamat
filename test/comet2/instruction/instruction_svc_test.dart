@@ -21,8 +21,8 @@ void main() {
       r.setGR(1, 0x8000);
       r.setGR(2, text.length);
 
-      r.memory.setWord(r.PR, 0xf000);
-      r.memory.setWord(r.PR + 1, 1);
+      r.memory[r.PR] = 0xf000;
+      r.memory[r.PR + 1] = 1;
 
       supervisorCall(r, sv);
 
@@ -43,7 +43,7 @@ void main() {
       ];
 
       for (var i = 0; i < e.length; i++) {
-        expect(r.memory.getWord(0x8000 + i), equals(e[i]));
+        expect(r.memory[0x8000 + i], equals(e[i]));
       }
     });
 
@@ -57,8 +57,8 @@ void main() {
       r.setGR(2, text.length);
 
       r.setGR(7, 1);
-      r.memory.setWord(r.PR, 0xf007);
-      r.memory.setWord(r.PR + 1, 0);
+      r.memory[r.PR] = 0xf007;
+      r.memory[r.PR + 1] = 0;
 
       supervisorCall(r, sv);
 
@@ -79,7 +79,7 @@ void main() {
       ];
 
       for (var i = 0; i < e.length; i++) {
-        expect(r.memory.getWord(0x8000 + i), equals(e[i]));
+        expect(r.memory[0x8000 + i], equals(e[i]));
       }
     });
   });
@@ -98,13 +98,13 @@ void main() {
       r.setGR(1, 0x8000);
       r.setGR(2, text.length - 1);
 
-      r.memory.setWord(r.PR, 0xf000);
-      r.memory.setWord(r.PR + 1, 2);
+      r.memory[r.PR] = 0xf000;
+      r.memory[r.PR + 1] = 2;
       {
         final s = text.split('');
         for (var i = 0; i < s.length; i++) {
           final c = s[i];
-          r.memory.setWord(0x8000 + i, char2code[c] ?? 0);
+          r.memory[0x8000 + i] = char2code[c] ?? 0;
         }
       }
 
@@ -126,13 +126,13 @@ void main() {
       r.setGR(2, text.length - 1);
 
       r.setGR(7, 1);
-      r.memory.setWord(r.PR, 0xf007);
-      r.memory.setWord(r.PR + 1, 1);
+      r.memory[r.PR] = 0xf007;
+      r.memory[r.PR + 1] = 1;
       {
         final s = text.split('');
         for (var i = 0; i < s.length; i++) {
           final c = s[i];
-          r.memory.setWord(0x8000 + i, char2code[c] ?? 0);
+          r.memory[0x8000 + i] = char2code[c] ?? 0;
         }
       }
 

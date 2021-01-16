@@ -24,10 +24,10 @@ void main() {
       final pr = r.PR;
 
       r.setGR(gr, v1);
-      r.memory.setWord(pr, addl);
-      r.memory.setWord(pr + 1, adr);
-      r.memory.setWord(pr + 2, ret);
-      r.memory.setWord(adr, v2);
+      r.memory[pr] = addl;
+      r.memory[pr + 1] = adr;
+      r.memory[pr + 2] = ret;
+      r.memory[adr] = v2;
 
       c.exec(r);
       expect(r.getGR(gr), equals((v1 + v2) & maskBits));

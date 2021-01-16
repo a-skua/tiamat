@@ -36,12 +36,10 @@ void main() {
 
   final cc = Casl2();
   final bin = cc.compile(asm);
-  print('compiled: $bin\n');
+  print('compiled:\n$bin\n');
 
   final r = Resource();
-  for (var i = 0; i < bin.length; i++) {
-    r.memory.setWord(i, bin[i]);
-  }
+  r.memory.setAll(0, bin);
 
   final c = Comet2();
   c.sv.read = () {

@@ -95,7 +95,7 @@ void main() {
     final r = Resource();
     final c = Comet2();
     for (var i = 0; i < code.length; i++) {
-      r.memory.setWord(r.PR + i, code[i]);
+      r.memory[r.PR + i] = code[i];
     }
     c.exec(r);
     expect(r.getGR(0), equals(0));

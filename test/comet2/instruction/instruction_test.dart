@@ -41,14 +41,14 @@ void main() {
         final data = rand.nextInt(1 << 16);
 
         r.setGR(reg, data);
-        r.memory.setWord(addr, 0);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, addr);
+        r.memory[addr] = 0;
+        r.memory[pr] = op;
+        r.memory[pr + 1] = addr;
         r.PR = pr;
 
         store(r);
         expect(r.PR, equals(pr + 2));
-        expect(r.memory.getWord(addr), equals(data));
+        expect(r.memory[addr], equals(data));
       }
     });
 
@@ -70,14 +70,14 @@ void main() {
 
         r.setGR(reg, data);
         r.setGR(baseReg, base);
-        r.memory.setWord(base + addr, 0);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, addr);
+        r.memory[base + addr] = 0;
+        r.memory[pr] = op;
+        r.memory[pr + 1] = addr;
         r.PR = pr;
 
         store(r);
         expect(r.PR, equals(pr + 2));
-        expect(r.memory.getWord(base + addr), equals(data));
+        expect(r.memory[base + addr], equals(data));
       }
     });
   });
@@ -93,8 +93,8 @@ void main() {
 
         final op = (0x14 << 0x8) + (reg << 0x4);
 
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, addr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = addr;
         r.PR = pr;
 
         loadAddress(r);
@@ -116,8 +116,8 @@ void main() {
         final op = (0x14 << 0x8) + (reg << 0x4) + baseReg;
 
         r.setGR(baseReg, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, addr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = addr;
         r.PR = pr;
 
         loadAddress(r);
@@ -136,8 +136,8 @@ void main() {
 
   //     {
   //       final pr = r.PR;
-  //       r.memory.setWord(r.PR, op);
-  //       r.memory.setWord(r.PR + 1, 1);
+  //       r.memory[r.PR]= op;
+  //       r.memory[r.PR + 1]= 1;
 
   //       supervisorCall(r);
   //     }

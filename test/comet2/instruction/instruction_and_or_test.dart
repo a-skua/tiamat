@@ -23,9 +23,9 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[adr] = v2;
 
         andMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -51,9 +51,9 @@ void main() {
 
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(base + adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[base + adr] = v2;
 
         andMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -76,9 +76,9 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[adr] = v2;
 
         andMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -101,9 +101,9 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[adr] = v2;
 
         andMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -130,7 +130,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         and(r);
         expect(r.PR, equals(pr + 1));
@@ -155,7 +155,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         and(r);
         expect(r.PR, equals(pr + 1));
@@ -179,7 +179,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         and(r);
         expect(r.PR, equals(pr + 1));
@@ -205,9 +205,9 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[adr] = v2;
 
         orMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -233,9 +233,9 @@ void main() {
 
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(base + adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[base + adr] = v2;
 
         orMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -258,9 +258,9 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[adr] = v2;
 
         orMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -282,9 +282,9 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[adr] = v2;
 
         orMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -311,7 +311,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         or(r);
         expect(r.PR, equals(pr + 1));
@@ -336,7 +336,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         or(r);
         expect(r.PR, equals(pr + 1));
@@ -360,7 +360,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         or(r);
         expect(r.PR, equals(pr + 1));
@@ -386,9 +386,9 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[adr] = v2;
 
         exclusiveOrMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -414,9 +414,9 @@ void main() {
 
         r.setGR(gr, v1);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(base + adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[base + adr] = v2;
 
         exclusiveOrMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -439,9 +439,9 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[adr] = v2;
 
         exclusiveOrMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -463,9 +463,9 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
-        r.memory.setWord(adr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
+        r.memory[adr] = v2;
 
         exclusiveOrMemory(r);
         expect(r.PR, equals(pr + 2));
@@ -492,7 +492,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         exclusiveOr(r);
         expect(r.PR, equals(pr + 1));
@@ -517,7 +517,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         exclusiveOr(r);
         expect(r.PR, equals(pr + 1));
@@ -541,7 +541,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         exclusiveOr(r);
         expect(r.PR, equals(pr + 1));

@@ -21,13 +21,13 @@ void main() {
         final pr = r.PR;
 
         r.setGR(i, v);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, adr);
+        r.memory[r.PR] = op;
+        r.memory[r.PR + 1] = adr;
 
         push(r);
         expect(r.SP, equals(sp - 1));
         expect(r.PR, equals(pr + 2));
-        expect(r.memory.getWord(r.SP), equals(v));
+        expect(r.memory[r.SP], equals(v));
       }
     });
 
@@ -40,13 +40,13 @@ void main() {
         final sp = r.SP;
         final pr = r.PR;
 
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, adr);
+        r.memory[r.PR] = op;
+        r.memory[r.PR + 1] = adr;
 
         push(r);
         expect(r.SP, equals(sp - 1));
         expect(r.PR, equals(pr + 2));
-        expect(r.memory.getWord(r.SP), equals(adr));
+        expect(r.memory[r.SP], equals(adr));
       }
     });
 
@@ -62,13 +62,13 @@ void main() {
         final pr = r.PR;
 
         r.setGR(x, base);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, adr);
+        r.memory[r.PR] = op;
+        r.memory[r.PR + 1] = adr;
 
         push(r);
         expect(r.SP, equals(sp - 1));
         expect(r.PR, equals(pr + 2));
-        expect(r.memory.getWord(r.SP), equals(base + adr));
+        expect(r.memory[r.SP], equals(base + adr));
       }
     });
   });
@@ -85,8 +85,8 @@ void main() {
         final pr = r.PR + 1;
 
         r.SP -= 1;
-        r.memory.setWord(r.SP, v);
-        r.memory.setWord(r.PR, op);
+        r.memory[r.SP] = v;
+        r.memory[r.PR] = op;
 
         pop(r);
         expect(r.SP, equals(sp));

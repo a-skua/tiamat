@@ -24,9 +24,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, addr);
-        r.memory.setWord(addr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = addr;
+        r.memory[addr] = v2;
         subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
@@ -50,9 +50,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(baseGR, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, addr);
-        r.memory.setWord(base + addr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = addr;
+        r.memory[base + addr] = v2;
         subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
         expect(r.PR, equals(pr + 2));
@@ -74,9 +74,9 @@ void main() {
           final result = (v1 + (v2 ^ -1) + 1) & 0xffff;
 
           r.setGR(gr, v1);
-          r.memory.setWord(r.PR, op);
-          r.memory.setWord(r.PR + 1, addr);
-          r.memory.setWord(addr, v2);
+          r.memory[r.PR] = op;
+          r.memory[r.PR + 1] = addr;
+          r.memory[addr] = v2;
 
           subtractArithmeticMemory(r);
           expect(r.OF, equals(true));
@@ -95,9 +95,9 @@ void main() {
           final result = (v1 + (v2 ^ -1) + 1) & 0xffff;
 
           r.setGR(gr, v1);
-          r.memory.setWord(r.PR, op);
-          r.memory.setWord(r.PR + 1, addr);
-          r.memory.setWord(addr, v2);
+          r.memory[r.PR] = op;
+          r.memory[r.PR + 1] = addr;
+          r.memory[addr] = v2;
 
           subtractArithmeticMemory(r);
           expect(r.getGR(gr), equals(result));
@@ -118,9 +118,9 @@ void main() {
         var result = (v1 + (v2 ^ -1) + 1) & 0xffff;
 
         r.setGR(gr, v1);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, addr);
-        r.memory.setWord(addr, v2);
+        r.memory[r.PR] = op;
+        r.memory[r.PR + 1] = addr;
+        r.memory[addr] = v2;
 
         subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
@@ -136,9 +136,9 @@ void main() {
         result = (v1 + (v2 ^ -1) + 1) & 0xffff;
 
         r.setGR(gr, v1);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, addr);
-        r.memory.setWord(addr, v2);
+        r.memory[r.PR] = op;
+        r.memory[r.PR + 1] = addr;
+        r.memory[addr] = v2;
 
         subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(result));
@@ -157,9 +157,9 @@ void main() {
         var op = (0x21 << 8) + gr << 4;
 
         r.setGR(gr, v1);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, addr);
-        r.memory.setWord(addr, v2);
+        r.memory[r.PR] = op;
+        r.memory[r.PR + 1] = addr;
+        r.memory[addr] = v2;
 
         subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(0));
@@ -174,9 +174,9 @@ void main() {
         op = (0x21 << 8) + gr << 4;
 
         r.setGR(gr, v1);
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, addr);
-        r.memory.setWord(addr, v2);
+        r.memory[r.PR] = op;
+        r.memory[r.PR + 1] = addr;
+        r.memory[addr] = v2;
 
         subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(0));
@@ -190,9 +190,9 @@ void main() {
         gr = rand.nextInt(8);
         op = (0x21 << 8) + (gr << 4);
 
-        r.memory.setWord(r.PR, op);
-        r.memory.setWord(r.PR + 1, addr);
-        r.memory.setWord(addr, v2);
+        r.memory[r.PR] = op;
+        r.memory[r.PR + 1] = addr;
+        r.memory[addr] = v2;
 
         subtractArithmeticMemory(r);
         expect(r.getGR(gr), equals(0));
@@ -221,7 +221,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         subtractArithmetic(r);
         expect(r.getGR(r1), equals(result));
@@ -248,7 +248,7 @@ void main() {
           r.PR = pr;
           r.setGR(r1, v1);
           r.setGR(r2, v2);
-          r.memory.setWord(pr, op);
+          r.memory[pr] = op;
 
           subtractArithmetic(r);
           expect(r.getGR(r1), equals(result));
@@ -272,7 +272,7 @@ void main() {
           r.PR = pr;
           r.setGR(r1, v1);
           r.setGR(r2, v2);
-          r.memory.setWord(pr, op);
+          r.memory[pr] = op;
 
           subtractArithmetic(r);
           expect(r.getGR(r1), equals(result));
@@ -296,7 +296,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(r.PR, op);
+        r.memory[r.PR] = op;
 
         subtractArithmetic(r);
         expect(r.getGR(r1), equals(result));
@@ -313,7 +313,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(r.PR, op);
+        r.memory[r.PR] = op;
 
         subtractArithmetic(r);
         expect(r.getGR(r1), equals(result));
@@ -334,7 +334,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(r.PR, op);
+        r.memory[r.PR] = op;
 
         subtractArithmetic(r);
         expect(r.getGR(r1), equals(0));
@@ -350,7 +350,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(r.PR, op);
+        r.memory[r.PR] = op;
 
         subtractArithmetic(r);
         expect(r.getGR(r1), equals(0));
@@ -366,7 +366,7 @@ void main() {
 
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(r.PR, op);
+        r.memory[r.PR] = op;
 
         subtractArithmetic(r);
         expect(r.getGR(r1), equals(0));
@@ -395,9 +395,9 @@ void main() {
 
         r.PR = pr;
         r.setGR(gr, v1);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, addr);
-        r.memory.setWord(addr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = addr;
+        r.memory[addr] = v2;
 
         subtractLogicalMemory(r);
         expect(r.getGR(gr), equals(result));
@@ -426,9 +426,9 @@ void main() {
         r.PR = pr;
         r.setGR(gr, v1);
         r.setGR(baseGR, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, addr);
-        r.memory.setWord(base + addr, v2);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = addr;
+        r.memory[base + addr] = v2;
 
         subtractLogicalMemory(r);
         expect(r.getGR(gr), equals(result));
@@ -452,9 +452,9 @@ void main() {
           final result = (v1 - v2) & maskBits;
 
           r.setGR(gr, v1);
-          r.memory.setWord(r.PR, op);
-          r.memory.setWord(r.PR + 1, addr);
-          r.memory.setWord(addr, v2);
+          r.memory[r.PR] = op;
+          r.memory[r.PR + 1] = addr;
+          r.memory[addr] = v2;
 
           subtractLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
@@ -476,9 +476,9 @@ void main() {
           final result = (v1 - v2) & maskBits;
 
           r.setGR(gr, v1);
-          r.memory.setWord(r.PR, op);
-          r.memory.setWord(r.PR + 1, addr);
-          r.memory.setWord(addr, v2);
+          r.memory[r.PR] = op;
+          r.memory[r.PR + 1] = addr;
+          r.memory[addr] = v2;
 
           subtractLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
@@ -500,9 +500,9 @@ void main() {
           final result = (v1 - v2) & maskBits;
 
           r.setGR(gr, v1);
-          r.memory.setWord(r.PR, op);
-          r.memory.setWord(r.PR + 1, addr);
-          r.memory.setWord(addr, v2);
+          r.memory[r.PR] = op;
+          r.memory[r.PR + 1] = addr;
+          r.memory[addr] = v2;
 
           subtractLogicalMemory(r);
           expect(r.getGR(gr), equals(result));
@@ -533,7 +533,7 @@ void main() {
         r.PR = pr;
         r.setGR(r1, v1);
         r.setGR(r2, v2);
-        r.memory.setWord(pr, op);
+        r.memory[pr] = op;
 
         subtractLogical(r);
         expect(r.getGR(r1), equals(result));
@@ -560,7 +560,7 @@ void main() {
           r.PR = pr;
           r.setGR(r1, v1);
           r.setGR(r2, v2);
-          r.memory.setWord(pr, op);
+          r.memory[pr] = op;
 
           subtractLogical(r);
           expect(r.getGR(r1), equals(result));
@@ -586,7 +586,7 @@ void main() {
           r.PR = pr;
           r.setGR(r1, v1);
           r.setGR(r2, v2);
-          r.memory.setWord(pr, op);
+          r.memory[pr] = op;
 
           subtractLogical(r);
           expect(r.getGR(r1), equals(result));
@@ -611,7 +611,7 @@ void main() {
           r.PR = pr;
           r.setGR(r1, v1);
           r.setGR(r2, v2);
-          r.memory.setWord(pr, op);
+          r.memory[pr] = op;
 
           subtractLogical(r);
           expect(r.getGR(r1), equals(0));

@@ -23,12 +23,12 @@ void main() {
 
         r.SP = sp;
         r.PR = pr;
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         callSubroutine(r);
         expect(r.SP, equals((sp - 1) & maskBits));
-        expect(r.memory.getWord(r.SP), equals((pr + 2) & maskBits));
+        expect(r.memory[r.SP], equals((pr + 2) & maskBits));
         expect(r.PR, equals(adr));
       }
     });
@@ -47,12 +47,12 @@ void main() {
         r.SP = sp;
         r.PR = pr;
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         callSubroutine(r);
         expect(r.SP, equals((sp - 1) & maskBits));
-        expect(r.memory.getWord(r.SP), equals((pr + 2) & maskBits));
+        expect(r.memory[r.SP], equals((pr + 2) & maskBits));
         expect(r.PR, equals((adr + base) & maskBits));
       }
     });
@@ -68,8 +68,8 @@ void main() {
       final op = 0x81 << 8;
 
       r.SP = sp;
-      r.memory.setWord(r.PR, op);
-      r.memory.setWord(sp, pr);
+      r.memory[r.PR] = op;
+      r.memory[sp] = pr;
 
       returnFromSubroutine(r);
       expect(r.SP, equals((sp + 1) & maskBits));
@@ -79,8 +79,8 @@ void main() {
     final pr = rand.nextInt(1 << 16);
 
     r.SP = 0xffff;
-    r.memory.setWord(r.SP, pr);
-    r.memory.setWord(r.PR, 0x81 << 8);
+    r.memory[r.SP] = pr;
+    r.memory[r.PR] = 0x81 << 8;
 
     returnFromSubroutine(r);
     expect(r.SP, equals(0));

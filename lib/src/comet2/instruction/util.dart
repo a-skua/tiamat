@@ -2,16 +2,14 @@ import '../../resource/resource.dart';
 
 /// Calculate an effective address.
 int getEffectiveAddress(final Resource r, final int x) {
-  return x == 0
-      ? r.memory.getWord(r.PR)
-      : (r.memory.getWord(r.PR) + r.getGR(x)) & 0xffff;
+  return x == 0 ? r.memory[r.PR] : (r.memory[r.PR] + r.getGR(x)) & 0xffff;
 }
 
 /// Calculate a flag.
 ///
 /// ```
 /// void foo(Resource r) {
-///   final v = r.memory.getWord(r.PR);
+///   final v = r.memory[r.PR];
 ///   r.PR += 1;
 ///
 ///   final f = Flag(v);

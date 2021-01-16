@@ -21,8 +21,8 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         shiftLeftArithmetic(r);
         final result = (v << adr) & 0xffff;
@@ -52,8 +52,8 @@ void main() {
 
         r.setGR(gr, v);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         shiftLeftArithmetic(r);
         final result = (v << (base + adr)) & 0xffff;
@@ -83,8 +83,8 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         shiftRightArithmetic(r);
         final result = (v >> adr) & 0xffff;
@@ -108,8 +108,8 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         expect(r.getGR(gr), equals(v & 0xffff));
         shiftRightArithmetic(r);
@@ -140,8 +140,8 @@ void main() {
 
         r.setGR(gr, v);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         shiftRightArithmetic(r);
         final result = (v >> (base + adr)) & 0xffff;
@@ -168,8 +168,8 @@ void main() {
 
         r.setGR(gr, v);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         expect(r.getGR(gr), equals(v & 0xffff));
         shiftRightArithmetic(r);
@@ -199,8 +199,8 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         shiftLeftLogical(r);
         final result = (v << adr) & 0xffff;
@@ -230,8 +230,8 @@ void main() {
 
         r.setGR(gr, v);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         shiftLeftLogical(r);
         final result = (v << (base + adr)) & 0xffff;
@@ -260,8 +260,8 @@ void main() {
         final pr = r.PR;
 
         r.setGR(gr, v);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         shiftRightLogical(r);
         final result = (v >> adr) & 0xffff;
@@ -291,8 +291,8 @@ void main() {
 
         r.setGR(gr, v);
         r.setGR(x, base);
-        r.memory.setWord(pr, op);
-        r.memory.setWord(pr + 1, adr);
+        r.memory[pr] = op;
+        r.memory[pr + 1] = adr;
 
         shiftRightLogical(r);
         final result = (v >> (base + adr)) & 0xffff;

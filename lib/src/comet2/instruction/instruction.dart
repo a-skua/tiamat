@@ -9,7 +9,7 @@ typedef Instruction = void Function(Resource r);
 
 /// LAD r, adr, x
 void loadAddress(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -21,7 +21,7 @@ void loadAddress(final Resource r) {
 
 /// ADDA r,adr,x
 void addArithmeticMemory(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -31,7 +31,7 @@ void addArithmeticMemory(final Resource r) {
   const maskBits = (1 << wordSize) - 1;
 
   final v1 = r.getGR(gr);
-  final v2 = r.memory.getWord(adr);
+  final v2 = r.memory[adr];
   final result = (v1 + v2) & maskBits;
   final flag = _addaFlag(v1, v2);
 
@@ -41,7 +41,7 @@ void addArithmeticMemory(final Resource r) {
 
 /// ADDA r1,r2
 void addArithmetic(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final r2 = cache & 0xf;
@@ -61,7 +61,7 @@ void addArithmetic(final Resource r) {
 
 /// ADDL r,addr,x
 void addLogicalMemory(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   const maskBits = (1 << wordSize) - 1;
@@ -71,7 +71,7 @@ void addLogicalMemory(final Resource r) {
   final adr = _getADR(r, x);
 
   final v1 = r.getGR(gr);
-  final v2 = r.memory.getWord(adr);
+  final v2 = r.memory[adr];
   final result = (v1 + v2) & maskBits;
   final flag = _addlFlag(v1, v2);
 
@@ -81,7 +81,7 @@ void addLogicalMemory(final Resource r) {
 
 /// ALLD r1,r2
 void addLogical(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   const maskBits = (1 << wordSize) - 1;
@@ -99,7 +99,7 @@ void addLogical(final Resource r) {
 
 /// SUBA r,adr,x
 void subtractArithmeticMemory(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -109,7 +109,7 @@ void subtractArithmeticMemory(final Resource r) {
   const maskBits = (1 << wordSize) - 1;
 
   final v1 = r.getGR(gr);
-  final v2 = _complement2(r.memory.getWord(adr));
+  final v2 = _complement2(r.memory[adr]);
   final result = (v1 + v2) & maskBits;
   final flag = _addaFlag(v1, v2);
   r.setGR(gr, result);
@@ -118,7 +118,7 @@ void subtractArithmeticMemory(final Resource r) {
 
 /// SUBA r1,r2
 void subtractArithmetic(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final r2 = cache & 0xf;
@@ -135,7 +135,7 @@ void subtractArithmetic(final Resource r) {
 
 /// SUBL r,adr,x
 void subtractLogicalMemory(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -145,7 +145,7 @@ void subtractLogicalMemory(final Resource r) {
   const maskBits = (1 << wordSize) - 1;
 
   final v1 = r.getGR(gr);
-  final v2 = r.memory.getWord(adr);
+  final v2 = r.memory[adr];
   final result = (v1 - v2) & maskBits;
   final flag = _sublFlag(v1, v2);
 
@@ -155,7 +155,7 @@ void subtractLogicalMemory(final Resource r) {
 
 /// SUBL r1,r2
 void subtractLogical(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final r2 = cache & 0xf;
@@ -173,7 +173,7 @@ void subtractLogical(final Resource r) {
 
 /// AND r,adr,x
 void andMemory(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -181,7 +181,7 @@ void andMemory(final Resource r) {
   final adr = _getADR(r, x);
 
   final v1 = r.getGR(gr);
-  final v2 = r.memory.getWord(adr);
+  final v2 = r.memory[adr];
 
   final result = v1 & v2;
   r.setGR(gr, result);
@@ -190,7 +190,7 @@ void andMemory(final Resource r) {
 
 /// AND r1,r2
 void and(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final r2 = cache & 0xf;
@@ -206,7 +206,7 @@ void and(final Resource r) {
 
 /// OR r,adr,x
 void orMemory(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -214,7 +214,7 @@ void orMemory(final Resource r) {
   final adr = _getADR(r, x);
 
   final v1 = r.getGR(gr);
-  final v2 = r.memory.getWord(adr);
+  final v2 = r.memory[adr];
 
   final result = v1 | v2;
   r.setGR(gr, result);
@@ -223,7 +223,7 @@ void orMemory(final Resource r) {
 
 /// OR r1,r2
 void or(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final r2 = cache & 0xf;
@@ -239,7 +239,7 @@ void or(final Resource r) {
 
 /// XOR r,adr,x
 void exclusiveOrMemory(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -247,7 +247,7 @@ void exclusiveOrMemory(final Resource r) {
   final adr = _getADR(r, x);
 
   final v1 = r.getGR(gr);
-  final v2 = r.memory.getWord(adr);
+  final v2 = r.memory[adr];
 
   final result = v1 ^ v2;
   r.setGR(gr, result);
@@ -256,7 +256,7 @@ void exclusiveOrMemory(final Resource r) {
 
 /// XOR r1,r2
 void exclusiveOr(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final r2 = cache & 0xf;
@@ -272,7 +272,7 @@ void exclusiveOr(final Resource r) {
 
 /// CPA r,adr,x
 void compareArithmeticMemory(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -280,14 +280,14 @@ void compareArithmeticMemory(final Resource r) {
   final adr = _getADR(r, x);
 
   final v1 = r.getGR(gr);
-  final v2 = r.memory.getWord(adr);
+  final v2 = r.memory[adr];
 
   r.FR = _cpaFlag(v1, v2);
 }
 
 /// CPA r1,r2
 void compareArithmetic(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final r2 = cache & 0xf;
@@ -301,7 +301,7 @@ void compareArithmetic(final Resource r) {
 
 /// CPL r,adr,x
 void compareLogicalMemory(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -309,14 +309,14 @@ void compareLogicalMemory(final Resource r) {
   final adr = _getADR(r, x);
 
   final v1 = r.getGR(gr);
-  final v2 = r.memory.getWord(adr);
+  final v2 = r.memory[adr];
 
   r.FR = _cplFlag(v1, v2);
 }
 
 /// CPL r1,r2
 void compareLogical(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final r2 = cache & 0xf;
@@ -330,7 +330,7 @@ void compareLogical(final Resource r) {
 
 /// SLA r,adr,x
 void shiftLeftArithmetic(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -346,7 +346,7 @@ void shiftLeftArithmetic(final Resource r) {
 
 /// SRA r,adr,x
 void shiftRightArithmetic(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -368,7 +368,7 @@ void shiftRightArithmetic(final Resource r) {
 
 /// SLL r,adr,x
 void shiftLeftLogical(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -384,7 +384,7 @@ void shiftLeftLogical(final Resource r) {
 
 /// SRL r,adr,x
 void shiftRightLogical(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final x = cache & 0xf;
@@ -400,7 +400,7 @@ void shiftRightLogical(final Resource r) {
 
 /// JUMP adr,x
 void unconditionalJump(final Resource r) {
-  final x = r.memory.getWord(r.PR) & 0xf;
+  final x = r.memory[r.PR] & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
@@ -410,7 +410,7 @@ void unconditionalJump(final Resource r) {
 
 /// JPL adr,x
 void jumpOnPlus(final Resource r) {
-  final x = r.memory.getWord(r.PR) & 0xf;
+  final x = r.memory[r.PR] & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
@@ -422,7 +422,7 @@ void jumpOnPlus(final Resource r) {
 
 /// JMI adr,x
 void jumpOnMinus(final Resource r) {
-  final x = r.memory.getWord(r.PR) & 0xf;
+  final x = r.memory[r.PR] & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
@@ -434,7 +434,7 @@ void jumpOnMinus(final Resource r) {
 
 /// JNZ adr,x
 void jumpOnNonZero(final Resource r) {
-  final x = r.memory.getWord(r.PR) & 0xf;
+  final x = r.memory[r.PR] & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
@@ -446,7 +446,7 @@ void jumpOnNonZero(final Resource r) {
 
 /// JZE adr,x
 void jumpOnZero(final Resource r) {
-  final x = r.memory.getWord(r.PR) & 0xf;
+  final x = r.memory[r.PR] & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
@@ -458,7 +458,7 @@ void jumpOnZero(final Resource r) {
 
 /// JOV adr,x
 void jumpOnOverflow(final Resource r) {
-  final x = r.memory.getWord(r.PR) & 0xf;
+  final x = r.memory[r.PR] & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
@@ -470,22 +470,22 @@ void jumpOnOverflow(final Resource r) {
 
 /// PUSH adr,x
 void push(final Resource r) {
-  final x = r.memory.getWord(r.PR) & 0xf;
+  final x = r.memory[r.PR] & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
 
   r.SP -= 1;
-  r.memory.setWord(r.SP, adr);
+  r.memory[r.SP] = adr;
 }
 
 /// POP r
 void pop(final Resource r) {
-  final cache = r.memory.getWord(r.PR);
+  final cache = r.memory[r.PR];
   r.PR += 1;
 
   final gr = (cache >> 4) & 0xf;
-  final v = r.memory.getWord(r.SP);
+  final v = r.memory[r.SP];
   r.SP += 1;
 
   r.setGR(gr, v);
@@ -493,25 +493,25 @@ void pop(final Resource r) {
 
 /// CALL adr,x
 void callSubroutine(final Resource r) {
-  final x = r.memory.getWord(r.PR) & 0xf;
+  final x = r.memory[r.PR] & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
 
   r.SP -= 1;
-  r.memory.setWord(r.SP, r.PR);
+  r.memory[r.SP] = r.PR;
   r.PR = adr;
 }
 
 /// RET
 void returnFromSubroutine(final Resource r) {
-  r.PR = r.memory.getWord(r.SP);
+  r.PR = r.memory[r.SP];
   r.SP += 1;
 }
 
 /// SVC adr,x
 void supervisorCall(final Resource r, Supervisor s) {
-  final x = r.memory.getWord(r.PR) & 0xf;
+  final x = r.memory[r.PR] & 0xf;
   r.PR += 1;
 
   final adr = _getADR(r, x);
@@ -520,9 +520,7 @@ void supervisorCall(final Resource r, Supervisor s) {
 }
 
 int _getADR(final Resource r, final int x) {
-  final adr = x == 0
-      ? r.memory.getWord(r.PR)
-      : (r.memory.getWord(r.PR) + r.getGR(x)) & 0xffff;
+  final adr = x == 0 ? r.memory[r.PR] : (r.memory[r.PR] + r.getGR(x)) & 0xffff;
   r.PR += 1;
   return adr;
 }

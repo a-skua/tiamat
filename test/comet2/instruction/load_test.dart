@@ -42,7 +42,7 @@ void main() {
 
           r.PR = d.pr;
           r.setGR(d.r2.value, d.r2.data);
-          r.memory.setWord(d.pr, op);
+          r.memory[d.pr] = op;
 
           final gr = <int>[];
           for (var i = 0; i < 8; i++) {
@@ -95,12 +95,12 @@ void main() {
           r.PR = d.pr;
           if (d.x.value > 0) {
             r.setGR(d.x.value, d.x.data);
-            r.memory.setWord(d.x.data + d.adr.value, d.adr.data);
+            r.memory[d.x.data + d.adr.value] = d.adr.data;
           } else {
-            r.memory.setWord(d.adr.value, d.adr.data);
+            r.memory[d.adr.value] = d.adr.data;
           }
-          r.memory.setWord(d.pr, op);
-          r.memory.setWord(d.pr + 1, d.adr.value);
+          r.memory[d.pr] = op;
+          r.memory[d.pr + 1] = d.adr.value;
 
           final gr = <int>[];
           for (var i = 0; i < 8; i++) {

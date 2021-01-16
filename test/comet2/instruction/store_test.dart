@@ -33,8 +33,8 @@ void main() {
         r.PR = d.pr;
         r.setGR(d.r.value, d.r.data);
         r.setGR(d.x.value, d.x.data);
-        r.memory.setWord(d.pr, op);
-        r.memory.setWord(d.pr + 1, d.adr.value);
+        r.memory[d.pr] = op;
+        r.memory[d.pr + 1] = d.adr.value;
 
         final flag = Flag(
           overflow: r.OF,
@@ -55,12 +55,12 @@ void main() {
         expect(r.ZF, equals(flag.zero));
         if (d.x.value > 0) {
           expect(
-            r.memory.getWord(d.x.data + d.adr.value),
+            r.memory[d.x.data + d.adr.value],
             equals(d.r.data),
           );
         } else {
           expect(
-            r.memory.getWord(d.adr.value),
+            r.memory[d.adr.value],
             equals(d.r.data),
           );
         }
