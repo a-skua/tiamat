@@ -22,7 +22,7 @@ void main() {
       for (var i = 0; i < 64; i++)
         TestData(
           name: 'GR$i',
-          value: rand.nextInt(0x10000),
+          value: rand.nextInt(0x100000),
           bits: rand.nextInt(16),
         ),
     ];
@@ -37,8 +37,12 @@ void main() {
         );
 
         expect(r.name, equals(data.name));
-        r.value = data.value;
         expect(r.value, equals(data.value.toUnsigned(data.bits)));
+        {
+          final value = data.value + rand.nextInt(0x8000);
+          r.value = value;
+          expect(r.value, equals(value.toUnsigned(data.bits)));
+        }
       });
     }
   });

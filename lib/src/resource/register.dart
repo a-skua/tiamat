@@ -4,14 +4,13 @@ class Register {
   int _value = 0;
   int _maskBits = 0;
 
-  /// New instance.
   Register(
     this.name, {
     int value = 0,
     int bits = 16,
   }) {
-    this._value = 0;
     this._maskBits = (-1).toUnsigned(bits);
+    this.value = value;
   }
 
   /// Get [value].
