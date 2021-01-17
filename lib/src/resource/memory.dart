@@ -11,13 +11,14 @@ class Memory {
   /// New COMET2's memory instance.
   ///
   /// [length] specifies the length of memory,
-  /// and [maskBits] specifies the data size.
+  /// and [wordLength] specifies the length of word.
+  /// Memory size: [length] x [wordLength].
   Memory({
     int length = 0x10000,
-    int maskBits = 0xffff,
+    int wordLength = 16,
   }) {
     this._values = List.filled(length, 0);
-    this._maskBits = maskBits;
+    this._maskBits = (-1).toUnsigned(wordLength);
   }
 
   /// Memory length.
