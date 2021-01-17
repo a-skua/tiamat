@@ -12,6 +12,7 @@ void load(final Resource r) {
 
   final op = Operand(r.memory[pr.value]);
   pr.value += 1;
+
   final adr = getEffectiveAddress(r, op.x);
   pr.value += 1;
 

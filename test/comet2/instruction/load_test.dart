@@ -36,8 +36,8 @@ void main() {
       const operand = 0x1400;
       final r = Resource();
       for (var i = 0; i < testdata.length; i++) {
-        final data = testdata[i];
         test('$i', () {
+          final data = testdata[i];
           final op = operand | data.r1.value << 4 | data.r2.value;
 
           final pr = r.programRegister;
@@ -92,8 +92,8 @@ void main() {
       const operand = 0x10000;
       final r = Resource();
       for (var i = 0; i < testdata.length; i++) {
-        final data = testdata[i];
         test('$i', () {
+          final data = testdata[i];
           final op = operand | data.r.value << 4 | data.x.value;
 
           final pr = r.programRegister;

@@ -6,13 +6,14 @@ import 'util.dart';
 /// That's 2 words instruction, store 'r' to effective address.
 /// Syntax: ST r,adr,x
 void store(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
+  final pr = r.programRegister;
+  final gr = r.generalRegisters;
 
-  final x = cache & 0xf;
-  final gr = (cache >> 4) & 0xf;
-  final adr = getEffectiveAddress(r, x);
-  r.PR += 1;
+  final op = Operand(r.memory[pr.value]);
+  pr.value += 1;
 
-  r.memory[adr] = r.getGR(gr);
+  final adr = getEffectiveAddress(r, op.x);
+  pr.value += 1;
+
+  r.memory[adr] = gr[op.r].value;
 }

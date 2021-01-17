@@ -26,42 +26,46 @@ void main() {
     const operand = 0x1100;
     final r = Resource();
     for (var i = 0; i < testdata.length; i++) {
-      final d = testdata[i];
       test('$i', () {
-        final op = operand | d.r.value << 4 | d.x.value;
+        final data = testdata[i];
+        final op = operand | data.r.value << 4 | data.x.value;
 
-        r.PR = d.pr;
-        r.setGR(d.r.value, d.r.data);
-        r.setGR(d.x.value, d.x.data);
-        r.memory[d.pr] = op;
-        r.memory[d.pr + 1] = d.adr.value;
+        final pr = r.programRegister;
+        final gr = r.generalRegisters;
+        final fr = r.flagRegister;
+
+        pr.value = data.pr;
+        gr[data.r.value].value = data.r.data;
+        gr[data.x.value].value = data.x.data;
+        r.memory[data.pr] = op;
+        r.memory[data.pr + 1] = data.adr.value;
 
         final flag = Flag(
-          overflow: r.OF,
-          sign: r.SF,
-          zero: r.ZF,
+          overflow: fr.overflow,
+          sign: fr.sign,
+          zero: fr.zero,
         );
-        final gr = <int>[];
+        final expectGR = <int>[];
         for (var i = 0; i < 8; i++) {
-          gr.add(r.getGR(i));
+          expectGR.add(gr[i].value);
         }
         store(r);
-        expect(r.PR, equals((d.pr + 2) & 0xffff));
+        expect(pr.value, equals((data.pr + 2) & 0xffff));
         for (var i = 0; i < 8; i++) {
-          expect(r.getGR(i), equals(gr[i]));
+          expect(gr[i].value, equals(expectGR[i]));
         }
-        expect(r.OF, equals(flag.overflow));
-        expect(r.SF, equals(flag.sign));
-        expect(r.ZF, equals(flag.zero));
-        if (d.x.value > 0) {
+        expect(fr.overflow, equals(flag.overflow));
+        expect(fr.sign, equals(flag.sign));
+        expect(fr.zero, equals(flag.zero));
+        if (data.x.value > 0) {
           expect(
-            r.memory[d.x.data + d.adr.value],
-            equals(d.r.data),
+            r.memory[data.x.data + data.adr.value],
+            equals(data.r.data),
           );
         } else {
           expect(
-            r.memory[d.adr.value],
-            equals(d.r.data),
+            r.memory[data.adr.value],
+            equals(data.r.data),
           );
         }
       });
