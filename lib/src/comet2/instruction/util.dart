@@ -33,25 +33,49 @@ class Operand {
   int get r2 => this.x;
 }
 
-/// Calculate a flag.
+/// Calculate a flag when arithmetic.
 ///
 /// ```
-/// void foo(Resource r) {
-///   final v = r.memory[r.programRegister.value];
-///   r.programRegister.value += 1;
-///
-///   final f = Flagger(v);
-///   r.flagRegister.value = f.sign | f.zero;
+/// (int v) {
+///   final f = ArithmeticFlagger(v);
+///   return f.overflow | f.sign | f.zero;
 /// }
 /// ```
-class Flagger {
+class ArithmeticFlagger {
   /// base value;
   final int _value;
 
-  const Flagger(this._value);
+  const ArithmeticFlagger(this._value);
+
+  /// Get overflow flag.
+  int get overflow =>
+      this._value < -0x8000 || this._value > 0x7fff ? Flag.overflow : 0;
 
   /// Get sign flag.
   int get sign => this._value & 0x8000 > 0 ? Flag.sign : 0;
+
+  /// Get zero flag.
+  int get zero => this._value == 0 ? Flag.zero : 0;
+}
+
+/// Calculate a flag when logical.
+///
+/// ```
+/// (int v) {
+///   final f = LogicalFlagger(v);
+///   return f.overflow | f.sign | f.zero;
+/// }
+/// ```
+class LogicalFlagger {
+  final int _value;
+  const LogicalFlagger(this._value);
+
+  /// Get overflow flag.
+  int get overflow =>
+      this._value < 0 || this._value > 0xffff ? Flag.overflow : 0;
+
+  /// Geet sign flag.
+  int get sign => 0;
 
   /// Get zero flag.
   int get zero => this._value == 0 ? Flag.zero : 0;

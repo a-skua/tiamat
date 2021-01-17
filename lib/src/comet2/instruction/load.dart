@@ -17,7 +17,7 @@ void load(final Resource r) {
   pr.value += 1;
 
   final data = r.memory[adr];
-  final f = Flagger(data);
+  final f = ArithmeticFlagger(data);
 
   gr[op.r].value = data;
   fr.value = f.sign | f.zero;
@@ -36,7 +36,7 @@ void loadGR(final Resource r) {
   pr.value += 1;
 
   final data = gr[op.r2].value;
-  final f = Flagger(data);
+  final f = ArithmeticFlagger(data);
 
   gr[op.r1].value = data;
   fr.value = f.sign | f.zero;

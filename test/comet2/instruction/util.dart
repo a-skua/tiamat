@@ -45,3 +45,5 @@ int getX(final int r) {
   }
   return x == (length - 1) ? 0 : x + 1;
 }
+
+int getR2(final int r1) => getX(r1);
