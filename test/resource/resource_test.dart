@@ -1,12 +1,15 @@
 import 'dart:math';
 
+import 'package:tiamat/src/resource/flag.dart';
 import 'package:tiamat/src/resource/resource.dart';
 import 'package:test/test.dart';
 
 void main() {
-  const randSize = 1 << 16;
   final rand = Random();
 
+  const generalRegisterSize = 8;
+  const wordSize = 0x10000;
+  const randSize = 0x10000;
   group('GRs', () {
     for (var i = 0; i < generalRegisterSize; i++) {
       test('set/get success; GR[$i]', () {
@@ -14,24 +17,6 @@ void main() {
         final val = rand.nextInt(randSize);
         expect(r.setGR(i, val), equals(true));
         expect(r.getGR(i), equals(val));
-      });
-    }
-
-    for (var i = generalRegisterSize; i < generalRegisterSize * 2; i++) {
-      test('set/get fail; GR[$i]', () {
-        final r = Resource();
-        final val = rand.nextInt(randSize);
-        expect(r.setGR(i, val), equals(false));
-        expect(r.getGR(i), equals(0));
-      });
-    }
-
-    for (var i = -1; i >= generalRegisterSize * -1; i--) {
-      test('set/get fail; GR[$i]', () {
-        final r = Resource();
-        final val = rand.nextInt(randSize);
-        expect(r.setGR(i, val), equals(false));
-        expect(r.getGR(i), equals(0));
       });
     }
   });
@@ -115,17 +100,17 @@ void main() {
         bool sf = false;
         bool zf = false;
 
-        if (i & overflowFlag > 0) {
+        if (i & Flag.overflow > 0) {
           of = true;
-          val |= overflowFlag;
+          val |= Flag.overflow;
         }
-        if (i & signFlag > 0) {
+        if (i & Flag.sign > 0) {
           sf = true;
-          val |= signFlag;
+          val |= Flag.sign;
         }
-        if (i & zeroFlag > 0) {
+        if (i & Flag.zero > 0) {
           zf = true;
-          val |= zeroFlag;
+          val |= Flag.zero;
         }
         r.OF = of;
         r.SF = sf;
