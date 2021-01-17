@@ -24,13 +24,35 @@ class Memory {
   int get length => this._values.length;
 
   /// Set [values] on memory.
-  void setAll(int address, List<int> values) =>
+  void setAll(final int address, final List<int> values) =>
       this._values.setAll(address, values);
 
   /// Get value from [address].
-  int operator [](int address) => this._values[address % this._values.length];
+  int operator [](final int address) =>
+      this._values[address % this._values.length];
 
   /// Set [value] to [address].
   void operator []=(final int address, final int value) =>
       this._values[address % this._values.length] = value & this._maskBits;
+
+  /// deprecated: To use operator.
+  ///
+  /// ```
+  /// final m = Memory();
+  /// print(m[adress]);
+  /// ```
+  @deprecated
+  int getWord(final int address) => this[address];
+
+  /// deprecated: To use operator.
+  ///
+  /// ```
+  /// final m = Memory();
+  /// m[adress] = value;
+  /// ```
+  @deprecated
+  bool setWord(final int address, final int value) {
+    this[address] = value;
+    return true;
+  }
 }

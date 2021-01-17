@@ -39,9 +39,7 @@ class ControlPanel {
             onPreExecute();
 
             final code = cc.compile(getCode());
-            for (var i = 0; i < code.length; i++) {
-              r.memory.setWord(r.PR + i, code[i]);
-            }
+            r.memory.setAll(r.PR, code);
             c.exec(r);
             onUpdate();
           })
