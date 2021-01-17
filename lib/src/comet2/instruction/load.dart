@@ -6,19 +6,20 @@ import 'util.dart';
 /// That's 2 words instruction, load from effective address to `r`.
 /// Syntax: `LD r,adr,x`
 void load(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
+  final pr = r.programRegister;
+  final gr = r.generalRegisters;
+  final fr = r.flagRegister;
 
-  final x = cache & 0xf;
-  final gr = (cache >> 4) & 0xf;
-  final adr = getEffectiveAddress(r, x);
-  r.PR += 1;
+  final op = Operand(r.memory[pr.value]);
+  pr.value += 1;
+  final adr = getEffectiveAddress(r, op.x);
+  pr.value += 1;
 
   final data = r.memory[adr];
-  final flag = Flag(data);
+  final f = Flagger(data);
 
-  r.setGR(gr, data);
-  r.FR = flag.sign | flag.zero;
+  gr[op.r].value = data;
+  fr.value = f.sign | f.zero;
 }
 
 /// An instruction of CASL2, named LD.
@@ -26,14 +27,16 @@ void load(final Resource r) {
 /// That's 1 word instruction, load from `r2` to `r1`.
 /// Syntax: `LD r1,r2`
 void loadGR(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
+  final pr = r.programRegister;
+  final gr = r.generalRegisters;
+  final fr = r.flagRegister;
 
-  final r2 = cache & 0xf;
-  final r1 = (cache >> 4) & 0xf;
+  final op = Operand(r.memory[pr.value]);
+  pr.value += 1;
 
-  final data = r.getGR(r2);
-  final flag = Flag(data);
-  r.setGR(r1, data);
-  r.FR = flag.sign | flag.zero;
+  final data = gr[op.r2].value;
+  final f = Flagger(data);
+
+  gr[op.r1].value = data;
+  fr.value = f.sign | f.zero;
 }

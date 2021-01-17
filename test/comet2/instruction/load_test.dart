@@ -36,30 +36,34 @@ void main() {
       const operand = 0x1400;
       final r = Resource();
       for (var i = 0; i < testdata.length; i++) {
-        final d = testdata[i];
+        final data = testdata[i];
         test('$i', () {
-          final op = operand | d.r1.value << 4 | d.r2.value;
+          final op = operand | data.r1.value << 4 | data.r2.value;
 
-          r.PR = d.pr;
-          r.setGR(d.r2.value, d.r2.data);
-          r.memory[d.pr] = op;
+          final pr = r.programRegister;
+          final gr = r.generalRegisters;
+          final fr = r.flagRegister;
 
-          final gr = <int>[];
+          pr.value = data.pr;
+          gr[data.r2.value].value = data.r2.data;
+          r.memory[data.pr] = op;
+
+          final expectGR = <int>[];
           for (var i = 0; i < 8; i++) {
-            if (i == d.r1.value) {
-              gr.add(d.r2.data);
+            if (i == data.r1.value) {
+              expectGR.add(data.r2.data);
             } else {
-              gr.add(r.getGR(i));
+              expectGR.add(gr[i].value);
             }
           }
           loadGR(r);
-          expect(r.PR, equals((d.pr + 1) & 0xffff));
+          expect(pr.value, equals((data.pr + 1) & 0xffff));
           for (var i = 0; i < 8; i++) {
-            expect(r.getGR(i), equals(gr[i]));
+            expect(gr[i].value, equals(expectGR[i]));
           }
-          expect(r.OF, equals(false));
-          expect(r.ZF, equals(r.getGR(d.r1.value) == 0));
-          expect(r.SF, equals((r.getGR(d.r1.value) & 0x8000) > 0));
+          expect(fr.overflow, equals(false));
+          expect(fr.sign, equals((gr[data.r1.value].value & 0x8000) > 0));
+          expect(fr.zero, equals(gr[data.r1.value].value == 0));
         });
       }
     });
@@ -88,36 +92,40 @@ void main() {
       const operand = 0x10000;
       final r = Resource();
       for (var i = 0; i < testdata.length; i++) {
-        final d = testdata[i];
+        final data = testdata[i];
         test('$i', () {
-          final op = operand | d.r.value << 4 | d.x.value;
+          final op = operand | data.r.value << 4 | data.x.value;
 
-          r.PR = d.pr;
-          if (d.x.value > 0) {
-            r.setGR(d.x.value, d.x.data);
-            r.memory[d.x.data + d.adr.value] = d.adr.data;
+          final pr = r.programRegister;
+          final gr = r.generalRegisters;
+          final fr = r.flagRegister;
+
+          pr.value = data.pr;
+          if (data.x.value > 0) {
+            gr[data.x.value].value = data.x.data;
+            r.memory[data.x.data + data.adr.value] = data.adr.data;
           } else {
-            r.memory[d.adr.value] = d.adr.data;
+            r.memory[data.adr.value] = data.adr.data;
           }
-          r.memory[d.pr] = op;
-          r.memory[d.pr + 1] = d.adr.value;
+          r.memory[data.pr] = op;
+          r.memory[data.pr + 1] = data.adr.value;
 
-          final gr = <int>[];
+          final expectGR = <int>[];
           for (var i = 0; i < 8; i++) {
-            if (i == d.r.value) {
-              gr.add(d.adr.data);
+            if (i == data.r.value) {
+              expectGR.add(data.adr.data);
             } else {
-              gr.add(r.getGR(i));
+              expectGR.add(gr[i].value);
             }
           }
           load(r);
-          expect(r.PR, equals((d.pr + 2) & 0xffff));
+          expect(pr.value, equals((data.pr + 2) & 0xffff));
           for (var i = 0; i < 8; i++) {
-            expect(r.getGR(i), equals(gr[i]));
+            expect(gr[i].value, equals(expectGR[i]));
           }
-          expect(r.OF, equals(false));
-          expect(r.ZF, equals(r.getGR(d.r.value) == 0));
-          expect(r.SF, equals((r.getGR(d.r.value) & 0x8000) > 0));
+          expect(fr.overflow, equals(false));
+          expect(fr.sign, equals((gr[data.r.value].value & 0x8000) > 0));
+          expect(fr.zero, equals(gr[data.r.value].value == 0));
         });
       }
     });
