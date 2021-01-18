@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:tiamat/src/comet2/instruction/add_arithmetic.dart';
+import 'package:tiamat/src/comet2/instruction/subtract_arithmetic.dart';
 import 'package:tiamat/src/resource/resource.dart';
 import 'package:test/test.dart';
 
@@ -9,7 +9,7 @@ import 'util.dart';
 void main() {
   final rand = Random();
 
-  group('add arithmetic', () {
+  group('subtract arithmetic', () {
     group('r1,r2', () {
       final testdata = [
         ...List.generate(8, (_) {
@@ -30,7 +30,7 @@ void main() {
         }),
       ];
 
-      const operand = 0x2400;
+      const operand = 0x2500;
       final r = Resource();
       for (var i = 0; i < testdata.length; i++) {
         test('$i', () {
@@ -49,17 +49,17 @@ void main() {
           final expectGR = <int>[];
           for (var i = 0; i < 8; i++) {
             if (i == data.r1.value) {
-              expectGR.add((data.r1.data + data.r2.data) & 0xffff);
+              expectGR.add((data.r1.data - data.r2.data) & 0xffff);
             } else {
               expectGR.add(gr[i].value);
             }
           }
-          addArithmeticGR(r);
+          subtractArithmeticGR(r);
           expect(pr.value, equals((data.pr + 1) & 0xffff));
           for (var i = 0; i < 8; i++) {
             expect(gr[i].value, equals(expectGR[i]));
           }
-          final result = data.r1.data + data.r2.data;
+          final result = data.r1.data - data.r2.data;
           expect(fr.overflow, equals(result < -0x8000 || result > 0x7fff));
           expect(fr.sign, equals((result & 0x8000) > 0));
           expect(fr.zero, equals(result == 0));
@@ -90,7 +90,7 @@ void main() {
         }),
       ];
 
-      const operand = 0x2000;
+      const operand = 0x2100;
       final r = Resource();
       for (var i = 0; i < testdata.length; i++) {
         test('$i', () {
@@ -103,10 +103,10 @@ void main() {
 
           pr.value = data.pr;
           gr[data.r.value].value = data.r.data;
+          gr[data.x.value].value = data.x.data;
           r.memory[data.pr] = op;
           r.memory[data.pr + 1] = data.adr.value;
           if (data.x.value > 0) {
-            gr[data.x.value].value = data.x.data;
             r.memory[data.x.data + data.adr.value] = data.adr.data;
           } else {
             r.memory[data.adr.value] = data.adr.data;
@@ -115,17 +115,17 @@ void main() {
           final expectGR = <int>[];
           for (var i = 0; i < 8; i++) {
             if (i == data.r.value) {
-              expectGR.add((data.r.data + data.adr.data) & 0xffff);
+              expectGR.add((data.r.data - data.adr.data) & 0xffff);
             } else {
               expectGR.add(gr[i].value);
             }
           }
-          addArithmetic(r);
+          subtractArithmetic(r);
           expect(pr.value, equals((data.pr + 2) & 0xffff));
           for (var i = 0; i < 8; i++) {
             expect(gr[i].value, equals(expectGR[i]));
           }
-          final result = data.r.data + data.adr.data;
+          final result = data.r.data - data.adr.data;
           expect(fr.overflow, equals(result < -0x8000 || result > 0x7fff));
           expect(fr.sign, equals((result & 0x8000) > 0));
           expect(fr.zero, equals(result == 0));
