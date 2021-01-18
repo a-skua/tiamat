@@ -1,4 +1,5 @@
 import '../../resource/resource.dart';
+import '../../resource/flag.dart';
 import '../supervisorcall.dart';
 
 export 'no_operation.dart';
@@ -10,6 +11,11 @@ export 'add_logical.dart';
 export 'subtract_arithmetic.dart';
 
 typedef Instruction = void Function(Resource r);
+
+const wordSize = 16;
+const overflowFlag = Flag.overflow;
+const signFlag = Flag.sign;
+const zeroFlag = Flag.zero;
 
 /// SUBL r,adr,x
 void subtractLogicalMemory(final Resource r) {

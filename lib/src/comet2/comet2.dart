@@ -13,13 +13,13 @@ class Comet2 {
     this._map[0x12] = loadAddress;
     this._map[0x14] = loadGR;
 
-    this._map[0x20] = addArithmeticMemory;
-    this._map[0x21] = subtractArithmeticMemory;
-    this._map[0x22] = addLogicalMemory;
+    this._map[0x20] = addArithmetic;
+    this._map[0x21] = subtractArithmetic;
+    this._map[0x22] = addLogical;
     this._map[0x23] = subtractLogicalMemory;
-    this._map[0x24] = addArithmetic;
-    this._map[0x25] = subtractArithmetic;
-    this._map[0x26] = addLogical;
+    this._map[0x24] = addArithmeticGR;
+    this._map[0x25] = subtractArithmeticGR;
+    this._map[0x26] = addLogicalGR;
     this._map[0x27] = subtractLogical;
 
     this._map[0x30] = andMemory;
