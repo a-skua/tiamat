@@ -6,47 +6,10 @@ export 'load.dart';
 export 'store.dart';
 export 'load_address.dart';
 export 'add_arithmetic.dart';
+export 'add_logical.dart';
 export 'subtract_arithmetic.dart';
 
 typedef Instruction = void Function(Resource r);
-
-/// ADDL r,addr,x
-void addLogicalMemory(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  const maskBits = (1 << wordSize) - 1;
-
-  final x = cache & 0xf;
-  final gr = (cache >> 4) & 0xf;
-  final adr = _getADR(r, x);
-
-  final v1 = r.getGR(gr);
-  final v2 = r.memory[adr];
-  final result = (v1 + v2) & maskBits;
-  final flag = _addlFlag(v1, v2);
-
-  r.setGR(gr, result);
-  r.FR = flag;
-}
-
-/// ALLD r1,r2
-void addLogical(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  const maskBits = (1 << wordSize) - 1;
-
-  final r2 = cache & 0xf;
-  final r1 = (cache >> 4) & 0xf;
-  final v1 = r.getGR(r1);
-  final v2 = r.getGR(r2);
-  final result = (v1 + v2) & maskBits;
-  final flag = _addlFlag(v1, v2);
-
-  r.setGR(r1, result);
-  r.FR = flag;
-}
 
 /// SUBL r,adr,x
 void subtractLogicalMemory(final Resource r) {
