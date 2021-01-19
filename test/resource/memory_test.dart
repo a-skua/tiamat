@@ -5,10 +5,10 @@ import 'package:test/test.dart';
 
 class TestData4Constructor {
   final int length;
-  final int wordLength;
+  final int bits;
   TestData4Constructor({
     this.length = 0x10000,
-    this.wordLength = 16,
+    this.bits = 16,
   });
 }
 
@@ -40,7 +40,7 @@ void main() {
         for (var i = 0; i < 8; i++)
           TestData4Constructor(
             length: rand.nextInt(0x10000),
-            wordLength: rand.nextInt(16),
+            bits: rand.nextInt(16),
           ),
       ];
 
@@ -50,15 +50,16 @@ void main() {
 
           final memory = Memory(
             length: data.length,
-            wordLength: data.wordLength,
+            bits: data.bits,
           );
           expect(memory.length, equals(data.length));
+          expect(memory.bits, equals(data.bits));
+          expect(memory.maskBits, equals((-1).toUnsigned(data.bits)));
 
           final address = rand.nextInt(data.length);
           final value = rand.nextInt(0x10000);
           memory[address] = value;
-          expect(memory[address],
-              equals(value & (-1).toUnsigned(data.wordLength)));
+          expect(memory[address], equals(value & (-1).toUnsigned(data.bits)));
         });
       }
     });

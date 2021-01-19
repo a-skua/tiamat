@@ -17,8 +17,8 @@ void subtractArithmetic(final Resource r) {
   final adr = getEffectiveAddress(r, op.x);
   pr.value += 1;
 
-  final v1 = gr[op.r].value.toSigned(16);
-  final v2 = r.memory[adr].toSigned(16);
+  final v1 = gr[op.r].signed;
+  final v2 = r.memory[adr].toSigned(r.memory.bits);
   final result = v1 - v2;
   final f = ArithmeticFlagger(result);
 
@@ -39,8 +39,8 @@ void subtractArithmeticGR(final Resource r) {
   final op = Operand(r.memory[pr.value]);
   pr.value += 1;
 
-  final v1 = gr[op.r1].value.toSigned(16);
-  final v2 = gr[op.r2].value.toSigned(16);
+  final v1 = gr[op.r1].signed;
+  final v2 = gr[op.r2].signed;
   final result = v1 - v2;
   final f = ArithmeticFlagger(result);
 

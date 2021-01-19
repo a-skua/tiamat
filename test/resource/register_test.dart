@@ -23,7 +23,7 @@ void main() {
         TestData(
           name: 'GR$i',
           value: rand.nextInt(0x100000),
-          bits: rand.nextInt(16),
+          bits: rand.nextInt(16) | 1,
         ),
     ];
 
@@ -32,16 +32,19 @@ void main() {
         final data = testdata[i];
         final r = Register(
           data.name,
-          value: data.value,
           bits: data.bits,
-        );
+        )..value = data.value;
 
         expect(r.name, equals(data.name));
+        expect(r.bits, equals(data.bits));
+        expect(r.maskBits, equals((-1).toUnsigned(data.bits)));
         expect(r.value, equals(data.value.toUnsigned(data.bits)));
+        expect(r.signed, equals(data.value.toSigned(data.bits)));
         {
           final value = data.value + rand.nextInt(0x8000);
           r.value = value;
           expect(r.value, equals(value.toUnsigned(data.bits)));
+          expect(r.signed, equals(value.toSigned(data.bits)));
         }
       });
     }

@@ -11,7 +11,7 @@ class Resource {
       List.generate(8, (i) => Register('GR$i'));
 
   /// Stack Pointer
-  final Register stackPointer = Register('SP', value: 0xffff);
+  final Register stackPointer = Register('SP')..value = 0xffff;
 
   /// Program Register
   final Register programRegister = Register('PR');

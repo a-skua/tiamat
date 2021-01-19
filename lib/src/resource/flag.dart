@@ -11,8 +11,7 @@ class Flag {
 class FlagRegister extends Register {
   FlagRegister({
     String name = 'FR',
-    int value = 0,
-  }) : super(name, value: value, bits: 3);
+  }) : super(name, bits: 3);
 
   /// Get state of overflow.
   bool get overflow => this.value & Flag.overflow > 0;

@@ -38,7 +38,7 @@ void main() {
           zero: i & Flag.zero > 0,
         );
 
-        final flag = FlagRegister(value: i);
+        final flag = FlagRegister()..value = i;
 
         expect(flag.value, equals(i));
         expect(flag.overflow, equals(data.overflow));
