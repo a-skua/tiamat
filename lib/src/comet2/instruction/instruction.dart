@@ -9,6 +9,7 @@ export 'load_address.dart';
 export 'add_arithmetic.dart';
 export 'add_logical.dart';
 export 'subtract_arithmetic.dart';
+export 'subtract_logical.dart';
 
 typedef Instruction = void Function(Resource r);
 
@@ -16,44 +17,6 @@ const wordSize = 16;
 const overflowFlag = Flag.overflow;
 const signFlag = Flag.sign;
 const zeroFlag = Flag.zero;
-
-/// SUBL r,adr,x
-void subtractLogicalMemory(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  final x = cache & 0xf;
-  final gr = (cache >> 4) & 0xf;
-  final adr = _getADR(r, x);
-
-  const maskBits = (1 << wordSize) - 1;
-
-  final v1 = r.getGR(gr);
-  final v2 = r.memory[adr];
-  final result = (v1 - v2) & maskBits;
-  final flag = _sublFlag(v1, v2);
-
-  r.setGR(gr, result);
-  r.FR = flag;
-}
-
-/// SUBL r1,r2
-void subtractLogical(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  final r2 = cache & 0xf;
-  final r1 = (cache >> 4) & 0xf;
-
-  const maskBits = (1 << wordSize) - 1;
-  final v1 = r.getGR(r1);
-  final v2 = r.getGR(r2);
-  final result = (v1 - v2) & maskBits;
-  final flag = _sublFlag(v1, v2);
-
-  r.setGR(r1, result);
-  r.FR = flag;
-}
 
 /// AND r,adr,x
 void andMemory(final Resource r) {
