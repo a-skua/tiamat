@@ -1,7 +1,7 @@
 import '../../resource/resource.dart';
 import 'util.dart';
 
-/// An instruction of CASL2, named ST.
+/// An instruction of COMET2, named ST.
 ///
 /// That's 2 words instruction, store 'r' to effective address.
 /// Syntax: ST r,adr,x

@@ -1,7 +1,7 @@
 import '../../resource/resource.dart';
 import 'util.dart';
 
-/// An instruction of CASL2, named AND.
+/// An instruction of COMET2, named AND.
 ///
 /// That's two words instruction,
 /// the meaning register and effective address.
@@ -24,7 +24,7 @@ void and(final Resource r) {
   fr.value = f.sign | f.zero;
 }
 
-/// An instruction of CASL2, named AND.
+/// An instruction of COMET2, named AND.
 ///
 /// That's one word instruction,
 /// the meaning 1st register and 2nd register.

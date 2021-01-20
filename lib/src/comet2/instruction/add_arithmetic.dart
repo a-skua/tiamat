@@ -1,7 +1,7 @@
 import '../../resource/resource.dart';
 import 'util.dart';
 
-/// An instruction of CASL2, named ADDA
+/// An instruction of COMET2, named ADDA
 ///
 /// That's 2 words instruction,
 /// add(arithmetic) from effective address to `r`.
@@ -17,16 +17,14 @@ void addArithmetic(final Resource r) {
   final adr = getEffectiveAddress(r, op.x);
   pr.value += 1;
 
-  final v1 = gr[op.r].signed;
-  final v2 = r.memory[adr].toSigned(r.memory.bits);
-  final result = v1 + v2;
+  final result = gr[op.r].signed + r.memory[adr].toSigned(r.memory.bits);
   final f = ArithmeticFlagger(result);
 
   gr[op.r].value = result;
   fr.value = f.overflow | f.sign | f.zero;
 }
 
-/// An instruction of CASL2, named ADDA
+/// An instruction of COMET2, named ADDA
 ///
 /// That's 1 word instruction,
 /// add(arithmetic) from `r2` to `r1`.
@@ -39,9 +37,7 @@ void addArithmeticGR(final Resource r) {
   final op = Operand(r.memory[pr.value]);
   pr.value += 1;
 
-  final v1 = gr[op.r1].signed;
-  final v2 = gr[op.r2].signed;
-  final result = v1 + v2;
+  final result = gr[op.r1].signed + gr[op.r2].signed;
   final f = ArithmeticFlagger(result);
 
   gr[op.r1].value = result;

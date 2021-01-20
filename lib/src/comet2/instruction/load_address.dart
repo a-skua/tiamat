@@ -1,7 +1,7 @@
 import '../../resource/resource.dart';
 import 'util.dart';
 
-/// An instruction of CASL2, named LAD.
+/// An instruction of COMET2, named LAD.
 ///
 /// That's 2 words instruction, load address.
 /// Syntax: LAD r,adr,x

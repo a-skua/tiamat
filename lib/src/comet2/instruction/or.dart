@@ -1,7 +1,7 @@
 import '../../resource/resource.dart';
 import 'util.dart';
 
-/// An instruction of CASL2, named OR.
+/// An instruction of COMET2, named OR.
 ///
 /// That's two words instruction,
 /// the meaning register or effective address.
@@ -24,7 +24,7 @@ void or(final Resource r) {
   fr.value = f.sign | f.zero;
 }
 
-/// An instruction of CASL2, named OR.
+/// An instruction of COMET2, named OR.
 ///
 /// That's one word instruction,
 /// the meaning 1st register or 2nd register.
@@ -40,6 +40,6 @@ void orGR(final Resource r) {
   final result = gr[op.r1].value | gr[op.r2].value;
   final f = ArithmeticFlagger(result);
 
-  gr[op.r].value = result;
+  gr[op.r1].value = result;
   fr.value = f.sign | f.zero;
 }
