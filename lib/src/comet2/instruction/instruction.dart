@@ -18,39 +18,6 @@ const overflowFlag = Flag.overflow;
 const signFlag = Flag.sign;
 const zeroFlag = Flag.zero;
 
-/// AND r,adr,x
-void andMemory(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  final x = cache & 0xf;
-  final gr = (cache >> 4) & 0xf;
-  final adr = _getADR(r, x);
-
-  final v1 = r.getGR(gr);
-  final v2 = r.memory[adr];
-
-  final result = v1 & v2;
-  r.setGR(gr, result);
-  r.FR = _andFlag(result);
-}
-
-/// AND r1,r2
-void and(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  final r2 = cache & 0xf;
-  final r1 = (cache >> 4) & 0xf;
-
-  final v1 = r.getGR(r1);
-  final v2 = r.getGR(r2);
-  final result = v1 & v2;
-
-  r.setGR(r1, result);
-  r.FR = _andFlag(result);
-}
-
 /// OR r,adr,x
 void orMemory(final Resource r) {
   final cache = r.memory[r.PR];

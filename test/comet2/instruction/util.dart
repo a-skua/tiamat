@@ -22,12 +22,14 @@ class TestData {
   final Entity _x;
   final Entity adr;
   final int pr;
+  final int fr;
 
   TestData(
     this._r,
     this._x, {
     this.adr = const Entity(0),
     this.pr = 0,
+    this.fr = 0,
   });
 
   Entity get r => this._r;
