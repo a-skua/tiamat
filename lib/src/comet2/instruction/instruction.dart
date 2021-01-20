@@ -10,6 +10,7 @@ export 'add_arithmetic.dart';
 export 'add_logical.dart';
 export 'subtract_arithmetic.dart';
 export 'subtract_logical.dart';
+export 'and.dart';
 
 typedef Instruction = void Function(Resource r);
 

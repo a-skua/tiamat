@@ -22,10 +22,10 @@ class Comet2 {
     this._map[0x26] = addLogicalGR;
     this._map[0x27] = subtractLogicalGR;
 
-    this._map[0x30] = andMemory;
+    this._map[0x30] = and;
     this._map[0x31] = orMemory;
     this._map[0x32] = exclusiveOrMemory;
-    this._map[0x34] = and;
+    this._map[0x34] = andGR;
     this._map[0x35] = or;
     this._map[0x36] = exclusiveOr;
 
