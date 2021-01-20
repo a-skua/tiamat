@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:tiamat/src/comet2/instruction/and.dart';
+import 'package:tiamat/src/comet2/instruction/or.dart';
 import 'package:tiamat/src/resource/resource.dart';
 import 'package:test/test.dart';
 
@@ -32,7 +32,7 @@ void main() {
         }),
       ];
 
-      const operand = 0x3400;
+      const operand = 0x3500;
       final r = Resource();
       for (var i = 0; i < testdata.length; i++) {
         test('$i', () {
@@ -44,26 +44,26 @@ void main() {
           final fr = r.flagRegister;
 
           pr.value = data.pr;
+          fr.value = data.fr;
           gr[data.r1.value].value = data.r1.data;
           gr[data.r2.value].value = data.r2.data;
           r.memory[data.pr] = op;
-          fr.value = data.fr;
 
           final expectGR = <int>[];
           for (var i = 0; i < 8; i++) {
             if (i == data.r1.value) {
-              expectGR.add((data.r1.data & data.r2.data) & 0xffff);
+              expectGR.add((data.r1.data | data.r2.data) & 0xffff);
             } else {
               expectGR.add(gr[i].value);
             }
           }
 
-          andGR(r);
+          orGR(r);
           expect(pr.value, equals((data.pr + 1) & 0xffff));
           for (var i = 0; i < 8; i++) {
             expect(gr[i].value, equals(expectGR[i]));
           }
-          final result = (data.r1.data & data.r2.data) & 0xffff;
+          final result = (data.r1.data | data.r2.data) & 0xffff;
           expect(fr.overflow, equals(false));
           expect(fr.sign, equals((result & 0x8000) > 0));
           expect(fr.zero, equals(result == 0));
@@ -97,7 +97,7 @@ void main() {
         }),
       ];
 
-      const operand = 0x3000;
+      const operand = 0x3100;
       final r = Resource();
       for (var i = 0; i < testdata.length; i++) {
         test('$i', () {
@@ -123,18 +123,18 @@ void main() {
           final expectGR = <int>[];
           for (var i = 0; i < 8; i++) {
             if (i == data.r.value) {
-              expectGR.add((data.r.data & data.adr.data) & 0xffff);
+              expectGR.add((data.r.data | data.adr.data) & 0xffff);
             } else {
               expectGR.add(gr[i].value);
             }
           }
 
-          and(r);
+          or(r);
           expect(pr.value, equals((data.pr + 2) & 0xffff));
           for (var i = 0; i < 8; i++) {
             expect(gr[i].value, equals(expectGR[i]));
           }
-          final result = (data.r.data & data.adr.data) & 0xffff;
+          final result = (data.r.data | data.adr.data) & 0xffff;
           expect(fr.overflow, equals(false));
           expect(fr.sign, equals((result & 0x8000) > 0));
           expect(fr.zero, equals(result == 0));

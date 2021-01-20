@@ -1,12 +1,12 @@
 import '../../resource/resource.dart';
 import 'util.dart';
 
-/// An instruction of CASL2, named AND.
+/// An instruction of CASL2, named OR.
 ///
 /// That's two words instruction,
-/// the meaning register and effective address.
-/// Syntax: AND r,adr,x
-void and(final Resource r) {
+/// the meaning register or effective address.
+/// Syntax: OR r,adr,x
+void or(final Resource r) {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -17,19 +17,19 @@ void and(final Resource r) {
   final adr = getEffectiveAddress(r, op.x);
   pr.value += 1;
 
-  final result = gr[op.r].value & r.memory[adr];
+  final result = gr[op.r].value | r.memory[adr];
   final f = ArithmeticFlagger(result);
 
   gr[op.r].value = result;
   fr.value = f.sign | f.zero;
 }
 
-/// An instruction of CASL2, named AND.
+/// An instruction of CASL2, named OR.
 ///
 /// That's one word instruction,
-/// the meaning 1st register and 2nd register.
-/// Syntax: AND r1,r2
-void andGR(final Resource r) {
+/// the meaning 1st register or 2nd register.
+/// Syntax: OR r1,r2
+void orGR(final Resource r) {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -37,9 +37,9 @@ void andGR(final Resource r) {
   final op = Operand(r.memory[pr.value]);
   pr.value += 1;
 
-  final result = gr[op.r1].value & gr[op.r2].value;
+  final result = gr[op.r1].value | gr[op.r2].value;
   final f = ArithmeticFlagger(result);
 
-  gr[op.r1].value = result;
+  gr[op.r].value = result;
   fr.value = f.sign | f.zero;
 }
