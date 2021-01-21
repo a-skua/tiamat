@@ -17,41 +17,14 @@ export 'and.dart';
 export 'or.dart';
 export 'exclusive_or.dart';
 
+export 'compare_arithmetic.dart';
+
 typedef Instruction = void Function(Resource r);
 
 const wordSize = 16;
 const overflowFlag = Flag.overflow;
 const signFlag = Flag.sign;
 const zeroFlag = Flag.zero;
-
-/// CPA r,adr,x
-void compareArithmeticMemory(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  final x = cache & 0xf;
-  final gr = (cache >> 4) & 0xf;
-  final adr = _getADR(r, x);
-
-  final v1 = r.getGR(gr);
-  final v2 = r.memory[adr];
-
-  r.FR = _cpaFlag(v1, v2);
-}
-
-/// CPA r1,r2
-void compareArithmetic(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  final r2 = cache & 0xf;
-  final r1 = (cache >> 4) & 0xf;
-
-  final v1 = r.getGR(r1);
-  final v2 = r.getGR(r2);
-
-  r.FR = _cpaFlag(v1, v2);
-}
 
 /// CPL r,adr,x
 void compareLogicalMemory(final Resource r) {

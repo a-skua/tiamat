@@ -29,9 +29,9 @@ class Comet2 {
     this._map[0x35] = orGR;
     this._map[0x36] = exclusiveOrGR;
 
-    this._map[0x40] = compareArithmeticMemory;
+    this._map[0x40] = compareArithmetic;
     this._map[0x41] = compareLogicalMemory;
-    this._map[0x44] = compareArithmetic;
+    this._map[0x44] = compareArithmeticGR;
     this._map[0x45] = compareLogical;
 
     this._map[0x50] = shiftLeftArithmetic;

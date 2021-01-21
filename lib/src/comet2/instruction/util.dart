@@ -33,50 +33,82 @@ class Operand {
   int get r2 => this.x;
 }
 
+/// Interface.
+class Flagger {
+  const Flagger();
+
+  /// Get overflow flag.
+  int get overflow => 0;
+
+  /// Get sign flag.
+  int get sign => 0;
+
+  /// Get zero flag.
+  int get zero => 0;
+}
+
 /// Calculate a flag when arithmetic.
 ///
 /// ```
-/// (int v) {
+/// int getFlag(int v) {
 ///   final f = ArithmeticFlagger(v);
 ///   return f.overflow | f.sign | f.zero;
 /// }
 /// ```
-class ArithmeticFlagger {
+class ArithmeticFlagger extends Flagger {
   /// base value;
   final int _value;
 
   const ArithmeticFlagger(this._value);
 
-  /// Get overflow flag.
+  @override
   int get overflow =>
       this._value < -0x8000 || this._value > 0x7fff ? Flag.overflow : 0;
 
-  /// Get sign flag.
+  @override
   int get sign => this._value & 0x8000 > 0 ? Flag.sign : 0;
 
-  /// Get zero flag.
+  @override
   int get zero => this._value == 0 ? Flag.zero : 0;
 }
 
 /// Calculate a flag when logical.
 ///
 /// ```
-/// (int v) {
+/// int getFlag(int v) {
 ///   final f = LogicalFlagger(v);
 ///   return f.overflow | f.sign | f.zero;
 /// }
 /// ```
-class LogicalFlagger {
+class LogicalFlagger extends Flagger {
   final int _value;
   const LogicalFlagger(this._value);
 
-  /// Get overflow flag.
+  @override
   int get overflow =>
       this._value < 0 || this._value > 0xffff ? Flag.overflow : 0;
 
-  /// Geet sign flag.
-  int get sign => 0;
-
-  /// Get zero flag.
+  @override
   int get zero => this._value == 0 ? Flag.zero : 0;
+}
+
+/// Calculate a compared flag.
+///
+/// ```
+/// int getFlag(int l, int r) {
+///   final f = CompareFlagger(l, r);
+///   return f.sign | f.zero;
+/// }
+/// ```
+class CompareFlagger extends Flagger {
+  final int _left;
+  final int _right;
+
+  const CompareFlagger(this._left, this._right);
+
+  @override
+  int get zero => this._left == this._right ? Flag.zero : 0;
+
+  @override
+  int get sign => this._left < this._right ? Flag.sign : 0;
 }
