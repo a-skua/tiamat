@@ -26,11 +26,11 @@ void main() {
       '\tJNZ\tLOOP\n'
       'END\tOUT\tMSG,32\n'
       '\tRET\n'
-      'EXIT\tDC\t\'exit\',#FFFF\n'
+      'EXIT\tDC\t\'exit\',-1\n'
       'OUT\tDC\t\'input:\'\n'
       'IBUF\tDS\t31\n'
       'EOF\tDC\t#FFFF\n'
-      'MSG\tDC\t\'goodbye!\',#FFFF\n'
+      'MSG\tDC\t\'goodbye!\',-1\n'
       '\tEND\n';
   print('casl2:\n$asm');
 

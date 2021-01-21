@@ -24,10 +24,10 @@ class Comet2 {
 
     this._map[0x30] = and;
     this._map[0x31] = or;
-    this._map[0x32] = exclusiveOrMemory;
+    this._map[0x32] = exclusiveOr;
     this._map[0x34] = andGR;
     this._map[0x35] = orGR;
-    this._map[0x36] = exclusiveOr;
+    this._map[0x36] = exclusiveOrGR;
 
     this._map[0x40] = compareArithmeticMemory;
     this._map[0x41] = compareLogicalMemory;
