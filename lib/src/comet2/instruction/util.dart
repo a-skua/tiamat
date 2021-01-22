@@ -50,7 +50,7 @@ class Flagger {
 /// Calculate a flag when arithmetic.
 ///
 /// ```
-/// int getFlag(int v) {
+/// int getFlag(final int v) {
 ///   final f = ArithmeticFlagger(v);
 ///   return f.overflow | f.sign | f.zero;
 /// }
@@ -95,7 +95,7 @@ class LogicalFlagger extends Flagger {
 /// Calculate a compared flag.
 ///
 /// ```
-/// int getFlag(int l, int r) {
+/// int getFlag(final int l, final int r) {
 ///   final f = CompareFlagger(l, r);
 ///   return f.sign | f.zero;
 /// }
@@ -107,8 +107,25 @@ class CompareFlagger extends Flagger {
   const CompareFlagger(this._left, this._right);
 
   @override
-  int get zero => this._left == this._right ? Flag.zero : 0;
+  int get sign => this._left < this._right ? Flag.sign : 0;
 
   @override
-  int get sign => this._left < this._right ? Flag.sign : 0;
+  int get zero => this._left == this._right ? Flag.zero : 0;
+}
+
+/// Calculate a shift left flag.
+///
+/// ```
+/// int getFlag(final int v) {
+///   final f = ShiftLeftArithmeticFlagger(v);
+///   return f.overflow | f.sign | f.zero;
+/// }
+/// ```
+class ShiftLeftArithmeticFlagger extends ArithmeticFlagger {
+  final int _value;
+
+  const ShiftLeftArithmeticFlagger(this._value) : super(_value);
+
+  @override
+  int get overflow => this._value & 0x10000 > 0 ? Flag.overflow : 0;
 }
