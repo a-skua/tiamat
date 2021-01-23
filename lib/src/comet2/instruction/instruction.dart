@@ -32,35 +32,15 @@ export 'unconditional_jump.dart';
 export 'jump_on_plus.dart';
 export 'jump_on_overflow.dart';
 
+export 'push.dart';
+export 'pop.dart';
+
 typedef Instruction = void Function(Resource r);
 
 const wordSize = 16;
 const overflowFlag = Flag.overflow;
 const signFlag = Flag.sign;
 const zeroFlag = Flag.zero;
-
-/// PUSH adr,x
-void push(final Resource r) {
-  final x = r.memory[r.PR] & 0xf;
-  r.PR += 1;
-
-  final adr = _getADR(r, x);
-
-  r.SP -= 1;
-  r.memory[r.SP] = adr;
-}
-
-/// POP r
-void pop(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  final gr = (cache >> 4) & 0xf;
-  final v = r.memory[r.SP];
-  r.SP += 1;
-
-  r.setGR(gr, v);
-}
 
 /// CALL adr,x
 void callSubroutine(final Resource r) {

@@ -74,7 +74,7 @@ void main() {
           final r = rand.nextInt(8);
           return TestData(
             Entity(r),
-            Entity(getX(r), rand.nextInt(0x4000)),
+            Entity(getX(r)),
             adr: Entity(rand.nextInt(0x4000) | 0x8000),
             pr: rand.nextInt(0x7fff),
           );
