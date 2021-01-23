@@ -23,6 +23,7 @@ export 'compare_logical.dart';
 export 'shift_left_arithmetic.dart';
 export 'shift_right_arithmetic.dart';
 export 'shift_left_logical.dart';
+export 'shift_right_logical.dart';
 
 typedef Instruction = void Function(Resource r);
 
@@ -30,22 +31,6 @@ const wordSize = 16;
 const overflowFlag = Flag.overflow;
 const signFlag = Flag.sign;
 const zeroFlag = Flag.zero;
-
-/// SRL r,adr,x
-void shiftRightLogical(final Resource r) {
-  final cache = r.memory[r.PR];
-  r.PR += 1;
-
-  final x = cache & 0xf;
-  final gr = (cache >> 4) & 0xf;
-  final adr = _getADR(r, x);
-
-  final v = r.getGR(gr);
-  final result = (v >> adr) & 0xffff;
-  r.setGR(gr, result);
-  // TODO bug; adr == 0
-  r.FR = _shiftFlag(result, (v >> (adr - 1)) & 1);
-}
 
 /// JUMP adr,x
 void unconditionalJump(final Resource r) {
