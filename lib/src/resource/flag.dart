@@ -14,10 +14,10 @@ class FlagRegister extends Register {
   }) : super(name, bits: 3);
 
   /// Get state of overflow.
-  bool get overflow => this.value & Flag.overflow > 0;
+  bool get isOverflow => this.value & Flag.overflow > 0;
 
   /// Set state of overflow.
-  void set overflow(bool flag) {
+  void set isOverflow(bool flag) {
     if (flag) {
       this.value |= Flag.overflow;
     } else {
@@ -26,10 +26,10 @@ class FlagRegister extends Register {
   }
 
   /// Get state of sign flag.
-  bool get sign => this.value & Flag.sign > 0;
+  bool get isSign => this.value & Flag.sign > 0;
 
   /// Set state of sign flag.
-  void set sign(bool flag) {
+  void set isSign(bool flag) {
     if (flag) {
       this.value |= Flag.sign;
     } else {
@@ -38,10 +38,10 @@ class FlagRegister extends Register {
   }
 
   /// Get state of zero flag.
-  bool get zero => this.value & Flag.zero > 0;
+  bool get isZero => this.value & Flag.zero > 0;
 
   /// Set state of zero flag.
-  void set zero(bool flag) {
+  void set isZero(bool flag) {
     if (flag) {
       this.value |= Flag.zero;
     } else {

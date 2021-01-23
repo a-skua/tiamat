@@ -41,9 +41,9 @@ void main() {
         r.memory[data.pr + 1] = data.adr.value;
 
         final flag = Flag(
-          overflow: fr.overflow,
-          sign: fr.sign,
-          zero: fr.zero,
+          overflow: fr.isOverflow,
+          sign: fr.isSign,
+          zero: fr.isZero,
         );
         final expectGR = <int>[];
         for (var i = 0; i < 8; i++) {
@@ -54,9 +54,9 @@ void main() {
         for (var i = 0; i < 8; i++) {
           expect(gr[i].value, equals(expectGR[i]));
         }
-        expect(fr.overflow, equals(flag.overflow));
-        expect(fr.sign, equals(flag.sign));
-        expect(fr.zero, equals(flag.zero));
+        expect(fr.isOverflow, equals(flag.overflow));
+        expect(fr.isSign, equals(flag.sign));
+        expect(fr.isZero, equals(flag.zero));
         if (data.x.value > 0) {
           expect(
             r.memory[data.x.data + data.adr.value],

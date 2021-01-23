@@ -3,13 +3,15 @@ import 'util.dart';
 
 /// An instruction of COMET2, named LAD.
 ///
-/// That's 2 words instruction, load address.
+/// That's two words instruction,
+/// load effective address(not value) to register.
 /// Syntax: LAD r,adr,x
 void loadAddress(final Resource r) {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
+  final ram = r.memory;
 
-  final op = Operand(r.memory[pr.value]);
+  final op = Operand(ram[pr.value]);
   pr.value += 1;
 
   final adr = getEffectiveAddress(r, op.x);

@@ -3,21 +3,22 @@ import 'util.dart';
 
 /// An instruction of COMET2, named SUBL.
 ///
-/// That's 2 words instruction,
-/// subtract(logical) from effective address to register.
+/// That's two words instruction,
+/// subtract(logical) effective address to register.
 /// Syntax: SUBL r,adr,x
 void subtractLogical(final Resource r) {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
+  final ram = r.memory;
 
-  final op = Operand(r.memory[pr.value]);
+  final op = Operand(ram[pr.value]);
   pr.value += 1;
 
   final adr = getEffectiveAddress(r, op.x);
   pr.value += 1;
 
-  final result = gr[op.r].value - r.memory[adr];
+  final result = gr[op.r].value - ram[adr];
   final f = LogicalFlagger(result);
 
   gr[op.r].value = result;
@@ -33,8 +34,9 @@ void subtractLogicalGR(final Resource r) {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
+  final ram = r.memory;
 
-  final op = Operand(r.memory[pr.value]);
+  final op = Operand(ram[pr.value]);
   pr.value += 1;
 
   final result = gr[op.r1].value - gr[op.r2].value;

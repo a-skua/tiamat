@@ -25,6 +25,8 @@ export 'shift_right_arithmetic.dart';
 export 'shift_left_logical.dart';
 export 'shift_right_logical.dart';
 
+export 'jump_on_minus.dart';
+
 typedef Instruction = void Function(Resource r);
 
 const wordSize = 16;
@@ -50,18 +52,6 @@ void jumpOnPlus(final Resource r) {
   final adr = _getADR(r, x);
 
   if (!r.SF && !r.ZF) {
-    r.PR = adr;
-  }
-}
-
-/// JMI adr,x
-void jumpOnMinus(final Resource r) {
-  final x = r.memory[r.PR] & 0xf;
-  r.PR += 1;
-
-  final adr = _getADR(r, x);
-
-  if (r.SF) {
     r.PR = adr;
   }
 }

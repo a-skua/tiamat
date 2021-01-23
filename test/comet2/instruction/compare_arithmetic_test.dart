@@ -59,9 +59,9 @@ void main() {
           for (var i = 0; i < 8; i++) {
             expect(gr[i].value, equals(expectGR[i]));
           }
-          expect(fr.overflow, equals(false));
-          expect(fr.sign, equals(data.r1.data < data.r2.data));
-          expect(fr.zero, equals(data.r1.data == data.r2.data));
+          expect(fr.isOverflow, equals(false));
+          expect(fr.isSign, equals(data.r1.data < data.r2.data));
+          expect(fr.isZero, equals(data.r1.data == data.r2.data));
         });
       }
     });
@@ -124,9 +124,9 @@ void main() {
           for (var i = 0; i < 8; i++) {
             expect(gr[i].value, equals(expectGR[i]));
           }
-          expect(fr.overflow, equals(false));
-          expect(fr.sign, equals(data.r.data < data.adr.data));
-          expect(fr.zero, equals(data.r.data == data.adr.data));
+          expect(fr.isOverflow, equals(false));
+          expect(fr.isSign, equals(data.r.data < data.adr.data));
+          expect(fr.isZero, equals(data.r.data == data.adr.data));
         });
       }
     });

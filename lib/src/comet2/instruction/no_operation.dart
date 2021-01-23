@@ -2,8 +2,10 @@ import '../../resource/resource.dart';
 
 /// An instruction of COMET2, named NOP.
 ///
-/// That's 1 word instruction, do nothing.
-/// Syntax: `NOP`
+/// That's one word instruction,
+/// do nothing.
+/// Syntax: NOP
 void noOperation(final Resource r) {
-  r.programRegister.value += 1;
+  final pr = r.programRegister;
+  pr.value += 1;
 }

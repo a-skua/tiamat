@@ -48,20 +48,20 @@ class Resource {
   void set FR(final int val) => this.flagRegister.value = val;
 
   @deprecated
-  bool get OF => this.flagRegister.overflow;
+  bool get OF => this.flagRegister.isOverflow;
 
   @deprecated
-  void set OF(final bool f) => this.flagRegister.overflow = f;
+  void set OF(final bool f) => this.flagRegister.isOverflow = f;
 
   @deprecated
-  bool get SF => this.flagRegister.sign;
+  bool get SF => this.flagRegister.isSign;
 
   @deprecated
-  void set SF(final bool f) => this.flagRegister.sign = f;
+  void set SF(final bool f) => this.flagRegister.isSign = f;
 
   @deprecated
-  bool get ZF => this.flagRegister.zero;
+  bool get ZF => this.flagRegister.isZero;
 
   @deprecated
-  void set ZF(final bool f) => this.flagRegister.zero = f;
+  void set ZF(final bool f) => this.flagRegister.isZero = f;
 }

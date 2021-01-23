@@ -41,9 +41,9 @@ void main() {
         final flag = FlagRegister()..value = i;
 
         expect(flag.value, equals(i));
-        expect(flag.overflow, equals(data.overflow));
-        expect(flag.sign, equals(data.sign));
-        expect(flag.zero, equals(data.zero));
+        expect(flag.isOverflow, equals(data.overflow));
+        expect(flag.isSign, equals(data.sign));
+        expect(flag.isZero, equals(data.zero));
         expect(flag.value, equals(i));
         expect(flag.name, equals('FR'));
       });
@@ -56,19 +56,19 @@ void main() {
         );
 
         final flag = FlagRegister();
-        expect(flag.overflow, equals(false));
-        expect(flag.sign, equals(false));
-        expect(flag.zero, equals(false));
+        expect(flag.isOverflow, equals(false));
+        expect(flag.isSign, equals(false));
+        expect(flag.isZero, equals(false));
         expect(flag.value, equals(0));
         expect(flag.name, equals('FR'));
 
-        flag.overflow = data.overflow;
-        flag.sign = data.sign;
-        flag.zero = data.zero;
+        flag.isOverflow = data.overflow;
+        flag.isSign = data.sign;
+        flag.isZero = data.zero;
 
-        expect(flag.overflow, equals(data.overflow));
-        expect(flag.sign, equals(data.sign));
-        expect(flag.zero, equals(data.zero));
+        expect(flag.isOverflow, equals(data.overflow));
+        expect(flag.isSign, equals(data.sign));
+        expect(flag.isZero, equals(data.zero));
         expect(flag.value, equals(i));
         expect(flag.name, equals('FR'));
       });

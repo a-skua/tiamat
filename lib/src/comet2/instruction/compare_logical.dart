@@ -10,14 +10,15 @@ void compareLogical(final Resource r) {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
+  final ram = r.memory;
 
-  final op = Operand(r.memory[pr.value]);
+  final op = Operand(ram[pr.value]);
   pr.value += 1;
 
   final adr = getEffectiveAddress(r, op.x);
   pr.value += 1;
 
-  final f = CompareFlagger(gr[op.r].value, r.memory[adr]);
+  final f = CompareFlagger(gr[op.r].value, ram[adr]);
 
   fr.value = f.sign | f.zero;
 }
@@ -31,8 +32,9 @@ void compareLogicalGR(final Resource r) {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
+  final ram = r.memory;
 
-  final op = Operand(r.memory[pr.value]);
+  final op = Operand(ram[pr.value]);
   pr.value += 1;
 
   final f = CompareFlagger(gr[op.r1].value, gr[op.r2].value);

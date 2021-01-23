@@ -73,9 +73,9 @@ void main() {
               data.x.value > 0 ? data.x.data + data.adr.value : data.adr.value;
           final result = data.r.data >> address;
           final of = address > 0 ? data.r.data >> (address - 1) : 0;
-          expect(fr.overflow, equals((of & 1) > 0));
-          expect(fr.sign, equals(false));
-          expect(fr.zero, equals(result == 0));
+          expect(fr.isOverflow, equals((of & 1) > 0));
+          expect(fr.isSign, equals(false));
+          expect(fr.isZero, equals(result == 0));
         });
       }
     });

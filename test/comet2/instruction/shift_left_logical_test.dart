@@ -72,9 +72,9 @@ void main() {
           final result = data.x.value > 0
               ? data.r.data << (data.x.data + data.adr.value)
               : data.r.data << data.adr.value;
-          expect(fr.overflow, equals((result & 0x10000) > 0));
-          expect(fr.sign, equals(false));
-          expect(fr.zero, equals(result == 0));
+          expect(fr.isOverflow, equals((result & 0x10000) > 0));
+          expect(fr.isSign, equals(false));
+          expect(fr.isZero, equals(result == 0));
         });
       }
     });

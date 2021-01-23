@@ -61,9 +61,9 @@ void main() {
             expect(gr[i].value, equals(expectGR[i]));
           }
           final result = data.r1.data + data.r2.data;
-          expect(fr.overflow, equals(result < 0 || result > 0xffff));
-          expect(fr.sign, equals(false));
-          expect(fr.zero, equals(result == 0));
+          expect(fr.isOverflow, equals(result < 0 || result > 0xffff));
+          expect(fr.isSign, equals(false));
+          expect(fr.isZero, equals(result == 0));
         });
       }
     });
@@ -126,9 +126,9 @@ void main() {
             expect(gr[i].value, equals(expectGR[i]));
           }
           final result = data.r.data + data.adr.data;
-          expect(fr.overflow, equals(result < 0 || result > 0xffff));
-          expect(fr.sign, equals(false));
-          expect(fr.zero, equals(result == 0));
+          expect(fr.isOverflow, equals(result < 0 || result > 0xffff));
+          expect(fr.isSign, equals(false));
+          expect(fr.isZero, equals(result == 0));
         });
       }
     });
