@@ -35,30 +35,15 @@ export 'jump_on_overflow.dart';
 export 'push.dart';
 export 'pop.dart';
 
+export 'call_subroutine.dart';
+export 'return_from_subroutine.dart';
+
 typedef Instruction = void Function(Resource r);
 
 const wordSize = 16;
 const overflowFlag = Flag.overflow;
 const signFlag = Flag.sign;
 const zeroFlag = Flag.zero;
-
-/// CALL adr,x
-void callSubroutine(final Resource r) {
-  final x = r.memory[r.PR] & 0xf;
-  r.PR += 1;
-
-  final adr = _getADR(r, x);
-
-  r.SP -= 1;
-  r.memory[r.SP] = r.PR;
-  r.PR = adr;
-}
-
-/// RET
-void returnFromSubroutine(final Resource r) {
-  r.PR = r.memory[r.SP];
-  r.SP += 1;
-}
 
 /// SVC adr,x
 void supervisorCall(final Resource r, Supervisor s) {
