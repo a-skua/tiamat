@@ -1,12 +1,8 @@
 import '../../resource/resource.dart';
 import 'util.dart';
 
-/// An instruction of COMET2, named SLA.
-///
-/// That's two words instruction,
-/// register shift left(arithmetic) effective address.
-/// Syntax: SLA r,adr,x
-void shiftLeftArithmetic(final Resource r) {
+/// SRA r,adr,x
+void shiftRightArithmetic(final Resource r) {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -18,9 +14,8 @@ void shiftLeftArithmetic(final Resource r) {
   final adr = getEffectiveAddress(r, op.x);
   pr.value += 1;
 
-  final result = gr[op.r].signed << adr;
-  final f = ShiftLeftArithmeticFlagger(result);
+  final f = ShiftRightArithmeticFlagger(gr[op.r].signed, adr);
 
-  gr[op.r].value = result;
+  gr[op.r].value = gr[op.r].signed >> adr;
   fr.value = f.overflow | f.sign | f.zero;
 }

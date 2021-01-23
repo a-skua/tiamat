@@ -129,3 +129,29 @@ class ShiftLeftArithmeticFlagger extends ArithmeticFlagger {
   @override
   int get overflow => this._value & 0x10000 > 0 ? Flag.overflow : 0;
 }
+
+/// Calculate a shift right flag.
+///
+/// ```
+/// int getFlag(final int v, final int s) {
+///   final f = ShiftRightArithmeticFlagger(v, s);
+///   return f.overflow | f.sign | f.zero;
+/// }
+/// ```
+class ShiftRightArithmeticFlagger extends ArithmeticFlagger {
+  final int _origin;
+  final int _shift;
+
+  const ShiftRightArithmeticFlagger(this._origin, this._shift)
+      : super(_origin >> _shift);
+
+  @override
+  int get overflow {
+    if (this._shift <= 0) {
+      return 0;
+    }
+    final v = this._origin >> (this._shift - 1);
+
+    return v & 1 > 0 ? Flag.overflow : 0;
+  }
+}
