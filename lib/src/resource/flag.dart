@@ -13,39 +13,21 @@ class FlagRegister extends Register {
     String name = 'FR',
   }) : super(name, bits: 3);
 
-  /// Get state of overflow.
+  /// Get state of overflow flag.
   bool get isOverflow => this.value & Flag.overflow > 0;
-
-  /// Set state of overflow.
-  void set isOverflow(bool flag) {
-    if (flag) {
-      this.value |= Flag.overflow;
-    } else {
-      this.value &= Flag.overflow ^ -1;
-    }
-  }
 
   /// Get state of sign flag.
   bool get isSign => this.value & Flag.sign > 0;
 
-  /// Set state of sign flag.
-  void set isSign(bool flag) {
-    if (flag) {
-      this.value |= Flag.sign;
-    } else {
-      this.value &= Flag.sign ^ -1;
-    }
-  }
-
   /// Get state of zero flag.
   bool get isZero => this.value & Flag.zero > 0;
 
-  /// Set state of zero flag.
-  void set isZero(bool flag) {
-    if (flag) {
-      this.value |= Flag.zero;
-    } else {
-      this.value &= Flag.zero ^ -1;
-    }
-  }
+  /// Get state of overflow flag.
+  bool get isNotOverflow => !this.isOverflow;
+
+  /// Get state of sign flag.
+  bool get isNotSign => !this.isSign;
+
+  /// Get state of zero flag.
+  bool get isNotZero => !this.isZero;
 }

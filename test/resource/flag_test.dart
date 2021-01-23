@@ -38,37 +38,25 @@ void main() {
           zero: i & Flag.zero > 0,
         );
 
-        final flag = FlagRegister()..value = i;
-
-        expect(flag.value, equals(i));
-        expect(flag.isOverflow, equals(data.overflow));
-        expect(flag.isSign, equals(data.sign));
-        expect(flag.isZero, equals(data.zero));
-        expect(flag.value, equals(i));
-        expect(flag.name, equals('FR'));
-      });
-
-      test('flag to value', () {
-        final data = TestData(
-          overflow: i & Flag.overflow > 0,
-          sign: i & Flag.sign > 0,
-          zero: i & Flag.zero > 0,
-        );
-
         final flag = FlagRegister();
+
         expect(flag.isOverflow, equals(false));
         expect(flag.isSign, equals(false));
         expect(flag.isZero, equals(false));
+        expect(flag.isNotOverflow, equals(true));
+        expect(flag.isNotSign, equals(true));
+        expect(flag.isNotZero, equals(true));
         expect(flag.value, equals(0));
         expect(flag.name, equals('FR'));
 
-        flag.isOverflow = data.overflow;
-        flag.isSign = data.sign;
-        flag.isZero = data.zero;
-
+        flag.value = i;
+        expect(flag.value, equals(i));
         expect(flag.isOverflow, equals(data.overflow));
         expect(flag.isSign, equals(data.sign));
         expect(flag.isZero, equals(data.zero));
+        expect(flag.isNotOverflow, equals(!data.overflow));
+        expect(flag.isNotSign, equals(!data.sign));
+        expect(flag.isNotZero, equals(!data.zero));
         expect(flag.value, equals(i));
         expect(flag.name, equals('FR'));
       });

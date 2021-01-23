@@ -26,6 +26,11 @@ export 'shift_left_logical.dart';
 export 'shift_right_logical.dart';
 
 export 'jump_on_minus.dart';
+export 'jump_on_non_zero.dart';
+export 'jump_on_zero.dart';
+export 'unconditional_jump.dart';
+export 'jump_on_plus.dart';
+export 'jump_on_overflow.dart';
 
 typedef Instruction = void Function(Resource r);
 
@@ -33,64 +38,6 @@ const wordSize = 16;
 const overflowFlag = Flag.overflow;
 const signFlag = Flag.sign;
 const zeroFlag = Flag.zero;
-
-/// JUMP adr,x
-void unconditionalJump(final Resource r) {
-  final x = r.memory[r.PR] & 0xf;
-  r.PR += 1;
-
-  final adr = _getADR(r, x);
-
-  r.PR = adr;
-}
-
-/// JPL adr,x
-void jumpOnPlus(final Resource r) {
-  final x = r.memory[r.PR] & 0xf;
-  r.PR += 1;
-
-  final adr = _getADR(r, x);
-
-  if (!r.SF && !r.ZF) {
-    r.PR = adr;
-  }
-}
-
-/// JNZ adr,x
-void jumpOnNonZero(final Resource r) {
-  final x = r.memory[r.PR] & 0xf;
-  r.PR += 1;
-
-  final adr = _getADR(r, x);
-
-  if (!r.ZF) {
-    r.PR = adr;
-  }
-}
-
-/// JZE adr,x
-void jumpOnZero(final Resource r) {
-  final x = r.memory[r.PR] & 0xf;
-  r.PR += 1;
-
-  final adr = _getADR(r, x);
-
-  if (r.ZF) {
-    r.PR = adr;
-  }
-}
-
-/// JOV adr,x
-void jumpOnOverflow(final Resource r) {
-  final x = r.memory[r.PR] & 0xf;
-  r.PR += 1;
-
-  final adr = _getADR(r, x);
-
-  if (r.OF) {
-    r.PR = adr;
-  }
-}
 
 /// PUSH adr,x
 void push(final Resource r) {
