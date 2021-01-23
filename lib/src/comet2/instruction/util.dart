@@ -5,7 +5,8 @@ import '../../resource/flag.dart' show Flag;
 int getEffectiveAddress(final Resource r, final int x) {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
-  return x == 0 ? r.memory[pr.value] : (r.memory[pr.value] + gr[x].value);
+  final ram = r.memory;
+  return x == 0 ? ram[pr.value] : (ram[pr.value] + gr[x].value);
 }
 
 /// Parse instruction word

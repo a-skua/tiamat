@@ -6,7 +6,7 @@ import 'flag.dart';
 class Resource {
   final Memory memory = Memory();
 
-  /// General Register0 - GR7.
+  /// General Register 0 - 7.
   final List<Register> generalRegisters =
       List.generate(8, (i) => Register('GR$i'));
 
