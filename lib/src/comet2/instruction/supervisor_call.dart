@@ -1,14 +1,13 @@
 import '../resource.dart';
 import 'util.dart';
 
-/// An instruction of COMET2, named JUMP.
+/// An instruction of COMET2, named SVC.
 ///
 /// That's two words instruction,
-/// jump to effective address.
-/// Syntax: JUMP adr,x
-void unconditionalJump(final Resource r) {
+/// call supsvcervisor function.
+/// Syntax: SVC adr,x
+void supervisorCall(final Resource r) {
   final pr = r.programRegister;
-  final fr = r.flagRegister;
   final ram = r.memory;
 
   final op = Operand(ram[pr.value]);
@@ -17,5 +16,5 @@ void unconditionalJump(final Resource r) {
   final adr = getEffectiveAddress(r, op.x);
   pr.value += 1;
 
-  pr.value = adr;
+  r.supervisorCall(adr);
 }

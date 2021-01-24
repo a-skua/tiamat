@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:tiamat/src/comet2/instruction/load_address.dart';
-import 'package:tiamat/src/resource/resource.dart';
+import 'package:tiamat/src/comet2/instruction.dart';
+import 'package:tiamat/src/comet2/resource.dart';
 import 'package:test/test.dart';
 
-import 'util.dart';
+import 'util.dart' as util;
 
 void main() {
   final rand = Random();
@@ -12,10 +12,10 @@ void main() {
   group('load address', () {
     final testdata = List.generate(
       32,
-      (final i) => TestData(
-        Entity(rand.nextInt(8)),
-        Entity(rand.nextInt(8), rand.nextInt(0x10000)),
-        adr: Entity(rand.nextInt(0x10000)),
+      (final i) => util.TestData(
+        util.Entity(rand.nextInt(8)),
+        util.Entity(rand.nextInt(8), rand.nextInt(0x10000)),
+        adr: util.Entity(rand.nextInt(0x10000)),
         pr: rand.nextInt(0x10000),
       ),
     );
@@ -36,7 +36,7 @@ void main() {
         r.memory[data.pr] = op;
         r.memory[data.pr + 1] = data.adr.value;
 
-        final flag = Flag(
+        final flag = util.Flag(
           overflow: fr.isOverflow,
           sign: fr.isSign,
           zero: fr.isZero,

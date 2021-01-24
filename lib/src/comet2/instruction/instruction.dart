@@ -1,30 +1,33 @@
-import '../../resource/resource.dart';
-import '../../resource/flag.dart';
-import '../supervisorcall.dart';
-
+/// 0x0...
 export 'no_operation.dart';
 
+/// 0x1...
 export 'load.dart';
 export 'store.dart';
 export 'load_address.dart';
 
+/// 0x2...
 export 'add_arithmetic.dart';
 export 'add_logical.dart';
 export 'subtract_arithmetic.dart';
 export 'subtract_logical.dart';
 
+/// 0x3...
 export 'and.dart';
 export 'or.dart';
 export 'exclusive_or.dart';
 
+/// 0x4...
 export 'compare_arithmetic.dart';
 export 'compare_logical.dart';
 
+/// 0x5...
 export 'shift_left_arithmetic.dart';
 export 'shift_right_arithmetic.dart';
 export 'shift_left_logical.dart';
 export 'shift_right_logical.dart';
 
+/// 0x6...
 export 'jump_on_minus.dart';
 export 'jump_on_non_zero.dart';
 export 'jump_on_zero.dart';
@@ -32,158 +35,13 @@ export 'unconditional_jump.dart';
 export 'jump_on_plus.dart';
 export 'jump_on_overflow.dart';
 
+/// 0x7...
 export 'push.dart';
 export 'pop.dart';
 
+/// 0x8...
 export 'call_subroutine.dart';
 export 'return_from_subroutine.dart';
 
-typedef Instruction = void Function(Resource r);
-
-const wordSize = 16;
-const overflowFlag = Flag.overflow;
-const signFlag = Flag.sign;
-const zeroFlag = Flag.zero;
-
-/// SVC adr,x
-void supervisorCall(final Resource r, Supervisor s) {
-  final x = r.memory[r.PR] & 0xf;
-  r.PR += 1;
-
-  final adr = _getADR(r, x);
-
-  s.call(r, adr);
-}
-
-int _getADR(final Resource r, final int x) {
-  final adr = x == 0 ? r.memory[r.PR] : (r.memory[r.PR] + r.getGR(x)) & 0xffff;
-  r.PR += 1;
-  return adr;
-}
-
-int _complement2(final int v) {
-  const maskBits = (1 << wordSize) - 1;
-  return ((v ^ -1) + 1) & maskBits;
-}
-
-int _andFlag(final int result) {
-  if ((result & (1 << (wordSize - 1))) > 0) {
-    return signFlag;
-  }
-  if (result == 0) {
-    return zeroFlag;
-  }
-  return 0;
-}
-
-int _shiftFlag(final int v, final int of) {
-  const signMask = 1 << (wordSize - 1);
-  var flag = 0;
-
-  if (of > 0) {
-    flag |= overflowFlag;
-  }
-  if ((v & signMask) > 0) {
-    flag |= signFlag;
-  } else if (v == 0) {
-    flag |= zeroFlag;
-  }
-
-  return flag;
-}
-
-int _addaFlag(final int v1, final int v2) {
-  const signMask = 1 << (wordSize - 1);
-  const maskBits = (1 << wordSize) - 1;
-  const overflowMask = maskBits << wordSize;
-
-  final raw = v1 + v2;
-  final result = raw & maskBits;
-
-  var flag = 0;
-  if ((v1 & signMask) == (v2 & signMask)) {
-    if ((raw & overflowMask) > 0) {
-      flag |= overflowFlag;
-    } else if ((v1 & signMask) != (result & signMask)) {
-      flag |= overflowFlag;
-    }
-  }
-  if ((result & signMask) > 0) {
-    flag |= signFlag;
-  } else if (result == 0) {
-    flag |= zeroFlag;
-  }
-  return flag;
-}
-
-int _addlFlag(final int v1, final int v2) {
-  const signMask = 1 << (wordSize - 1);
-  const maskBits = (1 << wordSize) - 1;
-  const overflowMask = maskBits << wordSize;
-
-  final raw = v1 + v2;
-  final result = raw & maskBits;
-
-  var flag = 0;
-  if ((raw & overflowMask) > 0) {
-    flag |= overflowFlag;
-  }
-  if ((result & signMask) > 0) {
-    flag |= signFlag;
-  } else if (result == 0) {
-    flag |= zeroFlag;
-  }
-  return flag;
-}
-
-int _sublFlag(final int v1, final int v2) {
-  const maskBits = (1 << wordSize) - 1;
-  const signMask = 1 << (wordSize - 1);
-
-  final result = (v1 - v2) & maskBits;
-
-  var flag = 0;
-  if (v1 < v2) {
-    flag |= overflowFlag;
-  }
-  if ((result & signMask) > 0) {
-    flag |= signFlag;
-  } else if (result == 0) {
-    flag |= zeroFlag;
-  }
-  return flag;
-}
-
-int _cpaFlag(final int v1, final int v2) {
-  if (v1 == v2) {
-    return zeroFlag;
-  }
-
-  const signMask = 0x8000;
-  if ((v1 & signMask == 0 && v2 & signMask == 0) ||
-      (v1 & signMask > 0 && v2 & signMask > 0)) {
-    if (v1 > v2) {
-      return 0;
-    } else {
-      return signFlag;
-    }
-  } else if (v1 & signMask > 0 && v2 & signMask == 0) {
-    return signFlag;
-  } else {
-    // v1 & signMask == 0 && v2 & signMask > 0
-    return 0;
-  }
-}
-
-int _cplFlag(final int v1, final int v2) {
-  if (v1 > v2) {
-    return 0;
-  }
-
-  if (v1 == v2) {
-    return zeroFlag;
-  }
-
-  // v1 < v2
-  return signFlag;
-}
+/// 0xf...
+export 'supervisor_call.dart';

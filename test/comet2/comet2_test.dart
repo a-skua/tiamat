@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:tiamat/src/comet2/comet2.dart';
-import 'package:tiamat/src/resource/resource.dart';
 import 'package:test/test.dart';
 
 import '../util/util.dart';
@@ -10,8 +9,8 @@ void main() {
   final rand = Random();
   test('exec', () {
     for (var i = 0; i < 4; i++) {
-      final r = Resource();
       final c = Comet2();
+      final r = c.resource;
       const maskBits = 0xffff;
 
       final gr = rand.nextInt(8);
@@ -29,7 +28,7 @@ void main() {
       r.memory[pr + 2] = ret;
       r.memory[adr] = v2;
 
-      c.exec(r);
+      c.exec();
       expect(r.getGR(gr), equals((v1 + v2) & maskBits));
       expect(r.PR, equals(0));
       expect(r.SP, equals(0));

@@ -1,8 +1,7 @@
 import 'dart:math';
 
-import 'package:tiamat/src/comet2/instruction/unconditional_jump.dart';
-import 'package:tiamat/src/resource/resource.dart';
-import 'package:tiamat/src/resource/flag.dart';
+import 'package:tiamat/src/comet2/instruction.dart';
+import 'package:tiamat/src/comet2/resource.dart';
 import 'package:test/test.dart';
 
 import 'util.dart' show TestData, Entity, getX;

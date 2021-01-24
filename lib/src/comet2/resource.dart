@@ -1,9 +1,18 @@
-import 'memory.dart';
-import 'register.dart';
-import 'flag.dart';
+import 'resource/flag.dart';
+import 'resource/memory.dart';
+import 'resource/register.dart';
+import 'supervisor_call.dart' show SupervisorCall;
+
+export 'resource/flag.dart';
+export 'resource/memory.dart';
+export 'resource/register.dart';
 
 /// COMET2's resource.
 class Resource {
+  /// Supervisor call
+  SupervisorCall supervisorCall = (final int code) {};
+
+  /// Memory
   final Memory memory = Memory();
 
   /// General Register 0 - 7.

@@ -1,70 +1,39 @@
-import 'instruction/instruction.dart';
-import 'supervisorcall.dart';
-import '../resource/resource.dart';
+import 'resource.dart' show Resource;
+import 'device.dart' show Device;
+import 'instruction.dart' show instruction;
+import 'supervisor_call.dart' show SupervisorCall, supervisorCall;
+
+export 'device.dart';
 
 class Comet2 {
-  final _map = <int, Instruction>{};
+  Device device = Device();
 
-  final sv = Supervisor();
+  final Resource resource = Resource();
 
   Comet2() {
-    this._map[0x10] = load;
-    this._map[0x11] = store;
-    this._map[0x12] = loadAddress;
-    this._map[0x14] = loadGR;
-
-    this._map[0x20] = addArithmetic;
-    this._map[0x21] = subtractArithmetic;
-    this._map[0x22] = addLogical;
-    this._map[0x23] = subtractLogical;
-    this._map[0x24] = addArithmeticGR;
-    this._map[0x25] = subtractArithmeticGR;
-    this._map[0x26] = addLogicalGR;
-    this._map[0x27] = subtractLogicalGR;
-
-    this._map[0x30] = and;
-    this._map[0x31] = or;
-    this._map[0x32] = exclusiveOr;
-    this._map[0x34] = andGR;
-    this._map[0x35] = orGR;
-    this._map[0x36] = exclusiveOrGR;
-
-    this._map[0x40] = compareArithmetic;
-    this._map[0x41] = compareLogical;
-    this._map[0x44] = compareArithmeticGR;
-    this._map[0x45] = compareLogicalGR;
-
-    this._map[0x50] = shiftLeftArithmetic;
-    this._map[0x51] = shiftRightArithmetic;
-    this._map[0x52] = shiftLeftLogical;
-    this._map[0x53] = shiftRightLogical;
-
-    this._map[0x61] = jumpOnMinus;
-    this._map[0x62] = jumpOnNonZero;
-    this._map[0x63] = jumpOnZero;
-    this._map[0x64] = unconditionalJump;
-    this._map[0x65] = jumpOnPlus;
-    this._map[0x66] = jumpOnOverflow;
-
-    this._map[0x70] = push;
-    this._map[0x71] = pop;
-
-    this._map[0x80] = callSubroutine;
-    this._map[0x81] = returnFromSubroutine;
-
-    this._map[0xf0] = this._supervisorCall;
+    this.resource.supervisorCall =
+        (final int code) => supervisorCall(this.resource, this.device, code);
   }
 
-  void exec(final Resource r) {
-    // FIXME conditional
-    while (r.SP != 0) {
-      final op = (r.memory[r.PR] >> 8) & 0xff;
-      final ins = this._map[op] ?? noOperation;
-      ins(r);
+  void load(final List<int> code) {
+    final pr = this.resource.programRegister;
+    this.resource.memory.setAll(pr.value, code);
+  }
+
+  void exec() {
+    final sp = this.resource.stackPointer;
+    final pr = this.resource.programRegister;
+    final ram = this.resource.memory;
+
+    while (sp.value != 0) {
+      final op = (ram[pr.value] >> 8) & 0xff;
+      instruction(this.resource, op);
     }
   }
 
-  void _supervisorCall(final Resource r) {
-    supervisorCall(r, this.sv);
-  }
+  // @deprecated
+  // final sv = this.supervisor;
+
+  // @deprecated
+  // void exec(final Resource r) {}
 }

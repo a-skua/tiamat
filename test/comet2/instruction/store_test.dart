@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:tiamat/src/comet2/instruction/store.dart';
-import 'package:tiamat/src/resource/resource.dart';
+import 'package:tiamat/src/comet2/instruction.dart';
+import 'package:tiamat/src/comet2/resource.dart';
 import 'package:test/test.dart';
 
-import 'util.dart';
+import 'util.dart' as util;
 
 void main() {
   final rand = Random();
@@ -14,10 +14,10 @@ void main() {
       for (var i = 0; i < 32; i++)
         () {
           final r = rand.nextInt(8);
-          return TestData(
-            Entity(r, rand.nextInt(0x10000)),
-            Entity(getX(r), rand.nextInt(0x10000)),
-            adr: Entity(rand.nextInt(0x10000)),
+          return util.TestData(
+            util.Entity(r, rand.nextInt(0x10000)),
+            util.Entity(util.getX(r), rand.nextInt(0x10000)),
+            adr: util.Entity(rand.nextInt(0x10000)),
             pr: rand.nextInt(0x10000),
           );
         }(),
@@ -40,7 +40,7 @@ void main() {
         r.memory[data.pr] = op;
         r.memory[data.pr + 1] = data.adr.value;
 
-        final flag = Flag(
+        final flag = util.Flag(
           overflow: fr.isOverflow,
           sign: fr.isSign,
           zero: fr.isZero,

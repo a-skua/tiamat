@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:tiamat/src/comet2/instruction/subtract_arithmetic.dart';
-import 'package:tiamat/src/resource/resource.dart';
+import 'package:tiamat/src/comet2/instruction.dart';
+import 'package:tiamat/src/comet2/resource.dart';
 import 'package:test/test.dart';
 
 import 'util.dart';

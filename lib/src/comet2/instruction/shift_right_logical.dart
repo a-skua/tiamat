@@ -1,4 +1,4 @@
-import '../../resource/resource.dart';
+import '../resource.dart';
 import 'util.dart';
 
 /// An instruction of COMET2, named SRL.

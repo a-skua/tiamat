@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:tiamat/src/comet2/instruction/no_operation.dart';
-import 'package:tiamat/src/resource/resource.dart';
+import 'package:tiamat/src/comet2/instruction.dart';
+import 'package:tiamat/src/comet2/resource.dart';
 import 'package:test/test.dart';
 
-import 'util.dart';
+import 'util.dart' as util;
 
 void main() {
   final rand = Random();
@@ -22,7 +22,7 @@ void main() {
         pr.value = adr;
         r.memory[adr] = operand;
 
-        final flag = Flag(
+        final flag = util.Flag(
           overflow: fr.isOverflow,
           sign: fr.isSign,
           zero: fr.isZero,

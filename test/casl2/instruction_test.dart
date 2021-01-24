@@ -3,8 +3,7 @@ import 'dart:math';
 
 import 'package:tiamat/src/casl2/casl2.dart';
 import 'package:tiamat/src/casl2/instruction.dart';
-import 'package:tiamat/src/comet2/comet2.dart';
-import 'package:tiamat/src/resource/resource.dart';
+import 'package:tiamat/src/comet2/comet2.dart' show Comet2;
 import 'package:test/test.dart';
 
 import '../util/util.dart';
@@ -92,12 +91,10 @@ void main() {
     expect(code,
         equals([0x6400, 4, 0x1210, 0x1111, 0x1401, 0x1210, 1111, 0x8100]));
 
-    final r = Resource();
     final c = Comet2();
-    for (var i = 0; i < code.length; i++) {
-      r.memory[r.PR + i] = code[i];
-    }
-    c.exec(r);
+    final r = c.resource;
+    c.load(code);
+    c.exec();
     expect(r.getGR(0), equals(0));
     expect(r.getGR(1), equals(1111));
     expect(r.getGR(2), equals(0));

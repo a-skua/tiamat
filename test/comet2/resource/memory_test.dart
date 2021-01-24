@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:tiamat/src/resource/memory.dart';
+import 'package:tiamat/src/comet2/resource.dart';
 import 'package:test/test.dart';
 
 class TestData4Constructor {

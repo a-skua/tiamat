@@ -1,5 +1,4 @@
-import '../../resource/resource.dart';
-import '../../resource/flag.dart' show Flag;
+import '../resource.dart';
 
 /// Calculate an effective address.
 int getEffectiveAddress(final Resource r, final int x) {
