@@ -1,5 +1,25 @@
 import 'package:tiamat/tiamat.dart';
 
+class DeviceCLI extends Device {
+  final input = () {
+    final list = [
+      'hello, world',
+      'こんにちは，世界',
+      'hello, 世界',
+      'foo bar',
+      'tofu on fire 📛',
+      'exit',
+    ];
+    var i = 0;
+
+    return () {
+      final str = list[i % list.length];
+      i += 1;
+      return str;
+    };
+  }();
+}
+
 void main() {
   const asm = 'MAIN\tSTART\n'
       'LOOP\tIN\tIBUF,31\n'
@@ -26,39 +46,26 @@ void main() {
       '\tJNZ\tLOOP\n'
       'END\tOUT\tMSG,32\n'
       '\tRET\n'
-      'EXIT\tDC\t\'exit\',#FFFF\n'
+      'EXIT\tDC\t\'exit\',-1\n'
       'OUT\tDC\t\'input:\'\n'
       'IBUF\tDS\t31\n'
       'EOF\tDC\t#FFFF\n'
-      'MSG\tDC\t\'goodbye!\',#FFFF\n'
+      'MSG\tDC\t\'goodbye!\',-1\n'
       '\tEND\n';
   print('casl2:\n$asm');
 
-  final cc = Casl2();
-  final bin = cc.compile(asm);
-  print('compiled: $bin\n');
+  final casl2 = Casl2();
 
-  final r = Resource();
-  for (var i = 0; i < bin.length; i++) {
-    r.memory.setWord(i, bin[i]);
-  }
+  final code = casl2.compile(asm);
+  print('compiled:\n$code\n');
 
-  final c = Comet2();
-  c.sv.read = () {
-    final list = [
-      'hello, world',
-      'foo bar',
-      'exit',
-    ];
-    var i = 0;
-    return () {
-      i += 1;
-      return list[i % list.length];
-    };
-  }();
-  c.exec(r);
+  final comet2 = Comet2()..device = DeviceCLI();
+  comet2.load(code);
+
+  comet2.exec();
   print('\nresult:');
   for (var i = 0; i < 8; i++) {
-    print('GR$i:${r.getGR(i)}');
+    final gr = comet2.resource.generalRegisters;
+    print('GR$i:${gr[i].value}');
   }
 }

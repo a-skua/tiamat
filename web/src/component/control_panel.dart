@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' show Comet2, Casl2, Resource;
 
 typedef OnPreExecute = void Function();
 typedef OnUpdate = void Function();
@@ -39,10 +39,8 @@ class ControlPanel {
             onPreExecute();
 
             final code = cc.compile(getCode());
-            for (var i = 0; i < code.length; i++) {
-              r.memory.setWord(r.PR + i, code[i]);
-            }
-            c.exec(r);
+            c.load(code);
+            c.exec();
             onUpdate();
           })
       ];

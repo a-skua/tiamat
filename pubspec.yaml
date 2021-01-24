@@ -1,5 +1,5 @@
 name: tiamat
-version: 0.1.2-nullsafety
+version: 0.2.0-nullsafety
 description: This is an emulator of the COMET2 and a compiler of the CASL2.
 repository: https://github.com/a-skua/tiamat
 

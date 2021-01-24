@@ -1,4 +1,4 @@
-import './token.dart' as token;
+import 'token.dart' as token;
 
 class Node {
   final String comment;

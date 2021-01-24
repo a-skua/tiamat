@@ -15,7 +15,7 @@ class Register {
     this.name,
     this.getR,
     this.setR, {
-    this.bits = wordSize,
+    this.bits = 16,
     this.hasSigned = true,
   });
 

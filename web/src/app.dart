@@ -8,20 +8,20 @@ import './component/content_box.dart';
 import './component/editor.dart';
 import './component/information.dart';
 
-const version = '0.1.2+nullsafety';
+const version = '0.2.0+nullsafety';
 
 Element app() {
-  final cc = Casl2();
-  final r = Resource();
-  final c = Comet2();
+  final casl2 = Casl2();
+  final comet2 = Comet2();
+  final r = comet2.resource;
 
   final inputValues = <String>[];
 
   final state = ResourceState(r);
   final editor = Editor(asm);
   final output = TextAreaElement()..disabled = true;
-  final input = TextAreaElement()..nodes.add(Text('hello, world!'));
-  final control = ControlPanel(r, c, cc, onPreExecute: () {
+  final input = TextAreaElement();
+  final control = ControlPanel(r, comet2, casl2, onPreExecute: () {
     inputValues.clear();
     inputValues.addAll((input.value ?? '').split('\n'));
     r.PR = 0;
@@ -46,11 +46,11 @@ Element app() {
     output.value = '';
   });
 
-  c.sv
-    ..write = (s) {
+  comet2.device
+    ..output = (s) {
       output.value = '${output.value ?? ''}$s\n';
     }
-    ..read = () {
+    ..input = () {
       final s = inputValues;
       var x = 0;
       return () => s[x++ % s.length];
@@ -69,10 +69,8 @@ Element app() {
 }
 
 const asm = 'MAIN\tSTART\n'
-    '\tIN\tIBUF,255\n'
-    '\tOUT\tOBUF,255\n'
+    '\tOUT\tMSG,255\n'
     '\tRET\n'
-    'OBUF\tDC\t\'input:\'\n'
-    'IBUF\tDS\t255\n'
-    'EOF\tDC\t#FFFF\n'
+    'MSG\tDC\t\'hello, world!\'\n'
+    'EOF\tDC\t-1\n'
     '\tEND\n';
