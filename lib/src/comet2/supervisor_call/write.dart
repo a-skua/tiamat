@@ -12,7 +12,7 @@ void write(final Resource r, final Device d) {
   var s = '';
   for (var i = 0; i < length; i++) {
     final char = ram[pointer + i];
-    if (char == eof) {
+    if (char == eof.toUnsigned(ram.bits)) {
       break;
     }
     s += code2char[char] ?? '□';

@@ -7,24 +7,20 @@ void read(final Resource r, final Device d) {
   final gr = r.generalRegisters;
   final ram = r.memory;
 
-  for (var char in d.input().split('')) {
-    final pointer = gr[1].value;
-    final length = gr[2].value;
+  final pointer = gr[1];
+  final length = gr[2];
 
-    if (length == 0) {
+  for (var char in d.input().split('')) {
+    if (length.value == 0) {
       break;
     }
-    gr[2].value -= 1;
+    length.value -= 1;
 
-    ram[pointer] = char2code[char] ?? 0;
-    gr[1].value += 1;
+    ram[pointer.value] = char2code[char] ?? 0;
+    pointer.value += 1;
   }
 
-  {
-    final length = gr[2].value;
-    if (length > 0) {
-      final pointer = gr[1].value;
-      ram[pointer] = eof;
-    }
+  if (length.value > 0) {
+    ram[pointer.value] = eof;
   }
 }

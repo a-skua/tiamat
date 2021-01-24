@@ -1,1 +1,1 @@
-const eof = 0xffff;
+const eof = -1;

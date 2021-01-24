@@ -1,9 +1,9 @@
 import 'dart:html';
 
-import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' show Resource;
 
-import './register.dart';
-import './content_box.dart';
+import 'register.dart';
+import 'content_box.dart';
 
 class ResourceState {
   final _generalRegisters = <Register>[];

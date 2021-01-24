@@ -1,8 +1,6 @@
 import 'resource.dart';
 import 'instruction/instruction.dart';
 
-export 'instruction/instruction.dart';
-
 typedef Instruction = void Function(Resource r);
 
 void instruction(final Resource r, final int code) {
@@ -49,15 +47,3 @@ final _map = <int, Instruction>{
   0x81: returnFromSubroutine,
   0xf0: supervisorCall,
 };
-
-@deprecated
-const wordSize = 16;
-
-@deprecated
-const overflowFlag = Flag.overflow;
-
-@deprecated
-const signFlag = Flag.sign;
-
-@deprecated
-const zeroFlag = Flag.zero;

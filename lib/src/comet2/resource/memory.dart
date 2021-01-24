@@ -28,12 +28,15 @@ class Memory {
   int get length => this._values.length;
 
   /// Set [values] on memory.
-  void setAll(final int address, final List<int> values) =>
-      this._values.setAll(address, values);
+  void setAll(final int address, final List<int> values) {
+    for (var i = 0; i < values.length; i++) {
+      this[address + i] = values[i];
+    }
+  }
 
   /// Get value from [address].
   int operator [](final int address) =>
-      this._values[address % this._values.length] & this.maskBits;
+      this._values[address % this._values.length];
 
   /// Set [value] to [address].
   void operator []=(final int address, final int value) =>

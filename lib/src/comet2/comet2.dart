@@ -3,11 +3,14 @@ import 'device.dart' show Device;
 import 'instruction.dart' show instruction;
 import 'supervisor_call.dart' show SupervisorCall, supervisorCall;
 
-export 'device.dart';
-
+/// COMET2 instance.
 class Comet2 {
+  /// I/O Device.
+  ///
+  /// Need to change when implementing the emulator.
   Device device = Device();
 
+  /// Resource.
   final Resource resource = Resource();
 
   Comet2() {
@@ -15,11 +18,13 @@ class Comet2 {
         (final int code) => supervisorCall(this.resource, this.device, code);
   }
 
+  /// Load code on memory.
   void load(final List<int> code) {
     final pr = this.resource.programRegister;
     this.resource.memory.setAll(pr.value, code);
   }
 
+  /// Execute.
   void exec() {
     final sp = this.resource.stackPointer;
     final pr = this.resource.programRegister;
@@ -30,10 +35,4 @@ class Comet2 {
       instruction(this.resource, op);
     }
   }
-
-  // @deprecated
-  // final sv = this.supervisor;
-
-  // @deprecated
-  // void exec(final Resource r) {}
 }
