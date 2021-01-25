@@ -1,4 +1,5 @@
-import 'token.dart' as token;
+import 'token/token.dart' as token;
+import 'token/parser.dart' as tokenParser;
 
 class Node {
   final String comment;
@@ -22,21 +23,21 @@ List<Node> parse(String s) {
   final instruction = <int>[];
   final operand = <int>[];
 
-  for (final t in token.parse(s)) {
-    switch (t.state) {
-      case token.State.comment:
+  for (final t in tokenParser.parse(s)) {
+    switch (t.type) {
+      case token.Type.comment:
         comment.add(t.rune);
         break;
-      case token.State.label:
+      case token.Type.label:
         label.add(t.rune);
         break;
-      case token.State.instruction:
+      case token.Type.instruction:
         instruction.add(t.rune);
         break;
-      case token.State.operand:
+      case token.Type.operand:
         operand.add(t.rune);
         break;
-      case token.State.newline:
+      case token.Type.endLine:
         if (comment.isNotEmpty ||
             label.isNotEmpty ||
             instruction.isNotEmpty ||
