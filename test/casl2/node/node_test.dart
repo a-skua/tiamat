@@ -12,11 +12,10 @@ void main() {
         test('$i', () {
           final code = rand.nextInt(0x10000);
 
-          final node = Node(code, Type.code, '${rand.nextInt(0x100)}');
+          final node = Node(code, Type.code);
           node.code = rand.nextInt(0x10000);
 
           expect(node.code, equals(code));
-          expect(node.label, equals(''));
           expect(node.type, equals(Type.code));
         });
       }
@@ -26,17 +25,14 @@ void main() {
       for (var i = 0; i < 16; i++) {
         test('$i', () {
           final code = rand.nextInt(0x10000);
-          final label = '${rand.nextInt(0x100)}';
-          final node = Node(code, Type.label, label);
+          final node = Node(code, Type.label);
 
           expect(node.code, equals(code));
-          expect(node.label, equals(label));
           expect(node.type, equals(Type.label));
           {
             final code = rand.nextInt(0x10000);
             node.code = code;
             expect(node.code, equals(code));
-            expect(node.label, equals(''));
             expect(node.type, equals(Type.code));
           }
         });
@@ -63,6 +59,12 @@ void main() {
         expect(root.label, equals(label));
         expect(root.instruction, equals(instruction));
         expect(root.operand, equals(operand));
+        expect(root.children.length, equals(0));
+
+        root.children.addAll(
+          List.filled(8, Node(rand.nextInt(0x10000), Type.code)),
+        );
+        expect(root.children.length, equals(8));
       });
     }
   });
