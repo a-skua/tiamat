@@ -14,7 +14,7 @@ class Node {
   /// Arguments
   /// 1. int code
   /// 2. node type
-  Node(this._code, this._type);
+  Node(this._code, [this._type = Type.code]);
 
   /// Get code.
   int get code => this._code;
@@ -34,6 +34,12 @@ class Node {
   }
 }
 
+/// Label.
+class Label {
+  Node? entity;
+  final references = <Node>[];
+}
+
 /// Root node.
 class Root {
   final String comment;
@@ -50,4 +56,16 @@ class Root {
     required this.instruction,
     required this.operand,
   });
+}
+
+/// Node tree.
+class Tree {
+  // START LABEL.
+  String startLabel = '';
+
+  /// Labels.
+  final labels = <String, Label>{};
+
+  /// Nodes.
+  final nodes = <Node>[];
 }
