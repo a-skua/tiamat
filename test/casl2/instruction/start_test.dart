@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 void main() {
   final rand = Random();
 
-  group('test', () {
+  group('start', () {
     test('without operand', () {
       final tree = Tree();
       final root = Root(

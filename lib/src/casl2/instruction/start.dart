@@ -61,7 +61,6 @@ void start(final Root r, final Tree t) {
         break;
       case State.error:
       default:
-        assert(false);
     }
   }
 

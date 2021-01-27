@@ -30,20 +30,6 @@ class Token {
   void setLabel(final int label) => this._code[this.refIndex] = label;
 }
 
-Token ds(final String label, final String operand) {
-  if (_expADR.hasMatch(operand)) {
-    final adr = operand.replaceFirst('#', '0x');
-    return Token(
-      List.filled(int.parse(adr), 0),
-      label: label,
-    );
-  }
-  return Token(
-    [],
-    label: label,
-  );
-}
-
 enum _DCState {
   string,
   decimal,

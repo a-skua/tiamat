@@ -13,6 +13,9 @@ Tree root2tree(List<Root> roots) {
       case 'END':
         end(root, tree);
         break;
+      case 'DS':
+        ds(root, tree);
+        break;
     }
   }
 
