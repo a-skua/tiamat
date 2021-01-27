@@ -30,28 +30,6 @@ class Token {
   void setLabel(final int label) => this._code[this.refIndex] = label;
 }
 
-Token start(final String label, final String operand) {
-  if (_expADR.hasMatch(operand)) {
-    final adr = _expADR.firstMatch(operand)?.group(1) ?? '0';
-    return Token([
-      0x6400,
-      int.parse(adr.replaceFirst('#', '0x')),
-    ], label: label);
-  }
-  if (operand.isEmpty) {
-    return Token([], label: label);
-  }
-  return Token(
-    [0x6400, 0],
-    label: label,
-    refLabel: operand,
-    refIndex: 1,
-  );
-  ;
-}
-
-Token end() => Token([]);
-
 Token ds(final String label, final String operand) {
   if (_expADR.hasMatch(operand)) {
     final adr = operand.replaceFirst('#', '0x');

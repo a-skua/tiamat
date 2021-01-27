@@ -69,6 +69,17 @@ void start(final Root r, final Tree t) {
     return;
   }
 
+  if (state == State.label) {
+    // Translate: JUMP LABEL
+    r.nodes.addAll([
+      Node(0x6400),
+      Node(0, Type.label),
+    ]);
+    t.nodes.addAll(r.nodes);
+    addReferenceLabel(r.operand, r.nodes.first, t.labels);
+    return;
+  }
+
   if (state == State.hexAddress) {
     // Translate: JUMP adr
     r.nodes.addAll([
@@ -86,17 +97,6 @@ void start(final Root r, final Tree t) {
       Node(int.parse(r.operand)),
     ]);
     t.nodes.addAll(r.nodes);
-    return;
-  }
-
-  if (state == State.label) {
-    // Translate: JUMP LABEL
-    r.nodes.addAll([
-      Node(0x6400),
-      Node(0, Type.label),
-    ]);
-    t.nodes.addAll(r.nodes);
-    addReferenceLabel(r.operand, r.nodes.first, t.labels);
     return;
   }
 
