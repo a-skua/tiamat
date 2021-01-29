@@ -59,7 +59,7 @@ void ds(final Root r, final Tree t) {
     r.nodes.addAll(List.filled(size, Node(0)));
     t.nodes.addAll(r.nodes);
     if (r.label.isNotEmpty) {
-      setLabel(r.label, t.nodes.first, t.labels);
+      setLabel(r.label, r.nodes.first, t.labels);
     }
     return;
   }
