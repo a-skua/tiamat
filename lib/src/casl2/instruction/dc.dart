@@ -12,9 +12,9 @@ enum State {
   error,
 }
 
-/// An instruction CASL2, named DC.
+/// An instruction of CASL2, named DC.
 ///
-///
+/// To define constants.
 void dc(final Root r, final Tree t) {
   final quote = '\''.runes.first;
   final sharp = '#'.runes.first;

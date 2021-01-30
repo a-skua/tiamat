@@ -8,7 +8,7 @@ enum State {
   error,
 }
 
-/// An instruction of casl2, named DS.
+/// An instruction of CASL2, named DS.
 ///
 /// To ensure word space.
 void ds(final Root r, final Tree t) {

@@ -159,12 +159,6 @@ Token rpop(final String label) => Token([
 
 Token ret(final String label) => Token([0x8100], label: label);
 
-Token nop(final String label) => Token([0], label: label);
-
-Token ld(final String label, final String operand) {
-  return _pattern(label, operand, 0x1400, 0x1000);
-}
-
 Token lad(final String label, final String operand) {
   final m = _expCommonOperand.firstMatch(operand);
   final r = m?.group(1) ?? '';

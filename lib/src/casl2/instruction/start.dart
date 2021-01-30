@@ -9,7 +9,7 @@ enum State {
   error,
 }
 
-/// An instruction casl2, named START.
+/// An instruction of CASL2, named START.
 ///
 /// Start is JUMP to address when has operand.
 /// Other than that do nothing.
