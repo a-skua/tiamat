@@ -1,60 +1,13 @@
 import 'dart:math';
 
-import 'package:tiamat/src/casl2/instruction/ld.dart';
+import 'package:tiamat/src/casl2/instruction/st.dart';
 import 'package:tiamat/src/casl2/node/node.dart';
 import 'package:test/test.dart';
 
 void main() {
   final rand = Random();
 
-  group('ld', () {
-    group('r1,r2', () {
-      for (var i = 0; i < 16; i++) {
-        test('$i', () {
-          final label = i % 2 > 0 ? 'LABEL' : '';
-          final register1 = rand.nextInt(8);
-          final register2 = rand.nextInt(8);
-
-          final tree = Tree()
-            ..nodes.addAll(List.generate(
-              rand.nextInt(0x100),
-              (i) => Node(i),
-            ));
-          {
-            final length = rand.nextInt(0x100);
-            tree.labels.addAll(Map.fromIterables(
-              List.generate(length, (i) => '$i${rand.nextInt(0x10000)}'),
-              List.generate(length, (_) => Label()),
-            ));
-          }
-          final root = Root(
-            comment: 'r1,r2',
-            label: label,
-            instruction: 'LD',
-            operand: 'GR$register1,GR$register2',
-          );
-
-          final baseLabelsLength = tree.labels.length;
-          final baseNodesLength = tree.nodes.length;
-
-          ld(root, tree);
-          expect(root.nodes.length, equals(1));
-          expect(tree.nodes.length, equals(baseNodesLength + 1));
-          if (label.isEmpty) {
-            expect(tree.labels.length, equals(baseLabelsLength));
-            expect(tree.labels[label], equals(null));
-          } else {
-            expect(tree.labels.length, equals(baseLabelsLength + 1));
-            expect(tree.labels[label], isNot(equals(null)));
-            expect(tree.labels[label]?.entity, equals(root.nodes.first));
-          }
-          expect(root.nodes.first.code,
-              equals(0x1400 | register1 << 4 | register2));
-          expect(root.nodes.first.type, equals(Type.code));
-        });
-      }
-    });
-
+  group('st', () {
     group('r,adx,x', () {
       group('address only', () {
         for (var i = 0; i < 16; i++) {
@@ -78,14 +31,14 @@ void main() {
             final root = Root(
               comment: 'r,adr,x',
               label: label,
-              instruction: 'LD',
+              instruction: 'ST',
               operand: 'GR$register,$address',
             );
 
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            ld(root, tree);
+            st(root, tree);
             expect(root.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -96,7 +49,7 @@ void main() {
               expect(tree.labels[label], isNot(equals(null)));
               expect(tree.labels[label]?.entity, equals(root.nodes.first));
             }
-            expect(root.nodes[0].code, equals(0x1000 | register << 4));
+            expect(root.nodes[0].code, equals(0x1100 | register << 4));
             expect(root.nodes[0].type, equals(Type.code));
             expect(root.nodes[1].code, equals(address));
             expect(root.nodes[1].type, equals(Type.code));
@@ -127,14 +80,14 @@ void main() {
             final root = Root(
               comment: 'r,adr,x',
               label: label,
-              instruction: 'LD',
+              instruction: 'ST',
               operand: 'GR$register,$address,GR$index',
             );
 
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            ld(root, tree);
+            st(root, tree);
             expect(root.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -145,7 +98,7 @@ void main() {
               expect(tree.labels[label], isNot(equals(null)));
               expect(tree.labels[label]?.entity, equals(root.nodes.first));
             }
-            expect(root.nodes[0].code, equals(0x1000 | register << 4 | index));
+            expect(root.nodes[0].code, equals(0x1100 | register << 4 | index));
             expect(root.nodes[0].type, equals(Type.code));
             expect(root.nodes[1].code, equals(address));
             expect(root.nodes[1].type, equals(Type.code));
@@ -175,7 +128,7 @@ void main() {
             final root = Root(
               comment: 'r,adr,x',
               label: label,
-              instruction: 'LD',
+              instruction: 'ST',
               operand:
                   'GR$register,#${address.toRadixString(16).toUpperCase().padLeft(4, '0')}',
             );
@@ -183,7 +136,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            ld(root, tree);
+            st(root, tree);
             expect(root.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -194,7 +147,7 @@ void main() {
               expect(tree.labels[label], isNot(equals(null)));
               expect(tree.labels[label]?.entity, equals(root.nodes.first));
             }
-            expect(root.nodes[0].code, equals(0x1000 | register << 4));
+            expect(root.nodes[0].code, equals(0x1100 | register << 4));
             expect(root.nodes[0].type, equals(Type.code));
             expect(root.nodes[1].code, equals(address));
             expect(root.nodes[1].type, equals(Type.code));
@@ -225,7 +178,7 @@ void main() {
             final root = Root(
               comment: 'r,adr,x',
               label: label,
-              instruction: 'LD',
+              instruction: 'ST',
               operand: 'GR$register,'
                   '#${address.toRadixString(16).toUpperCase().padLeft(4, '0')},'
                   'GR$index',
@@ -234,7 +187,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            ld(root, tree);
+            st(root, tree);
             expect(root.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -245,7 +198,7 @@ void main() {
               expect(tree.labels[label], isNot(equals(null)));
               expect(tree.labels[label]?.entity, equals(root.nodes.first));
             }
-            expect(root.nodes[0].code, equals(0x1000 | register << 4 | index));
+            expect(root.nodes[0].code, equals(0x1100 | register << 4 | index));
             expect(root.nodes[0].type, equals(Type.code));
             expect(root.nodes[1].code, equals(address));
             expect(root.nodes[1].type, equals(Type.code));
@@ -276,14 +229,14 @@ void main() {
             final root = Root(
               comment: 'r,adr,x',
               label: label,
-              instruction: 'LD',
+              instruction: 'ST',
               operand: 'GR$register,$referenceLabel',
             );
 
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            ld(root, tree);
+            st(root, tree);
             expect(root.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -304,7 +257,7 @@ void main() {
               expect(tree.labels[label], isNot(equals(null)));
               expect(tree.labels[label]?.entity, equals(root.nodes.first));
             }
-            expect(root.nodes[0].code, equals(0x1000 | register << 4));
+            expect(root.nodes[0].code, equals(0x1100 | register << 4));
             expect(root.nodes[0].type, equals(Type.code));
             expect(root.nodes[1].type, equals(Type.label));
           });
@@ -335,7 +288,7 @@ void main() {
             final root = Root(
               comment: 'r,adr,x',
               label: label,
-              instruction: 'LD',
+              instruction: 'ST',
               operand: 'GR$register,'
                   '$referenceLabel,'
                   'GR$index',
@@ -344,7 +297,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            ld(root, tree);
+            st(root, tree);
             expect(root.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -365,7 +318,7 @@ void main() {
               expect(tree.labels[label], isNot(equals(null)));
               expect(tree.labels[label]?.entity, equals(root.nodes.first));
             }
-            expect(root.nodes[0].code, equals(0x1000 | register << 4 | index));
+            expect(root.nodes[0].code, equals(0x1100 | register << 4 | index));
             expect(root.nodes[0].type, equals(Type.code));
             expect(root.nodes[1].type, equals(Type.label));
           });

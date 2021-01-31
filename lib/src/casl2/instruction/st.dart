@@ -7,18 +7,13 @@ enum State {
 
   /// |r,adr,x
   /// | ^ to address|label|register
-  /// +
-  /// |r1,r2
-  /// |  ^ to address|label|register
   unstable,
 
   /// |r,adr,x
   /// |^ register
-  /// +
-  /// |r1,r2
-  /// |^^ register
   register,
 
+  /// To error when register name.
   /// |r1,r2
   /// |   ^^ register2
   register2,
@@ -34,10 +29,8 @@ enum State {
   label,
 }
 
-/// Common parser.
-///
-/// Pattern: r,adr,x|r1,r2
-void parsePattern1(int operand, final Root r, final Tree t) {
+/// An instruction of CASL2, named ST.
+void st(final Root r, final Tree t) {
   final sharp = '#'.runes.first;
   final comma = ','.runes.first;
   final startNum = '0'.runes.first;
@@ -53,6 +46,7 @@ void parsePattern1(int operand, final Root r, final Tree t) {
   final temporary = <int>[];
   var temporaryRegister = 0;
   var pointer = 0;
+  var operand = 0x1100;
   int? address = null;
   String? label = null;
 
@@ -369,17 +363,6 @@ void parsePattern1(int operand, final Root r, final Tree t) {
     }
     return;
   }
-  // |GR0,GR1[EOF]
-  // |```````^ register2!
-  if (pointer == 3 && state == State.register2) {
-    operand |= 0x0400 | int.parse(String.fromCharCode(temporaryRegister));
-    r.nodes.add(Node(operand));
-    t.nodes.addAll(r.nodes);
-    if (r.label.isNotEmpty) {
-      setLabel(r.label, r.nodes.first, t.labels);
-    }
-    return;
-  }
   // |GR0,0,GR1[EOF]
   // |`````````^ index with address!
   if (pointer == 3 && state == State.indexRegister && address != null) {
@@ -417,5 +400,6 @@ void parsePattern1(int operand, final Root r, final Tree t) {
   assert(state != State.none);
   assert(state != State.error);
   assert(state != State.unstable);
+  assert(state != State.register2);
   assert(false);
 }

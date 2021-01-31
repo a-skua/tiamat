@@ -7,3 +7,4 @@ export 'dc.dart';
 /// Machine(COMET2) instructions.
 export 'nop.dart';
 export 'ld.dart';
+export 'st.dart';
