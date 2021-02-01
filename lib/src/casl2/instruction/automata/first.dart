@@ -1,5 +1,5 @@
-import '../node/node.dart';
-import 'util.dart';
+import '../../node/node.dart';
+import 'result.dart';
 
 enum State {
   none,
@@ -34,10 +34,27 @@ enum State {
   label,
 }
 
-/// Common parser.
+class ExResult extends Result {
+  final String label;
+  ExResult(
+    List<Node> values,
+    State lastState, {
+    Error? error = null,
+    this.label = '',
+  }) : super(values, lastState, error: error);
+}
+
+/// A first automata.
 ///
-/// Pattern: r,adr,x|r1,r2
-void parsePattern1(int operand, final Root r, final Tree t) {
+/// Expect one of the two results.
+/// Correct syntax: r,adr,x | r1,r2
+/// Used [firstHigh] when operand is `r,adr,x`.
+/// Used [secondHigh] when operand is `r1,r2`.
+ExResult automata(
+  final Runes runes,
+  final int firstHigh, [
+  final int secondHigh = 0,
+]) {
   final sharp = '#'.runes.first;
   final comma = ','.runes.first;
   final startNum = '0'.runes.first;
@@ -52,12 +69,13 @@ void parsePattern1(int operand, final Root r, final Tree t) {
 
   final temporary = <int>[];
   var temporaryRegister = 0;
+  var low = 0;
   var pointer = 0;
   int? address = null;
   String? label = null;
 
   var state = State.none;
-  for (final rune in r.operand.runes) {
+  for (final rune in runes) {
     switch (state) {
       case State.none:
         // |GR1,GR2
@@ -96,7 +114,7 @@ void parsePattern1(int operand, final Root r, final Tree t) {
         // |GR7,GR0
         // |```^ delimiter!
         if (pointer == 3 && rune == comma) {
-          operand |= int.parse(String.fromCharCode(temporaryRegister)) << 4;
+          low |= int.parse(String.fromCharCode(temporaryRegister)) << 4;
           temporary.clear();
           pointer = 0;
           state = State.unstable;
@@ -321,101 +339,68 @@ void parsePattern1(int operand, final Root r, final Tree t) {
         break;
       case State.error:
       default:
-        break;
     }
   }
 
   // |GR0,123[EOF]
   // |```````^ address!
   if (state == State.address) {
-    r.nodes.addAll([
-      Node(operand),
-      Node(int.parse(String.fromCharCodes(temporary))),
-    ]);
-    t.nodes.addAll(r.nodes);
-    if (r.label.isNotEmpty) {
-      setLabel(r.label, r.nodes.first, t.labels);
-    }
-    return;
+    return ExResult(
+      [
+        Node(firstHigh | low),
+        Node(int.parse(String.fromCharCodes(temporary))),
+      ],
+      State.address,
+    );
   }
+
   // |GR0,#FFFF[EOF]
   // |`````````^ hex address!
   if (pointer == 4 && state == State.hexAddress) {
-    r.nodes.addAll([
-      Node(operand),
+    return ExResult([
+      Node(firstHigh | low),
       Node(int.parse(String.fromCharCodes(temporary), radix: 16)),
-    ]);
-    t.nodes.addAll(r.nodes);
-    if (r.label.isNotEmpty) {
-      setLabel(r.label, r.nodes.first, t.labels);
-    }
-    return;
+    ], State.hexAddress);
   }
+
   // |GR1,LABEL[EOF]
   // |`````````^ label!
   if (state == State.label) {
-    r.nodes.addAll([
-      Node(operand),
+    final label = String.fromCharCodes(temporary);
+    return ExResult([
+      Node(firstHigh | low),
       Node(0, Type.label),
-    ]);
-    t.nodes.addAll(r.nodes);
-    addReferenceLabel(
-      String.fromCharCodes(temporary),
-      r.nodes.last,
-      t.labels,
-    );
-    if (r.label.isNotEmpty) {
-      setLabel(r.label, r.nodes.first, t.labels);
-    }
-    return;
+    ], State.label, label: label);
   }
+
   // |GR0,GR1[EOF]
   // |```````^ register2!
   if (pointer == 3 && state == State.register2) {
-    operand |= 0x0400 | int.parse(String.fromCharCode(temporaryRegister));
-    r.nodes.add(Node(operand));
-    t.nodes.addAll(r.nodes);
-    if (r.label.isNotEmpty) {
-      setLabel(r.label, r.nodes.first, t.labels);
-    }
-    return;
+    low |= int.parse(String.fromCharCode(temporaryRegister));
+    return ExResult([
+      Node(secondHigh | low),
+    ], State.register2);
   }
+
   // |GR0,0,GR1[EOF]
   // |`````````^ index with address!
   if (pointer == 3 && state == State.indexRegister && address != null) {
-    operand |= int.parse(String.fromCharCode(temporaryRegister));
-    r.nodes.addAll([
-      Node(operand),
+    low |= int.parse(String.fromCharCode(temporaryRegister));
+    return ExResult([
+      Node(firstHigh | low),
       Node(address),
-    ]);
-    t.nodes.addAll(r.nodes);
-    if (r.label.isNotEmpty) {
-      setLabel(r.label, r.nodes.first, t.labels);
-    }
-    return;
+    ], State.indexRegister);
   }
+
   // |GR0,LABEL,GR1[EOF]
   // |`````````````^ index with label!
   if (pointer == 3 && state == State.indexRegister && label != null) {
-    operand |= int.parse(String.fromCharCode(temporaryRegister));
-    r.nodes.addAll([
-      Node(operand),
+    low |= int.parse(String.fromCharCode(temporaryRegister));
+    return ExResult([
+      Node(firstHigh | low),
       Node(0, Type.label),
-    ]);
-    t.nodes.addAll(r.nodes);
-    addReferenceLabel(
-      label,
-      r.nodes.last,
-      t.labels,
-    );
-    if (r.label.isNotEmpty) {
-      setLabel(r.label, r.nodes.first, t.labels);
-    }
-    return;
+    ], State.indexRegister, label: label);
   }
 
-  assert(state != State.none);
-  assert(state != State.error);
-  assert(state != State.unstable);
-  assert(false);
+  return ExResult([], state, error: Error());
 }
