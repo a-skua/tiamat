@@ -9,3 +9,5 @@ export 'nop.dart';
 export 'ld.dart';
 export 'st.dart';
 export 'lad.dart';
+
+export 'adda.dart';

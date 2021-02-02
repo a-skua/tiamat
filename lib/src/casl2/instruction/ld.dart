@@ -1,5 +1,5 @@
 import '../node/node.dart';
-import 'automata/first.dart';
+import 'automata/pattern1.dart';
 import 'util.dart';
 
 /// An instruction of CASL2, named LD.

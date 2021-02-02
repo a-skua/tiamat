@@ -2,13 +2,12 @@ import '../node/node.dart';
 import 'automata/pattern1.dart';
 import 'util.dart';
 
-/// An instruction of CASL2, named ST.
-void st(final Root r, final Tree t) {
-  final result = automata(r.operand.runes, 0x1100);
+/// An instruction of CASL2, named ADDA.
+void adda(final Root r, final Tree t) {
+  final result = automata(r.operand.runes, 0x2000, 0x2400);
 
   // TODO: make error handling.
   assert(result.hasNotError);
-  assert(result != State.register2);
 
   // |GR0,123[EOF]
   // |```````^ address!
@@ -38,6 +37,17 @@ void st(final Root r, final Tree t) {
     r.nodes.addAll(result.values);
     t.nodes.addAll(result.values);
     addReferenceLabel(result.label, r.nodes.last, t.labels);
+    if (r.label.isNotEmpty) {
+      setLabel(r.label, r.nodes.first, t.labels);
+    }
+    return;
+  }
+
+  // |GR0,GR1[EOF]
+  // |```````^ register2!
+  if (result.lastState == State.register2) {
+    r.nodes.addAll(result.values);
+    t.nodes.addAll(result.values);
     if (r.label.isNotEmpty) {
       setLabel(r.label, r.nodes.first, t.labels);
     }
