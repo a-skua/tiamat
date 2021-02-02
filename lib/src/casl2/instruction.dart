@@ -159,22 +159,6 @@ Token rpop(final String label) => Token([
 
 Token ret(final String label) => Token([0x8100], label: label);
 
-Token adda(final String label, final String operand) {
-  return _pattern(label, operand, 0x2400, 0x2000);
-}
-
-Token addl(final String label, final String operand) {
-  return _pattern(label, operand, 0x2600, 0x2200);
-}
-
-Token suba(final String label, final String operand) {
-  return _pattern(label, operand, 0x2500, 0x2100);
-}
-
-Token subl(final String label, final String operand) {
-  return _pattern(label, operand, 0x2700, 0x2300);
-}
-
 Token and(final String label, final String operand) {
   return _pattern(label, operand, 0x3400, 0x3000);
 }
