@@ -159,26 +159,6 @@ Token rpop(final String label) => Token([
 
 Token ret(final String label) => Token([0x8100], label: label);
 
-Token and(final String label, final String operand) {
-  return _pattern(label, operand, 0x3400, 0x3000);
-}
-
-Token or(final String label, final String operand) {
-  return _pattern(label, operand, 0x3500, 0x3100);
-}
-
-Token xor(final String label, final String operand) {
-  return _pattern(label, operand, 0x3600, 0x3200);
-}
-
-Token cpa(final String label, final String operand) {
-  return _pattern(label, operand, 0x4400, 0x4000);
-}
-
-Token cpl(final String label, final String operand) {
-  return _pattern(label, operand, 0x4500, 0x4100);
-}
-
 Token sla(final String label, final String operand) {
   // TODO
   final t = _pattern(label, operand, 0, 0x5000);

@@ -14,3 +14,10 @@ export 'adda.dart';
 export 'suba.dart';
 export 'addl.dart';
 export 'subl.dart';
+
+export 'and.dart';
+export 'or.dart';
+export 'xor.dart';
+
+export 'cpa.dart';
+export 'cpl.dart';
