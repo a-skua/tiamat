@@ -159,10 +159,6 @@ Token rpop(final String label) => Token([
 
 Token ret(final String label) => Token([0x8100], label: label);
 
-Token push(final String label, final String operand) {
-  return _pattern2(label, operand, 0x7000);
-}
-
 Token pop(final String label, final String operand) {
   final r = _expGR.firstMatch(operand)?.group(1) ?? '0';
   final op = 0x7100 | (int.parse(r) << 4);
