@@ -159,26 +159,6 @@ Token rpop(final String label) => Token([
 
 Token ret(final String label) => Token([0x8100], label: label);
 
-Token jnz(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6200);
-}
-
-Token jze(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6300);
-}
-
-Token jump(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6400);
-}
-
-Token jpl(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6500);
-}
-
-Token jov(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6600);
-}
-
 Token push(final String label, final String operand) {
   return _pattern2(label, operand, 0x7000);
 }

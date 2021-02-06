@@ -28,3 +28,8 @@ export 'sll.dart';
 export 'srl.dart';
 
 export 'jmi.dart';
+export 'jnz.dart';
+export 'jze.dart';
+export 'jump.dart';
+export 'jpl.dart';
+export 'jov.dart';
