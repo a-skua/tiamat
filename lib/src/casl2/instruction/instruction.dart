@@ -35,3 +35,9 @@ export 'jpl.dart';
 export 'jov.dart';
 
 export 'push.dart';
+export 'pop.dart';
+
+export 'call.dart';
+export 'ret.dart';
+
+export 'svc.dart';

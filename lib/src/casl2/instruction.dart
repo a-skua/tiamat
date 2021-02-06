@@ -157,23 +157,6 @@ Token rpop(final String label) => Token([
       0x7110,
     ], label: label);
 
-Token ret(final String label) => Token([0x8100], label: label);
-
-Token pop(final String label, final String operand) {
-  final r = _expGR.firstMatch(operand)?.group(1) ?? '0';
-  final op = 0x7100 | (int.parse(r) << 4);
-
-  return Token([op], label: label);
-}
-
-Token call(final String label, final String operand) {
-  return _pattern2(label, operand, 0x8000);
-}
-
-Token svc(final String label, final String operand) {
-  return _pattern2(label, operand, 0xf000);
-}
-
 Token _pattern2(final String label, final String operand, final int code) {
   final m = _expADRX.firstMatch(operand);
   final adr = m?.group(1) ?? '';
