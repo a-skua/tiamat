@@ -8,7 +8,7 @@ void main() {
   final rand = Random();
 
   group('jmi', () {
-    group('adx,x', () {
+    group('adr,x', () {
       group('address only', () {
         for (var i = 0; i < 16; i++) {
           test('$i', () {

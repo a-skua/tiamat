@@ -55,7 +55,7 @@ void main() {
       }
     });
 
-    group('r,adx,x', () {
+    group('r,adr,x', () {
       group('address only', () {
         for (var i = 0; i < 16; i++) {
           test('$i', () {
