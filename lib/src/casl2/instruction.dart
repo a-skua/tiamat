@@ -159,46 +159,6 @@ Token rpop(final String label) => Token([
 
 Token ret(final String label) => Token([0x8100], label: label);
 
-Token sla(final String label, final String operand) {
-  // TODO
-  final t = _pattern(label, operand, 0, 0x5000);
-  if (t.size == 1) {
-    t.code[0] = 0;
-  }
-  return t;
-}
-
-Token sra(final String label, final String operand) {
-  // TODO
-  final t = _pattern(label, operand, 0, 0x5100);
-  if (t.size == 1) {
-    t.code[0] = 0;
-  }
-  return t;
-}
-
-Token sll(final String label, final String operand) {
-  // TODO
-  final t = _pattern(label, operand, 0, 0x5200);
-  if (t.size == 1) {
-    t.code[0] = 0;
-  }
-  return t;
-}
-
-Token srl(final String label, final String operand) {
-  // TODO
-  final t = _pattern(label, operand, 0, 0x5300);
-  if (t.size == 1) {
-    t.code[0] = 0;
-  }
-  return t;
-}
-
-Token jmi(final String label, final String operand) {
-  return _pattern2(label, operand, 0x6100);
-}
-
 Token jnz(final String label, final String operand) {
   return _pattern2(label, operand, 0x6200);
 }

@@ -21,3 +21,10 @@ export 'xor.dart';
 
 export 'cpa.dart';
 export 'cpl.dart';
+
+export 'sla.dart';
+export 'sra.dart';
+export 'sll.dart';
+export 'srl.dart';
+
+export 'jmi.dart';
