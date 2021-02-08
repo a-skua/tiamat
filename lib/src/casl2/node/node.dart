@@ -56,6 +56,15 @@ class Root {
     required this.instruction,
     required this.operand,
   });
+
+  factory Root.simplified(String instruction, String operand) {
+    return Root(
+      comment: '',
+      label: '',
+      instruction: instruction,
+      operand: operand,
+    );
+  }
 }
 
 /// Node tree.

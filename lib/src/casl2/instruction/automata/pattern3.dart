@@ -54,7 +54,7 @@ Result automata(final Runes runes, final int high) {
         // |``^ register?
         if (pointer == 2 && rune >= startNum && rune <= endNumR) {
           pointer = 3;
-          low = int.parse(String.fromCharCode(rune));
+          low = int.parse(String.fromCharCode(rune)) << 4;
           break;
         }
         // |GR0,#FF13

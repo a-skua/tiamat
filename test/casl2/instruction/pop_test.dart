@@ -48,7 +48,7 @@ void main() {
               expect(tree.labels[label], isNot(equals(null)));
               expect(tree.labels[label]?.entity, equals(root.nodes.first));
             }
-            expect(root.nodes[0].code, equals(0x7100 | register));
+            expect(root.nodes[0].code, equals(0x7100 | register << 4));
             expect(root.nodes[0].type, equals(Type.code));
           });
         }
