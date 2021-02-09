@@ -1,120 +1,48 @@
-import '../util/charcode.dart';
+/// CASL2 instructions.
+export 'instruction/start.dart';
+export 'instruction/end.dart';
+export 'instruction/ds.dart';
+export 'instruction/dc.dart';
 
-// FIXME
-//
-// LABEL ADDA GR0,GR1
-//       RET
-final _expCommonOperand = RegExp(r'(GR[0-7]),?([A-Z0-9#]+)?,?(GR[1-7])?');
-final _expADRX = RegExp(r'([A-Z0-9#]+),?(GR[1-7])?');
-final _expGR = RegExp(r'^GR([0-7])$');
-final _expADR = RegExp(r'^(#?[0-9A-F]+)$');
-final _expStr = RegExp('\'([^\']*)\'');
+/// Machine(COMET2) instructions.
+export 'instruction/nop.dart';
+export 'instruction/ld.dart';
+export 'instruction/st.dart';
+export 'instruction/lad.dart';
 
-class Token {
-  final List<int> _code;
-  final String label;
-  final String refLabel;
-  final int refIndex;
+export 'instruction/adda.dart';
+export 'instruction/suba.dart';
+export 'instruction/addl.dart';
+export 'instruction/subl.dart';
 
-  Token(
-    this._code, {
-    this.label = '',
-    this.refLabel = '',
-    this.refIndex = 0,
-  });
+export 'instruction/and.dart';
+export 'instruction/or.dart';
+export 'instruction/xor.dart';
 
-  int get size => this.code.length;
-  bool get hasLabel => this.label.isNotEmpty;
-  bool get hasReferenceLabel => this.refLabel.isNotEmpty;
-  List<int> get code => this._code;
-  void setLabel(final int label) => this._code[this.refIndex] = label;
-}
+export 'instruction/cpa.dart';
+export 'instruction/cpl.dart';
 
-Token rpop(final String label) => Token([
-      0x7170,
-      0x7160,
-      0x7150,
-      0x7140,
-      0x7130,
-      0x7120,
-      0x7110,
-    ], label: label);
+export 'instruction/sla.dart';
+export 'instruction/sra.dart';
+export 'instruction/sll.dart';
+export 'instruction/srl.dart';
 
-Token _pattern2(final String label, final String operand, final int code) {
-  final m = _expADRX.firstMatch(operand);
-  final adr = m?.group(1) ?? '';
-  final x = m?.group(2) ?? '';
+export 'instruction/jmi.dart';
+export 'instruction/jnz.dart';
+export 'instruction/jze.dart';
+export 'instruction/jump.dart';
+export 'instruction/jpl.dart';
+export 'instruction/jov.dart';
 
-  var op = code;
-  if (_expGR.hasMatch(x)) {
-    final gr = _expGR.firstMatch(x)?.group(1) ?? '0';
-    op |= int.parse(gr);
-  }
+export 'instruction/push.dart';
+export 'instruction/pop.dart';
 
-  if (_expADR.hasMatch(adr)) {
-    final a = _expADR.firstMatch(adr)?.group(1) ?? '0';
-    return Token([
-      op,
-      int.parse(a.replaceFirst('#', '0x')),
-    ], label: label);
-  }
-  return Token(
-    [op, 0],
-    label: label,
-    refLabel: adr,
-    refIndex: 1,
-  );
-}
+export 'instruction/call.dart';
+export 'instruction/ret.dart';
 
-Token _pattern(final String label, final String operand, final int codeR1R2,
-    final int codeRAdrX) {
-  final m = _expCommonOperand.firstMatch(operand);
-  final r1 = m?.group(1) ?? '';
-  final r2 = m?.group(2) ?? '';
-  final x = m?.group(3) ?? '';
+export 'instruction/svc.dart';
 
-  // CODE r1,r2
-  if (_expGR.hasMatch(r1) && _expGR.hasMatch(r2)) {
-    var op = codeR1R2;
-    {
-      final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
-      op |= int.parse(r) << 4;
-    }
-
-    {
-      final r = _expGR.firstMatch(r2)?.group(1) ?? '0';
-      op |= int.parse(r);
-    }
-    return Token([op], label: label);
-  }
-
-  // CODE r,adr,x
-  if (_expGR.hasMatch(r1)) {
-    var op = codeRAdrX;
-    {
-      final r = _expGR.firstMatch(r1)?.group(1) ?? '0';
-      op |= int.parse(r) << 4;
-    }
-
-    if (_expGR.hasMatch(x)) {
-      final r = _expGR.firstMatch(x)?.group(1) ?? '0';
-      op |= int.parse(r);
-    }
-
-    if (_expADR.hasMatch(r2)) {
-      final adr = _expADR.firstMatch(r2)?.group(1) ?? '0';
-      final a = adr.replaceFirst('#', '0x');
-      return Token(
-        [op, int.parse(a)],
-        label: label,
-      );
-    }
-    return Token(
-      [op, 0],
-      label: label,
-      refLabel: r2,
-      refIndex: 1,
-    );
-  }
-  return nop(label);
-}
+export 'instruction/input.dart';
+export 'instruction/output.dart';
+export 'instruction/rpush.dart';
+export 'instruction/rpop.dart';

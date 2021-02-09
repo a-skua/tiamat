@@ -1,5 +1,4 @@
 import '../node/node.dart';
-import 'automata/pattern4.dart';
 import 'push.dart';
 import 'util.dart';
 
