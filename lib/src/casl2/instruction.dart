@@ -30,23 +30,6 @@ class Token {
   void setLabel(final int label) => this._code[this.refIndex] = label;
 }
 
-Token rpush(final String label) => Token([
-      0x7001,
-      0,
-      0x7002,
-      0,
-      0x7003,
-      0,
-      0x7004,
-      0,
-      0x7005,
-      0,
-      0x7006,
-      0,
-      0x7007,
-      0,
-    ], label: label);
-
 Token rpop(final String label) => Token([
       0x7170,
       0x7160,

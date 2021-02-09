@@ -32,7 +32,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: '',
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand: '$label,$length',
               );
 
@@ -96,7 +96,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: '',
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand:
                     '$label,#${length.toRadixString(16).toUpperCase().padLeft(4, '0')}',
               );
@@ -160,7 +160,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: '',
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand: '$addr,$length',
               );
 
@@ -222,7 +222,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: '',
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand:
                     '$addr,#${length.toRadixString(16).toUpperCase().padLeft(4, '0')}',
               );
@@ -285,7 +285,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: '',
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand:
                     '#${addr.toRadixString(16).toUpperCase().padLeft(4, '0')}'
                     ',$length',
@@ -349,7 +349,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: '',
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand:
                     '#${addr.toRadixString(16).toUpperCase().padLeft(4, '0')}'
                     ',#${length.toRadixString(16).toUpperCase().padLeft(4, '0')}',
@@ -417,7 +417,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: insLabel,
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand: '$label,$length',
               );
 
@@ -483,7 +483,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: insLabel,
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand:
                     '$label,#${length.toRadixString(16).toUpperCase().padLeft(4, '0')}',
               );
@@ -549,7 +549,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: label,
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand: '$addr,$length',
               );
 
@@ -613,7 +613,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: label,
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand:
                     '$addr,#${length.toRadixString(16).toUpperCase().padLeft(4, '0')}',
               );
@@ -678,7 +678,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: label,
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand:
                     '#${addr.toRadixString(16).toUpperCase().padLeft(4, '0')}'
                     ',$length',
@@ -744,7 +744,7 @@ void main() {
               final root = Root(
                 comment: 'adr,len',
                 label: label,
-                instruction: 'IN',
+                instruction: 'OUT',
                 operand:
                     '#${addr.toRadixString(16).toUpperCase().padLeft(4, '0')}'
                     ',#${length.toRadixString(16).toUpperCase().padLeft(4, '0')}',

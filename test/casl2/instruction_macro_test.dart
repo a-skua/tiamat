@@ -6,29 +6,6 @@ import 'package:test/test.dart';
 import '../util/util.dart';
 
 void main() {
-  test('RPUSH', () {
-    expect(
-      rpush('FOO').code,
-      equals([
-        0x7001,
-        0,
-        0x7002,
-        0,
-        0x7003,
-        0,
-        0x7004,
-        0,
-        0x7005,
-        0,
-        0x7006,
-        0,
-        0x7007,
-        0,
-      ]),
-    );
-    expect(rpush('FOO').label, equals('FOO'));
-  });
-
   test('RPOP', () {
     expect(
       rpop('FOO').code,
