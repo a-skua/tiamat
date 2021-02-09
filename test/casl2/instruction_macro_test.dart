@@ -6,54 +6,6 @@ import 'package:test/test.dart';
 import '../util/util.dart';
 
 void main() {
-  test('IN', () {
-    expect(
-      input('FOO', '#00F0,10').code,
-      equals([
-        0x7001,
-        0,
-        0x7002,
-        0,
-        0x1210,
-        0xf0,
-        0x1220,
-        10,
-        0xf000,
-        1,
-        0x7120,
-        0x7110,
-      ]),
-    );
-    expect(
-      input('FOO', '#00F0,10').label,
-      equals('FOO'),
-    );
-  });
-
-  test('OUT', () {
-    expect(
-      output('FOO', '#00F0,10').code,
-      equals([
-        0x7001,
-        0,
-        0x7002,
-        0,
-        0x1210,
-        0xf0,
-        0x1220,
-        10,
-        0xf000,
-        2,
-        0x7120,
-        0x7110,
-      ]),
-    );
-    expect(
-      output('FOO', '#00F0,10').label,
-      equals('FOO'),
-    );
-  });
-
   test('RPUSH', () {
     expect(
       rpush('FOO').code,
