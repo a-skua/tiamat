@@ -48,7 +48,7 @@ void main() {
         final instruction = 'i${rand.nextInt(0x100)}';
         final operand = 'o${rand.nextInt(0x100)}';
 
-        final root = RootNode(
+        final root = Root(
           comment: comment,
           label: label,
           instruction: instruction,
@@ -59,12 +59,12 @@ void main() {
         expect(root.label, equals(label));
         expect(root.instruction, equals(instruction));
         expect(root.operand, equals(operand));
-        expect(root.children.length, equals(0));
+        expect(root.nodes.length, equals(0));
 
-        root.children.addAll(
+        root.nodes.addAll(
           List.filled(8, Node(rand.nextInt(0x10000), Type.code)),
         );
-        expect(root.children.length, equals(8));
+        expect(root.nodes.length, equals(8));
       });
     }
   });

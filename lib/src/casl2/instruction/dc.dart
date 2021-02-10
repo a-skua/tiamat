@@ -2,7 +2,7 @@ import '../node/node.dart';
 import '../../util/charcode.dart';
 import 'util.dart';
 
-enum State {
+enum _State {
   none,
   string,
   address,
@@ -30,10 +30,10 @@ void dc(final Root r, final Tree t) {
   // value
   var constant = <int>[];
   // state
-  var state = State.none;
+  var state = _State.none;
   for (final rune in r.operand.runes) {
     switch (state) {
-      case State.none:
+      case _State.none:
         // |'hello, world'
         // |^ string!
         // +
@@ -41,7 +41,7 @@ void dc(final Root r, final Tree t) {
         // |``````^ string!
         if (rune == quote) {
           // exclude quote!
-          state = State.string;
+          state = _State.string;
           break;
         }
         // |#ABCD
@@ -51,7 +51,7 @@ void dc(final Root r, final Tree t) {
         // |``````^ address(hex)!
         if (rune == sharp) {
           // exclude sharp!
-          state = State.hexAddress;
+          state = _State.hexAddress;
           break;
         }
         // |-1
@@ -61,7 +61,7 @@ void dc(final Root r, final Tree t) {
         // |```^
         if (rune == minus) {
           constant.add(rune);
-          state = State.address;
+          state = _State.address;
           break;
         }
         // |1234
@@ -71,7 +71,7 @@ void dc(final Root r, final Tree t) {
         // |````^ address(decimal)!
         if (rune >= startNum && rune <= endNum) {
           constant.add(rune);
-          state = State.address;
+          state = _State.address;
           break;
         }
         // |LABEL
@@ -81,7 +81,7 @@ void dc(final Root r, final Tree t) {
         // |```````^ label!
         if (rune >= startLabel && rune <= endLabel) {
           constant.add(rune);
-          state = State.label;
+          state = _State.label;
           break;
         }
         // |,!@#
@@ -89,9 +89,9 @@ void dc(final Root r, final Tree t) {
         // +
         // |-1,!@#
         // |```^ error!
-        state = State.error;
+        state = _State.error;
         break;
-      case State.string:
+      case _State.string:
         // |'hello, world!'
         // |``````````````^ meta char!
         // +
@@ -99,14 +99,14 @@ void dc(final Root r, final Tree t) {
         // |```^ meta char!
         if (rune == quote) {
           // exclude quote!
-          state = State.metaChar;
+          state = _State.metaChar;
           break;
         }
         // |'hello, world'
         // |````^ string!
         constant.add(rune);
         break;
-      case State.address:
+      case _State.address:
         // |123,456
         // |```^ delimiter!
         if (rune == comma) {
@@ -115,7 +115,7 @@ void dc(final Root r, final Tree t) {
             String.fromCharCodes(constant),
           )));
           constant.clear();
-          state = State.none;
+          state = _State.none;
           break;
         }
         // |123456
@@ -126,9 +126,9 @@ void dc(final Root r, final Tree t) {
         }
         // |12E456
         // |``^ error!
-        state = State.error;
+        state = _State.error;
         break;
-      case State.hexAddress:
+      case _State.hexAddress:
         // |#ABCD,#1234
         // |`````^ delimiter!
         if (rune == comma) {
@@ -138,7 +138,7 @@ void dc(final Root r, final Tree t) {
             radix: 16,
           )));
           constant.clear();
-          state = State.none;
+          state = _State.none;
           break;
         }
         // |#ABCD,#1234
@@ -153,9 +153,9 @@ void dc(final Root r, final Tree t) {
         }
         // |#00O0
         // |```^ error!
-        state = State.error;
+        state = _State.error;
         break;
-      case State.label:
+      case _State.label:
         // |LABEL1,LABEL2
         // |``````^ delimiter!
         if (rune == comma) {
@@ -166,7 +166,7 @@ void dc(final Root r, final Tree t) {
             t.labels,
           );
           constant.clear();
-          state = State.none;
+          state = _State.none;
           break;
         }
         // |LABEL
@@ -183,9 +183,9 @@ void dc(final Root r, final Tree t) {
         // +
         // |LABEL#
         // |`````^ error!
-        state = State.error;
+        state = _State.error;
         break;
-      case State.metaChar:
+      case _State.metaChar:
         // |'hello, world!','it''s a small world.'
         // |```````````````^ delimiter!
         if (rune == comma) {
@@ -197,21 +197,21 @@ void dc(final Root r, final Tree t) {
             ),
           ));
           constant.clear();
-          state = State.none;
+          state = _State.none;
           break;
         }
         // |'hello, world!','it''s a small world.'
         // |````````````````````^ string!
         if (rune == quote) {
           constant.add(rune);
-          state = State.string;
+          state = _State.string;
           break;
         }
         // |'error'\'
         // |```````^ error!
-        state = State.error;
+        state = _State.error;
         break;
-      case State.error:
+      case _State.error:
       default:
         break;
     }
@@ -219,7 +219,7 @@ void dc(final Root r, final Tree t) {
 
   // |'hello, world!'[EOF]
   // |```````````````^ string!
-  if (state == State.metaChar) {
+  if (state == _State.metaChar) {
     r.nodes.addAll(List.generate(
       constant.length,
       (i) => Node(constant[i]),
@@ -233,7 +233,7 @@ void dc(final Root r, final Tree t) {
 
   // |LABEL[EOF]
   // |`````^ label!
-  if (state == State.label) {
+  if (state == _State.label) {
     r.nodes.add(Node(0, Type.label));
     addReferenceLabel(
       String.fromCharCodes(constant),
@@ -249,7 +249,7 @@ void dc(final Root r, final Tree t) {
 
   // |-1234[EOF]
   // |`````^ address(decimal)!
-  if (state == State.address) {
+  if (state == _State.address) {
     r.nodes.add(Node(int.parse(
       String.fromCharCodes(constant),
     )));
@@ -262,7 +262,7 @@ void dc(final Root r, final Tree t) {
 
   // |#FFFF[EOF]
   // |`````^ address(hex)!
-  if (state == State.hexAddress) {
+  if (state == _State.hexAddress) {
     r.nodes.add(Node(int.parse(
       String.fromCharCodes(constant),
       radix: 16,
@@ -274,7 +274,7 @@ void dc(final Root r, final Tree t) {
     return;
   }
 
-  assert(state != State.string);
-  assert(state != State.none);
-  assert(state != State.error);
+  assert(state != _State.string);
+  assert(state != _State.none);
+  assert(state != _State.error);
 }

@@ -1,48 +1,51 @@
-/// CASL2 instructions.
-export 'instruction/start.dart';
-export 'instruction/end.dart';
-export 'instruction/ds.dart';
-export 'instruction/dc.dart';
+import 'node/node.dart';
+import 'instruction/instruction.dart';
 
-/// Machine(COMET2) instructions.
-export 'instruction/nop.dart';
-export 'instruction/ld.dart';
-export 'instruction/st.dart';
-export 'instruction/lad.dart';
+typedef Parser = void Function(Root r, Tree t);
 
-export 'instruction/adda.dart';
-export 'instruction/suba.dart';
-export 'instruction/addl.dart';
-export 'instruction/subl.dart';
+void instruction(Root r, Tree t) {
+  final ins = _map[r.instruction];
+  assert(ins != null);
+  if (ins != null) {
+    ins(r, t);
+  }
+}
 
-export 'instruction/and.dart';
-export 'instruction/or.dart';
-export 'instruction/xor.dart';
-
-export 'instruction/cpa.dart';
-export 'instruction/cpl.dart';
-
-export 'instruction/sla.dart';
-export 'instruction/sra.dart';
-export 'instruction/sll.dart';
-export 'instruction/srl.dart';
-
-export 'instruction/jmi.dart';
-export 'instruction/jnz.dart';
-export 'instruction/jze.dart';
-export 'instruction/jump.dart';
-export 'instruction/jpl.dart';
-export 'instruction/jov.dart';
-
-export 'instruction/push.dart';
-export 'instruction/pop.dart';
-
-export 'instruction/call.dart';
-export 'instruction/ret.dart';
-
-export 'instruction/svc.dart';
-
-export 'instruction/input.dart';
-export 'instruction/output.dart';
-export 'instruction/rpush.dart';
-export 'instruction/rpop.dart';
+final _map = <String, Parser>{
+  'START': start,
+  'END': end,
+  'DS': ds,
+  'DC': dc,
+  'NOP': nop,
+  'LD': ld,
+  'LAD': lad,
+  'ST': st,
+  'ADDA': adda,
+  'ADDL': addl,
+  'SUBA': suba,
+  'SUBL': subl,
+  'AND': and,
+  'OR': or,
+  'XOR': xor,
+  'CPA': cpa,
+  'CPL': cpl,
+  'SLA': sla,
+  'SRA': sra,
+  'SLL': sll,
+  'SRL': srl,
+  'JMI': jmi,
+  'JNZ': jnz,
+  'JZE': jze,
+  'JUMP': jump,
+  'JPL': jpl,
+  'JOV': jov,
+  'PUSH': push,
+  'POP': pop,
+  'CALL': call,
+  'RET': ret,
+  'SVC': svc,
+  'IN': input,
+  'OUT': output,
+  'RPUSH': rpush,
+  'RPOP': rpop,
+};

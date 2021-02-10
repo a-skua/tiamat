@@ -1,7 +1,7 @@
 import '../node/node.dart';
 import 'util.dart';
 
-enum State {
+enum _State {
   none,
   address,
   hexAddress,
@@ -16,44 +16,44 @@ void ds(final Root r, final Tree t) {
   final startNum = '0'.runes.first;
   final endNum = '9'.runes.first;
 
-  var state = State.none;
+  var state = _State.none;
   for (final rune in r.operand.runes) {
     switch (state) {
-      case State.none:
+      case _State.none:
         // |12345
         // |^
         if (rune >= startNum && rune <= endNum) {
-          state = State.address;
+          state = _State.address;
           break;
         }
         // |#1234
         // |^
         if (rune == sharp) {
-          state = State.hexAddress;
+          state = _State.hexAddress;
           break;
         }
         // |LABEL
         // |^ error!
-        state = State.error;
+        state = _State.error;
         break;
-      case State.address:
-      case State.hexAddress:
+      case _State.address:
+      case _State.hexAddress:
         // |12E45
         // |``^ error!
         // +
         // |#00O0
         // |```^ error!
         if (rune < startNum || rune > endNum) {
-          state = State.error;
+          state = _State.error;
           break;
         }
         break;
-      case State.error:
+      case _State.error:
       default:
     }
   }
 
-  if (state == State.hexAddress || state == State.address) {
+  if (state == _State.hexAddress || state == _State.address) {
     final size = int.parse(r.operand.replaceFirst('#', '0x'));
     assert(size > 0);
     r.nodes.addAll(List.filled(size, Node(0)));
@@ -64,6 +64,6 @@ void ds(final Root r, final Tree t) {
     return;
   }
 
-  assert(state != State.none);
-  assert(state != State.error);
+  assert(state != _State.none);
+  assert(state != _State.error);
 }
