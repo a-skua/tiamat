@@ -1,10 +1,10 @@
 import '../core/symbol.dart';
-import '../core/node.dart';
+import '../core/node_tree.dart';
 import 'automata/pattern1.dart';
 import 'util.dart';
 
 /// An instruction of CASL2, named XOR.
-void xor(final Symbol s, final Tree t) {
+void xor(final Symbol s, final NodeTree t) {
   final result = automata(s.operand, 0x3200, 0x3600);
 
   // TODO: make error handling.

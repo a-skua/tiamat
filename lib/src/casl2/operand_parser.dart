@@ -1,10 +1,10 @@
 import 'core/symbol.dart';
-import 'core/node.dart';
+import 'core/node_tree.dart';
 import 'operand_parser/operand_parser.dart';
 
-typedef Parser = void Function(Symbol s, Tree t);
+typedef Parser = void Function(Symbol, NodeTree);
 
-void parse(Symbol s, Tree t) {
+void parse(Symbol s, NodeTree t) {
   final parse = _map[String.fromCharCodes(s.opecode)];
   assert(parse != null);
   if (parse != null) {

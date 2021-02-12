@@ -1,5 +1,6 @@
 import '../core/symbol.dart';
 import '../core/node.dart';
+import '../core/node_tree.dart';
 import 'util.dart';
 
 enum _State {
@@ -12,7 +13,7 @@ enum _State {
 /// An instruction of CASL2, named DS.
 ///
 /// To ensure word space.
-void ds(final Symbol s, final Tree t) {
+void ds(final Symbol s, final NodeTree t) {
   final sharp = '#'.runes.first;
   final startNum = '0'.runes.first;
   final endNum = '9'.runes.first;

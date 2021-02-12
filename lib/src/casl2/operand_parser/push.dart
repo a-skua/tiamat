@@ -1,10 +1,10 @@
 import '../core/symbol.dart';
-import '../core/node.dart';
+import '../core/node_tree.dart';
 import 'automata/pattern2.dart';
 import 'util.dart';
 
 /// An instruction of CASL2, named PUSH.
-void push(final Symbol s, final Tree t) {
+void push(final Symbol s, final NodeTree t) {
   final result = automata(s.operand, 0x7000);
 
   // TODO: make error handling.

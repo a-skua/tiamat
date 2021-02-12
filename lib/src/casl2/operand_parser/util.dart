@@ -1,4 +1,5 @@
 import '../core/node.dart';
+import '../core/node_tree.dart';
 
 void setLabel(
   final String label,

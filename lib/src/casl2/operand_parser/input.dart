@@ -1,5 +1,5 @@
 import '../core/symbol.dart';
-import '../core/node.dart';
+import '../core/node_tree.dart';
 import 'automata/pattern4.dart';
 import 'util.dart';
 import 'push.dart';
@@ -8,7 +8,7 @@ import 'svc.dart';
 import 'pop.dart';
 
 /// A macro of CASL2, named IN.
-void input(final Symbol s, final Tree t) {
+void input(final Symbol s, final NodeTree t) {
   final result = automata(s.operand);
 
   // TODO: make error handling.

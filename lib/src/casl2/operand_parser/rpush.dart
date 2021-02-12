@@ -1,10 +1,10 @@
 import '../core/symbol.dart';
-import '../core/node.dart';
+import '../core/node_tree.dart';
 import 'push.dart';
 import 'util.dart';
 
 /// A macro of CASL2, named RPUSH.
-void rpush(final Symbol s, final Tree t) {
+void rpush(final Symbol s, final NodeTree t) {
   {
     final symbols = <Symbol>[
       Symbol.fromString(opecode: 'PUSH', operand: '0,GR1'),

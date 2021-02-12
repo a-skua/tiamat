@@ -1,10 +1,10 @@
 import '../core/symbol.dart';
-import '../core/node.dart';
+import '../core/node_tree.dart';
 import 'automata/pattern1.dart';
 import 'util.dart';
 
 /// An instruction of CASL2, named ADDL.
-void addl(final Symbol s, final Tree t) {
+void addl(final Symbol s, final NodeTree t) {
   final result = automata(s.operand, 0x2200, 0x2600);
 
   // TODO: make error handling.

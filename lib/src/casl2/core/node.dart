@@ -33,21 +33,3 @@ class Node {
     }
   }
 }
-
-/// Label.
-class Label {
-  Node? entity;
-  final references = <Node>[];
-}
-
-/// Node tree.
-class Tree {
-  // START LABEL.
-  String startLabel = '';
-
-  /// Labels.
-  final labels = <String, Label>{};
-
-  /// Nodes.
-  final nodes = <Node>[];
-}

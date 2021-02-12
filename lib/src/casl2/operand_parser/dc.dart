@@ -1,5 +1,6 @@
 import '../core/symbol.dart';
 import '../core/node.dart';
+import '../core/node_tree.dart';
 import '../../util/charcode.dart';
 import 'util.dart';
 
@@ -16,7 +17,7 @@ enum _State {
 /// An instruction of CASL2, named DC.
 ///
 /// To define constants.
-void dc(final Symbol s, final Tree t) {
+void dc(final Symbol s, final NodeTree t) {
   final quote = '\''.runes.first;
   final sharp = '#'.runes.first;
   final comma = ','.runes.first;

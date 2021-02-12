@@ -1,10 +1,10 @@
 import '../core/symbol.dart';
-import '../core/node.dart';
+import '../core/node_tree.dart';
 import 'pop.dart';
 import 'util.dart';
 
 /// A macro of CASL2, named RPOP.
-void rpop(final Symbol s, final Tree t) {
+void rpop(final Symbol s, final NodeTree t) {
   {
     final symbols = <Symbol>[
       Symbol.fromString(opecode: 'POP', operand: 'GR7'),

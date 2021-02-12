@@ -1,5 +1,6 @@
 import '../core/symbol.dart';
 import '../core/node.dart';
+import '../core/node_tree.dart';
 import 'util.dart';
 
 enum State {
@@ -15,7 +16,7 @@ enum State {
 /// Start is JUMP to address when has operand.
 /// Other than that do nothing.
 /// This label must not empty.
-void start(final Symbol s, final Tree t) {
+void start(final Symbol s, final NodeTree t) {
   final sharp = '#'.runes.first;
   final startNum = '0'.runes.first;
   final endNum = '9'.runes.first;
