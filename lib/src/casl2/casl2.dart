@@ -1,7 +1,7 @@
-import 'token/parser.dart' as token;
-import 'node/token2root.dart';
-import 'node/node.dart';
-import 'instruction.dart';
+import 'core/tokenizer.dart';
+import 'core/symbolizer.dart';
+import 'core/node.dart';
+import 'operand_parser.dart' as parser;
 
 class Casl2 {
   List<int> compile(final String s) {
@@ -11,9 +11,9 @@ class Casl2 {
   Tree parse(final String s) {
     final tree = Tree();
     {
-      final roots = token2root(token.parse(s));
-      for (final root in roots) {
-        instruction(root, tree);
+      final symbols = symbolize(tokenize(s));
+      for (final symbol in symbols) {
+        parser.parse(symbol, tree);
       }
     }
 
