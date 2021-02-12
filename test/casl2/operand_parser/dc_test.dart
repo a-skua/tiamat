@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:tiamat/src/casl2/operand_parser/dc.dart';
 import 'package:tiamat/src/casl2/core/node.dart';
+import 'package:tiamat/src/casl2/core/node_tree.dart';
 import 'package:tiamat/src/casl2/core/symbol.dart';
 import 'package:tiamat/src/util/charcode.dart';
 import 'package:test/test.dart';
@@ -11,7 +12,7 @@ void main() {
 
   group('dc', () {
     test('a string', () {
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (i) => Node(i),
@@ -49,7 +50,7 @@ void main() {
     });
 
     test('multiple string', () {
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (_) => Node(rand.nextInt(0x10000)),
@@ -84,7 +85,7 @@ void main() {
     });
 
     test('an address', () {
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (_) => Node(rand.nextInt(0x10000)),
@@ -121,7 +122,7 @@ void main() {
     });
 
     test('multiple address', () {
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (_) => Node(rand.nextInt(0x10000)),
@@ -156,7 +157,7 @@ void main() {
     });
 
     test('a hex address', () {
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (_) => Node(rand.nextInt(0x10000)),
@@ -193,7 +194,7 @@ void main() {
     });
 
     test('multiple hex address', () {
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (_) => Node(rand.nextInt(0x10000)),
@@ -228,7 +229,7 @@ void main() {
     });
 
     test('a label', () {
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (_) => Node(rand.nextInt(0x10000)),
@@ -270,7 +271,7 @@ void main() {
     });
 
     test('multiple label', () {
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (_) => Node(rand.nextInt(0x10000)),

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:tiamat/src/casl2/operand_parser/rpush.dart';
 import 'package:tiamat/src/casl2/core/node.dart';
+import 'package:tiamat/src/casl2/core/node_tree.dart';
 import 'package:tiamat/src/casl2/core/symbol.dart';
 import 'package:test/test.dart';
 
@@ -11,7 +12,7 @@ void main() {
   group('rpush', () {
     test('with label', () {
       final label = 'LABEL';
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (i) => Node(i),
@@ -68,7 +69,7 @@ void main() {
     });
 
     test('with label', () {
-      final tree = Tree()
+      final tree = NodeTree()
         ..nodes.addAll(List.generate(
           rand.nextInt(0x100),
           (i) => Node(i),

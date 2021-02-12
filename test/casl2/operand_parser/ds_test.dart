@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:tiamat/src/casl2/operand_parser/ds.dart';
 import 'package:tiamat/src/casl2/core/node.dart';
+import 'package:tiamat/src/casl2/core/node_tree.dart';
 import 'package:tiamat/src/casl2/core/symbol.dart';
 import 'package:test/test.dart';
 
@@ -13,7 +14,7 @@ void main() {
       for (var i = 0; i < 8; i++) {
         test('$i', () {
           final size = rand.nextInt(100) + 1;
-          final tree = Tree()
+          final tree = NodeTree()
             ..nodes.addAll(List.generate(
               rand.nextInt(0x100),
               (i) => Node(i),
@@ -58,7 +59,7 @@ void main() {
       for (var i = 0; i < 8; i++) {
         test('$i', () {
           final size = rand.nextInt(100) + 1;
-          final tree = Tree()
+          final tree = NodeTree()
             ..nodes.addAll(List.generate(
               rand.nextInt(0x100),
               (i) => Node(i),

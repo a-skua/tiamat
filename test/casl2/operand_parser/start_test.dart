@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:tiamat/src/casl2/operand_parser/start.dart';
 import 'package:tiamat/src/casl2/core/node.dart';
+import 'package:tiamat/src/casl2/core/node_tree.dart';
 import 'package:tiamat/src/casl2/core/symbol.dart';
 import 'package:test/test.dart';
 
@@ -10,7 +11,7 @@ void main() {
 
   group('start', () {
     test('without operand', () {
-      final tree = Tree();
+      final tree = NodeTree();
       final symbol = Symbol.fromString(
         comment: 'fmm',
         label: 'MAIN',
@@ -27,7 +28,7 @@ void main() {
 
     group('with operand', () {
       test('label', () {
-        final tree = Tree();
+        final tree = NodeTree();
         final symbol = Symbol.fromString(
           comment: 'label test',
           label: 'MAIN2',
@@ -52,7 +53,7 @@ void main() {
       });
 
       test('address', () {
-        final tree = Tree();
+        final tree = NodeTree();
         final symbol = Symbol.fromString(
           comment: 'label test',
           label: 'MAIN3',
@@ -73,7 +74,7 @@ void main() {
       });
 
       test('hex address', () {
-        final tree = Tree();
+        final tree = NodeTree();
         final symbol = Symbol.fromString(
           comment: 'label test',
           label: 'MAIN3',

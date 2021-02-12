@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:tiamat/src/casl2/operand_parser/jov.dart';
 import 'package:tiamat/src/casl2/core/node.dart';
+import 'package:tiamat/src/casl2/core/node_tree.dart';
 import 'package:tiamat/src/casl2/core/symbol.dart';
 import 'package:test/test.dart';
 
@@ -16,7 +17,7 @@ void main() {
             final label = i % 2 > 0 ? 'LABEL' : '';
             final address = rand.nextInt(0x10000);
 
-            final tree = Tree()
+            final tree = NodeTree()
               ..nodes.addAll(List.generate(
                 rand.nextInt(0x100),
                 (i) => Node(i),
@@ -64,7 +65,7 @@ void main() {
             final address = rand.nextInt(0x10000);
             final index = rand.nextInt(7) + 1;
 
-            final tree = Tree()
+            final tree = NodeTree()
               ..nodes.addAll(List.generate(
                 rand.nextInt(0x100),
                 (i) => Node(i),
@@ -111,7 +112,7 @@ void main() {
             final label = i % 2 > 0 ? 'LABEL' : '';
             final address = rand.nextInt(0x10000);
 
-            final tree = Tree()
+            final tree = NodeTree()
               ..nodes.addAll(List.generate(
                 rand.nextInt(0x100),
                 (i) => Node(i),
@@ -160,7 +161,7 @@ void main() {
             final address = rand.nextInt(0x10000);
             final index = rand.nextInt(7) + 1;
 
-            final tree = Tree()
+            final tree = NodeTree()
               ..nodes.addAll(List.generate(
                 rand.nextInt(0x100),
                 (i) => Node(i),
@@ -210,7 +211,7 @@ void main() {
             final referenceLabel =
                 '${i % 2 > 0 ? 'GR' : 'L'}${rand.nextInt(0x10000).toRadixString(16).toUpperCase().padLeft(4, '0')}';
 
-            final tree = Tree()
+            final tree = NodeTree()
               ..nodes.addAll(List.generate(
                 rand.nextInt(0x100),
                 (i) => Node(i),
@@ -268,7 +269,7 @@ void main() {
                 '${i % 2 > 0 ? 'GR' : 'L'}${rand.nextInt(0x10000).toRadixString(16).toUpperCase().padLeft(4, '0')}';
             final index = rand.nextInt(7) + 1;
 
-            final tree = Tree()
+            final tree = NodeTree()
               ..nodes.addAll(List.generate(
                 rand.nextInt(0x100),
                 (i) => Node(i),

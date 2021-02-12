@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:tiamat/src/casl2/operand_parser/end.dart';
 import 'package:tiamat/src/casl2/core/node.dart';
+import 'package:tiamat/src/casl2/core/node_tree.dart';
 import 'package:tiamat/src/casl2/core/symbol.dart';
 import 'package:test/test.dart';
 
@@ -10,7 +11,7 @@ void main() {
 
   test('end', () {
     final label = 'MAIN${rand.nextInt(100)}';
-    final tree = Tree()..startLabel = label;
+    final tree = NodeTree()..startLabel = label;
     final symbol = Symbol.fromString(
       comment: 'end test',
       label: '',

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:tiamat/src/casl2/operand_parser/input.dart';
 import 'package:tiamat/src/casl2/core/node.dart';
+import 'package:tiamat/src/casl2/core/node_tree.dart';
 import 'package:tiamat/src/casl2/core/symbol.dart';
 import 'package:test/test.dart';
 
@@ -18,7 +19,7 @@ void main() {
                   'BUF${rand.nextInt(0x100).toRadixString(16).toUpperCase().padLeft(2, '0')}';
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -82,7 +83,7 @@ void main() {
                   'BUF${rand.nextInt(0x100).toRadixString(16).toUpperCase().padLeft(2, '0')}';
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -146,7 +147,7 @@ void main() {
               final addr = rand.nextInt(0x10000);
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -208,7 +209,7 @@ void main() {
               final addr = rand.nextInt(0x10000);
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -271,7 +272,7 @@ void main() {
               final addr = rand.nextInt(0x10000);
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -335,7 +336,7 @@ void main() {
               final addr = rand.nextInt(0x10000);
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -403,7 +404,7 @@ void main() {
                   'BUF${rand.nextInt(0x100).toRadixString(16).toUpperCase().padLeft(2, '0')}';
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -469,7 +470,7 @@ void main() {
                   'BUF${rand.nextInt(0x100).toRadixString(16).toUpperCase().padLeft(2, '0')}';
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -535,7 +536,7 @@ void main() {
               final addr = rand.nextInt(0x10000);
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -599,7 +600,7 @@ void main() {
               final addr = rand.nextInt(0x10000);
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -664,7 +665,7 @@ void main() {
               final addr = rand.nextInt(0x10000);
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
@@ -730,7 +731,7 @@ void main() {
               final addr = rand.nextInt(0x10000);
               final length = rand.nextInt(0x100);
 
-              final tree = Tree()
+              final tree = NodeTree()
                 ..nodes.addAll(List.generate(
                   rand.nextInt(0x100),
                   (i) => Node(i),
