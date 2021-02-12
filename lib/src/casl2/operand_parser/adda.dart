@@ -25,7 +25,7 @@ void adda(final Symbol s, final Tree t) {
   // |`````````^ hex address!
   if (result.lastState == State.hexAddress) {
     s.nodes.addAll(result.values);
-    s.nodes.addAll(result.values);
+    t.nodes.addAll(result.values);
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
