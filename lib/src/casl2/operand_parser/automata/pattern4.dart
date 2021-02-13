@@ -1,3 +1,4 @@
+import '../../core/error.dart';
 import '../../core/node.dart';
 import 'result.dart';
 
@@ -278,5 +279,5 @@ ExResult automata(final List<int> runes) {
     }
   }
 
-  return ExResult(state, length: 0, error: Error());
+  return ExResult(state, length: 0, error: Error('todo', ErrorType.syntax));
 }

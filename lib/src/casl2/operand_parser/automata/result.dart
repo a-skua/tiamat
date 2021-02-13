@@ -1,7 +1,5 @@
+import '../../core/error.dart';
 import '../../core/node.dart';
-
-/// Error.
-class Error {}
 
 /// Interface.
 class Result<T> {
