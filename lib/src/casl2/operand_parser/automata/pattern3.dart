@@ -28,6 +28,7 @@ Result automata(final List<int> runes, final int high) {
 
   var pointer = 0;
   var low = 0;
+  Error? error = null;
 
   var state = State.none;
   for (final rune in runes) {
@@ -42,6 +43,12 @@ Result automata(final List<int> runes, final int high) {
         }
         // |label
         // |^ error!
+        error = Error(
+          'cannot be used this character: '
+          '${String.fromCharCode(rune)}\n'
+          'can be used register is GR0 ~ GR7',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.register:
@@ -63,11 +70,17 @@ Result automata(final List<int> runes, final int high) {
         // +
         // |GR#
         // |``^
+        error = Error(
+          'cannot be used this character: '
+          '${String.fromCharCode(rune)}\n'
+          'can be used register is GR0 ~ GR7',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.error:
       default:
-        break;
+        return Result([], state, error: error);
     }
   }
 
@@ -77,5 +90,12 @@ Result automata(final List<int> runes, final int high) {
     return Result([Node(high | low)], State.register);
   }
 
-  return Result([], state, error: Error('todo', ErrorType.syntax));
+  return Result(
+    [],
+    state,
+    error: Error(
+      'syntax error',
+      ErrorType.operand,
+    ),
+  );
 }

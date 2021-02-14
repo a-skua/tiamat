@@ -65,6 +65,7 @@ ExResult automata(final List<int> runes) {
   var length = 0;
   int? address = null;
   String? label = null;
+  Error? error = null;
 
   var state = State.none;
   for (final rune in runes) {
@@ -103,6 +104,11 @@ ExResult automata(final List<int> runes) {
         }
         // |label
         // |^ error!
+        error = Error(
+          'cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.register:
@@ -118,11 +124,44 @@ ExResult automata(final List<int> runes) {
           pointer = 3;
           break;
         }
-        // |GR0,#FF13
+        // |GR0,GR1
         // |```^ error!
+        if (pointer == 3 && rune == comma) {
+          error = Error(
+            'label cannot be used register\'s name GR0 ~ GR1',
+            ErrorType.operand,
+          );
+          state = State.error;
+          break;
+        }
+        // |G,GR1
+        // |`^ delimiter!
+        if (rune == comma) {
+          label = String.fromCharCodes(temporary);
+          temporary.clear();
+          pointer = 0;
+          state = State.unstable;
+          break;
+        }
+        // |GX0
+        // |`^ label!
         // +
+        // |GR0X
+        // |```^ label!
+        if ((rune >= startLabel && rune <= endLabel) ||
+            (rune >= startNum && rune <= endNum)) {
+          pointer += 1;
+          temporary.add(rune);
+          state = State.label;
+          break;
+        }
         // |GR#
         // |``^
+        error = Error(
+          'cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.address:
@@ -143,6 +182,11 @@ ExResult automata(final List<int> runes) {
         }
         // |12#4,255
         // |``^ error!
+        error = Error(
+          'address cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.hexAddress:
@@ -171,12 +215,28 @@ ExResult automata(final List<int> runes) {
         // +
         // |#FFFF0,255
         // |`````^ error!
+        error = Error(
+          'cannot be used this character: '
+          '${String.fromCharCode(rune)}\n'
+          'and hex address must be 4 digits',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.label:
+        // |LABEL6789
+        // |````````^ over length(8)
+        if (pointer == 8) {
+          error = Error(
+            'label must be within 8 digits',
+            ErrorType.operand,
+          );
+          state = State.error;
+          break;
+        }
         // |LABEL,255
         // |````^ label!
-        if (pointer < 8 && (rune >= startNum && rune <= endNum) ||
+        if ((rune >= startNum && rune <= endNum) ||
             (rune >= startLabel && rune <= endLabel)) {
           temporary.add(rune);
           pointer += 1;
@@ -196,6 +256,11 @@ ExResult automata(final List<int> runes) {
         // +
         // |FF3456789,255
         // |````````^ error!
+        error = Error(
+          'cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.length:
@@ -207,6 +272,11 @@ ExResult automata(final List<int> runes) {
         }
         // |LABEL,1O0
         // |```````^ error!
+        error = Error(
+          'length cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.hexLength:
@@ -223,6 +293,11 @@ ExResult automata(final List<int> runes) {
         // +
         // |LABEL,#FF13II
         // |```````````^ error!
+        error = Error(
+          'hex length cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.unstable:
@@ -243,11 +318,16 @@ ExResult automata(final List<int> runes) {
         }
         // |LABEL,LABEL
         // |``````^ error!
+        error = Error(
+          'length cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.error:
       default:
-        break;
+        return ExResult(state, length: 0, error: error);
     }
   }
 
@@ -279,5 +359,12 @@ ExResult automata(final List<int> runes) {
     }
   }
 
-  return ExResult(state, length: 0, error: Error('todo', ErrorType.syntax));
+  return ExResult(
+    state,
+    length: 0,
+    error: Error(
+      'syntax error',
+      ErrorType.operand,
+    ),
+  );
 }

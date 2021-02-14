@@ -1,11 +1,13 @@
 /// ErrorType.
 enum ErrorType {
-  syntax,
+  label,
+  opecode,
+  operand,
 }
 
 /// Error.
 class Error {
   final ErrorType type;
-  final String message;
-  Error(this.message, this.type);
+  final String detail;
+  Error(this.detail, this.type);
 }

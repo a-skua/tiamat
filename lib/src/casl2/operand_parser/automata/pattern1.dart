@@ -74,6 +74,7 @@ ExResult automata(
   var pointer = 0;
   int? address = null;
   String? label = null;
+  Error? error = null;
 
   var state = State.none;
   for (final rune in runes) {
@@ -87,6 +88,13 @@ ExResult automata(
           break;
         }
         // error!
+        error = Error(
+          'can be used resistor is GR0 ~ GR7\n'
+          'for example:\n'
+          '\tADDA\tGR0,GR1\n'
+          '\tLAD\tGR0,0',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.register:
@@ -132,6 +140,13 @@ ExResult automata(
         // +
         // |G#7,0,GR6
         // |`^ error!
+        error = Error(
+          'can be used resistor is GR0 ~ GR7\n'
+          'for example:\n'
+          '\tADDA\tGR0,GR1\n'
+          '\tLAD\tGR0,0',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.unstable:
@@ -171,6 +186,11 @@ ExResult automata(
         // +
         // |GR0,-100
         // |````^ error!
+        error = Error(
+          'cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.address:
@@ -197,6 +217,11 @@ ExResult automata(
         }
         // |GR0,12E45
         // |``````^ error!
+        error = Error(
+          'address cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.hexAddress:
@@ -226,12 +251,28 @@ ExResult automata(
         // +
         // |GR0,#00O0
         // |```````^ error!
+        error = Error(
+          'cannot be used this character: '
+          '${String.fromCharCode(rune)}\n'
+          'and hex address must be 4 digits',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.label:
+        // |LABEL6789
+        // |````````^ over length(8)
+        if (pointer == 8) {
+          error = Error(
+            'label must be within 8 digits',
+            ErrorType.operand,
+          );
+          state = State.error;
+          break;
+        }
         // |GR0,LABEL,GR1
         // |`````````^ delimiter!
-        if (rune == comma) {
+        if (pointer <= 8 && rune == comma) {
           label = String.fromCharCodes(temporary);
           pointer = 0;
           temporary.clear();
@@ -246,10 +287,16 @@ ExResult automata(
         if ((rune >= startNum && rune <= endNum) ||
             (rune >= startLabel && rune <= endLabel)) {
           temporary.add(rune);
+          pointer += 1;
           break;
         }
         // |GR7,LAB#L
         // |```````^ error!
+        error = Error(
+          'cannot be used this character: '
+          '${String.fromCharCode(rune)}',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.register2:
@@ -297,6 +344,13 @@ ExResult automata(
         // +
         // |GR2,G?
         // |`````^ error!
+        error = Error(
+          'can be used resistor is GR0 ~ GR7\n'
+          'for example:\n'
+          '\tADDA\tGR0,GR1\n'
+          '\tLAD\tGR0,0',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.indexRegister:
@@ -336,10 +390,17 @@ ExResult automata(
         // +
         // |GR2,0,?
         // |``````^ error!
+        error = Error(
+          'can be used index resister is GR1 ~ GR7\n'
+          'for example:\n'
+          '\tLAD\tGR0,1,GR1',
+          ErrorType.operand,
+        );
         state = State.error;
         break;
       case State.error:
       default:
+        return ExResult([], state, error: error);
     }
   }
 
@@ -403,5 +464,12 @@ ExResult automata(
     ], State.indexRegister, label: label);
   }
 
-  return ExResult([], state, error: Error('todo', ErrorType.syntax));
+  return ExResult(
+    [],
+    state,
+    error: Error(
+      'syntax error',
+      ErrorType.operand,
+    ),
+  );
 }
