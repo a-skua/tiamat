@@ -10,6 +10,38 @@ void main() {
   final rand = Random();
 
   group('call', () {
+    group('error', () {
+      const testdata = [
+        'gr1,ge2',
+        'Gr2,GR2',
+        'GRX,GR8',
+        'GR7,GR6,GR0',
+        'GR7,GR8,GR0',
+        'GR7,Label',
+        'GR7',
+        'GR8,ADRx',
+        'GR8,123',
+        'GR8,ABC456789',
+      ];
+
+      for (var i = 0; i < testdata.length; i++) {
+        final data = testdata[i];
+        test('$i', () {
+          final tree = NodeTree();
+          final symbol = Symbol.fromString(
+            comment: 'error',
+            opecode: 'CALL',
+            operand: data,
+          );
+
+          expect(call(symbol, tree), isNotNull);
+          expect(tree.labels.length, equals(0));
+          expect(tree.nodes.length, equals(0));
+          expect(symbol.nodes.length, equals(0));
+        });
+      }
+    });
+
     group('adr,x', () {
       group('address only', () {
         for (var i = 0; i < 16; i++) {
@@ -39,7 +71,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            call(symbol, tree);
+            expect(call(symbol, tree), isNull);
             expect(symbol.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -87,7 +119,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            call(symbol, tree);
+            expect(call(symbol, tree), isNull);
             expect(symbol.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -135,7 +167,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            call(symbol, tree);
+            expect(call(symbol, tree), isNull);
             expect(symbol.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -185,7 +217,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            call(symbol, tree);
+            expect(call(symbol, tree), isNull);
             expect(symbol.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -233,7 +265,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            call(symbol, tree);
+            expect(call(symbol, tree), isNull);
             expect(symbol.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {
@@ -292,7 +324,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            call(symbol, tree);
+            expect(call(symbol, tree), isNull);
             expect(symbol.nodes.length, equals(2));
             expect(tree.nodes.length, equals(baseNodesLength + 2));
             if (label.isEmpty) {

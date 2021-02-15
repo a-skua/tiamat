@@ -1,14 +1,16 @@
+import '../core/error.dart';
 import '../core/symbol.dart';
 import '../core/node_tree.dart';
 import 'automata/pattern1.dart';
 import 'util.dart';
 
 /// An instruction of CASL2, named CPA.
-void cpa(final Symbol s, final NodeTree t) {
+Error? cpa(final Symbol s, final NodeTree t) {
   final result = automata(s.operand, 0x4000, 0x4400);
 
-  // TODO: make error handling.
-  assert(result.hasNotError);
+  if (result.hasError) {
+    return result.error;
+  }
 
   // |GR0,123[EOF]
   // |```````^ address!
@@ -18,7 +20,7 @@ void cpa(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |GR0,#FFFF[EOF]
@@ -29,7 +31,7 @@ void cpa(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |GR1,LABEL[EOF]
@@ -41,7 +43,7 @@ void cpa(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |GR0,GR1[EOF]
@@ -52,7 +54,7 @@ void cpa(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |GR0,LABEL,GR1[EOF]
@@ -64,7 +66,7 @@ void cpa(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |GR0,0,GR1[EOF]
@@ -75,6 +77,6 @@ void cpa(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 }
