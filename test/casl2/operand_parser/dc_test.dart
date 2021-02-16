@@ -11,6 +11,37 @@ void main() {
   final rand = Random();
 
   group('dc', () {
+    group('error', () {
+      const testdata = [
+        "'hello, world",
+        'GR0',
+        "'hello, world',",
+        "'hello, world'-,",
+        "-'hello, world'",
+        'GR0,GRXO',
+        '0,0,LABEL,LABEL6789,XXX',
+        '1XXX,0',
+        '0,#F',
+      ];
+
+      for (var i = 0; i < testdata.length; i++) {
+        final data = testdata[i];
+        test('$i', () {
+          final tree = NodeTree();
+          final symbol = Symbol.fromString(
+            comment: 'error',
+            opecode: 'CPL',
+            operand: data,
+          );
+
+          expect(dc(symbol, tree), isNotNull);
+          expect(tree.labels.length, equals(0));
+          expect(tree.nodes.length, equals(0));
+          expect(symbol.nodes.length, equals(0));
+        });
+      }
+    });
+
     test('a string', () {
       final tree = NodeTree()
         ..nodes.addAll(List.generate(
