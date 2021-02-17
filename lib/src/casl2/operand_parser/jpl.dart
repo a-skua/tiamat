@@ -1,14 +1,16 @@
+import '../core/error.dart';
 import '../core/symbol.dart';
 import '../core/node_tree.dart';
 import 'automata/pattern2.dart';
 import 'util.dart';
 
 /// An instruction of CASL2, named JPL.
-void jpl(final Symbol s, final NodeTree t) {
+Error? jpl(final Symbol s, final NodeTree t) {
   final result = automata(s.operand, 0x6500);
 
-  // TODO: make error handling.
-  assert(result.hasNotError);
+  if (result.hasError) {
+    return result.error;
+  }
 
   // |LABEL[EOF]
   // |`````^ label!
@@ -23,7 +25,7 @@ void jpl(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |#FF16[EOF]
@@ -42,6 +44,8 @@ void jpl(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
+
+  return null;
 }

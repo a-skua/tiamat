@@ -1,3 +1,4 @@
+import '../core/error.dart';
 import '../core/symbol.dart';
 import '../core/node_tree.dart';
 import 'automata/pattern4.dart';
@@ -8,11 +9,12 @@ import 'svc.dart';
 import 'pop.dart';
 
 /// A macro of CASL2, named IN.
-void input(final Symbol s, final NodeTree t) {
+Error? input(final Symbol s, final NodeTree t) {
   final result = automata(s.operand);
 
-  // TODO: make error handling.
-  assert(result.hasNotError);
+  if (result.hasError) {
+    return result.error;
+  }
 
   // |BUF,255[EOF]
   // |```````^ length!
@@ -38,25 +40,48 @@ void input(final Symbol s, final NodeTree t) {
       Symbol.fromString(opecode: 'POP', operand: 'GR2'),
       Symbol.fromString(opecode: 'POP', operand: 'GR1'),
     ];
+
     for (final symbol in symbols) {
       switch (String.fromCharCodes(symbol.opecode)) {
         case 'PUSH':
           push(symbol, t);
+          // TODO
+          // final error = push(symbol, t);
+          // if (error != null) {
+          //   return error;
+          // }
           break;
         case 'LAD':
           lad(symbol, t);
+          // TODO
+          // final error = lad(symbol, t);
+          // if (error != null) {
+          //   return error;
+          // }
           break;
         case 'SVC':
           svc(symbol, t);
+          // TODO
+          // final error = svc(symbol, t);
+          // if (error != null) {
+          //   return error;
+          // }
           break;
         case 'POP':
           pop(symbol, t);
+          // TODO
+          // final error = pop(symbol, t);
+          // if (error != null) {
+          //   return error;
+          // }
           break;
       }
       s.nodes.addAll(symbol.nodes);
     }
   }
+
   if (s.label.isNotEmpty) {
     setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
   }
+  return null;
 }
