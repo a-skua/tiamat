@@ -1,15 +1,23 @@
+import '../core/error.dart';
 import '../core/symbol.dart';
 import '../core/node_tree.dart';
 import 'automata/pattern1.dart';
 import 'util.dart';
 
 /// An instruction of CASL2, named LAD.
-void lad(final Symbol s, final NodeTree t) {
+Error? lad(final Symbol s, final NodeTree t) {
   final result = automata(s.operand, 0x1200);
 
-  // TODO: make error handling.
-  assert(result.hasNotError);
-  assert(result != State.register2);
+  if (result.hasError) {
+    return result.error;
+  }
+
+  if (result.lastState == State.register2) {
+    return Error(
+      'syntax error',
+      ErrorType.operand,
+    );
+  }
 
   // |GR0,123[EOF]
   // |```````^ address!
@@ -19,7 +27,7 @@ void lad(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |GR0,#FFFF[EOF]
@@ -30,7 +38,7 @@ void lad(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |GR1,LABEL[EOF]
@@ -42,7 +50,7 @@ void lad(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |GR0,LABEL,GR1[EOF]
@@ -54,7 +62,7 @@ void lad(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
 
   // |GR0,0,GR1[EOF]
@@ -65,6 +73,8 @@ void lad(final Symbol s, final NodeTree t) {
     if (s.label.isNotEmpty) {
       setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
     }
-    return;
+    return null;
   }
+
+  return null;
 }

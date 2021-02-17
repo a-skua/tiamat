@@ -10,6 +10,38 @@ void main() {
   final rand = Random();
 
   group('nop', () {
+    group('error', () {
+      const testdata = [
+        'gr1,ge2',
+        'Gr2,GR2',
+        'GR,GR2',
+        'GR8,GR5',
+        'GRX,GR8',
+        'GR7,GR6,GR0',
+        'GR7,GR8,GR0',
+        'GR7,Label',
+        'GR7',
+        'GR0,LABEL56789',
+      ];
+
+      for (var i = 0; i < testdata.length; i++) {
+        final data = testdata[i];
+        test('$i', () {
+          final tree = NodeTree();
+          final symbol = Symbol.fromString(
+            comment: 'error',
+            opecode: 'NOP',
+            operand: data,
+          );
+
+          expect(nop(symbol, tree), isNotNull);
+          expect(tree.labels.length, equals(0));
+          expect(tree.nodes.length, equals(0));
+          expect(symbol.nodes.length, equals(0));
+        });
+      }
+    });
+
     group('with label', () {
       for (var i = 0; i < 4; i++) {
         test('$i', () {
@@ -37,7 +69,7 @@ void main() {
           final baseLabelsLength = tree.labels.length;
           final baseNodesLength = tree.nodes.length;
 
-          nop(symbol, tree);
+          expect(nop(symbol, tree), isNull);
           expect(tree.nodes.length, equals(baseNodesLength + 1));
           expect(tree.labels.length, equals(baseLabelsLength + 1));
           expect(symbol.nodes.length, equals(1));
@@ -76,7 +108,7 @@ void main() {
           final baseLabelsLength = tree.labels.length;
           final baseNodesLength = tree.nodes.length;
 
-          nop(symbol, tree);
+          expect(nop(symbol, tree), isNull);
           expect(tree.nodes.length, equals(baseNodesLength + 1));
           expect(tree.labels.length, equals(baseLabelsLength));
           expect(symbol.nodes.length, equals(1));
