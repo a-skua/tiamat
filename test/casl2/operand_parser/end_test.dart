@@ -9,19 +9,32 @@ import 'package:test/test.dart';
 void main() {
   final rand = Random();
 
-  test('end', () {
-    final label = 'MAIN${rand.nextInt(100)}';
-    final tree = NodeTree()..startLabel = label;
-    final symbol = Symbol.fromString(
-      comment: 'end test',
-      label: '',
-      opecode: 'END',
-      operand: '',
-    );
+  group('end', () {
+    test('error', () {
+      final tree = NodeTree();
+      final symbol = Symbol.fromString(
+        comment: 'end test',
+        label: 'FOOO',
+        opecode: 'END',
+        operand: 'BAAR',
+      );
+      expect(end(symbol, tree), isNotNull);
+    });
 
-    end(symbol, tree);
-    expect(tree.startLabel, equals(label));
-    expect(tree.nodes.length, equals(0));
-    expect(tree.labels.length, equals(0));
+    test('success', () {
+      final label = 'MAIN${rand.nextInt(100)}';
+      final tree = NodeTree()..startLabel = label;
+      final symbol = Symbol.fromString(
+        comment: 'end test',
+        label: '',
+        opecode: 'END',
+        operand: '',
+      );
+
+      expect(end(symbol, tree), isNull);
+      expect(tree.startLabel, equals(label));
+      expect(tree.nodes.length, equals(0));
+      expect(tree.labels.length, equals(0));
+    });
   });
 }

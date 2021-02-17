@@ -66,7 +66,7 @@ void main() {
       final baseNodesLength = tree.nodes.length;
       final expecteds = 'hello, world'.split('');
 
-      dc(symbol, tree);
+      expect(dc(symbol, tree), isNull);
       expect(tree.nodes.length, equals(baseNodesLength + expecteds.length));
       expect(tree.labels.length, equals(baseLabelsLength + 1));
       expect(symbol.nodes.length, equals(expecteds.length));
@@ -104,7 +104,7 @@ void main() {
       final baseNodesLength = tree.nodes.length;
       final expecteds = "hello, world!it's a small world!".split('');
 
-      dc(symbol, tree);
+      expect(dc(symbol, tree), isNull);
       expect(tree.nodes.length, equals(baseNodesLength + expecteds.length));
       expect(tree.labels.length, equals(baseLabelsLength));
       expect(symbol.nodes.length, expecteds.length);
@@ -139,7 +139,7 @@ void main() {
       final baseNodesLength = tree.nodes.length;
       final expecteds = <int>[-1];
 
-      dc(symbol, tree);
+      expect(dc(symbol, tree), isNull);
       expect(tree.nodes.length, equals(baseNodesLength + expecteds.length));
       expect(tree.labels.length, equals(baseLabelsLength + 1));
       expect(symbol.nodes.length, expecteds.length);
@@ -176,7 +176,7 @@ void main() {
       final baseNodesLength = tree.nodes.length;
       final expecteds = <int>[124, -1, -234, 657];
 
-      dc(symbol, tree);
+      expect(dc(symbol, tree), isNull);
       expect(tree.nodes.length, equals(baseNodesLength + expecteds.length));
       expect(tree.labels.length, equals(baseLabelsLength));
       expect(symbol.nodes.length, expecteds.length);
@@ -211,7 +211,7 @@ void main() {
       final baseNodesLength = tree.nodes.length;
       final expecteds = <int>[0xffff];
 
-      dc(symbol, tree);
+      expect(dc(symbol, tree), isNull);
       expect(tree.nodes.length, equals(baseNodesLength + expecteds.length));
       expect(tree.labels.length, equals(baseLabelsLength + 1));
       expect(symbol.nodes.length, expecteds.length);
@@ -248,7 +248,7 @@ void main() {
       final baseNodesLength = tree.nodes.length;
       final expecteds = <int>[0x1234, 0xabcd, 0x0f9a];
 
-      dc(symbol, tree);
+      expect(dc(symbol, tree), isNull);
       expect(tree.nodes.length, equals(baseNodesLength + expecteds.length));
       expect(tree.labels.length, equals(baseLabelsLength));
       expect(symbol.nodes.length, expecteds.length);
@@ -283,7 +283,7 @@ void main() {
       final baseNodesLength = tree.nodes.length;
       final expecteds = <String>['BUF'];
 
-      dc(symbol, tree);
+      expect(dc(symbol, tree), isNull);
       expect(tree.nodes.length, equals(baseNodesLength + expecteds.length));
       expect(
           tree.labels.length, equals(baseLabelsLength + expecteds.length + 1));
@@ -325,7 +325,7 @@ void main() {
       final baseNodesLength = tree.nodes.length;
       final expecteds = <String>['FIZZ', 'BUZZ', 'X68000'];
 
-      dc(symbol, tree);
+      expect(dc(symbol, tree), isNull);
       expect(tree.nodes.length, equals(baseNodesLength + expecteds.length));
       expect(
           tree.labels.length, equals(baseLabelsLength + expecteds.length + 1));

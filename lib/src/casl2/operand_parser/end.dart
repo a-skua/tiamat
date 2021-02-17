@@ -1,3 +1,4 @@
+import '../core/error.dart';
 import '../core/symbol.dart';
 import '../core/node_tree.dart';
 import 'util.dart';
@@ -5,8 +6,14 @@ import 'util.dart';
 /// An instruction of CASL2, named END.
 ///
 /// Do nothing.
-void end(final Symbol s, final NodeTree t) {
-  assert(s.label.isEmpty);
-  assert(s.operand.isEmpty);
-  return;
+Error? end(final Symbol s, final NodeTree t) {
+  if (s.operand.isNotEmpty) {
+    return Error('syntax error', ErrorType.operand);
+  }
+
+  if (s.label.isNotEmpty) {
+    return Error('syntax error', ErrorType.label);
+  }
+
+  return null;
 }

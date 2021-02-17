@@ -63,7 +63,7 @@ void main() {
           final baseLabelsLength = tree.labels.length;
           final baseNodesLength = tree.nodes.length;
 
-          ds(symbol, tree);
+          expect(ds(symbol, tree), isNull);
           expect(symbol.nodes.length, equals(size));
           expect(tree.nodes.length, equals(baseNodesLength + size));
           for (final node in symbol.nodes) {
