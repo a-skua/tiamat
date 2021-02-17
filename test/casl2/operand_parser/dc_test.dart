@@ -30,7 +30,7 @@ void main() {
           final tree = NodeTree();
           final symbol = Symbol.fromString(
             comment: 'error',
-            opecode: 'CPL',
+            opecode: 'DC',
             operand: data,
           );
 
