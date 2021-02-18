@@ -10,6 +10,40 @@ void main() {
   final rand = Random();
 
   group('start', () {
+    group('error', () {
+      const testdata = [
+        'gr1,ge2',
+        'Gr2,GR2',
+        'GR,GR2',
+        'GR8,GR5',
+        'GRX,GR8',
+        'GR7,GR6,GR0',
+        'GR7,GR8,GR0',
+        'GR7,Label',
+        'GR7',
+        'GR0,LABEL56789',
+        '#FFFF',
+        '0',
+      ];
+
+      for (var i = 0; i < testdata.length; i++) {
+        final data = testdata[i];
+        test('$i', () {
+          final tree = NodeTree();
+          final symbol = Symbol.fromString(
+            comment: 'error',
+            opecode: 'START',
+            operand: data,
+          );
+
+          expect(start(symbol, tree), isNotNull);
+          expect(tree.labels.length, equals(0));
+          expect(tree.nodes.length, equals(0));
+          expect(symbol.nodes.length, equals(0));
+        });
+      }
+    });
+
     test('without operand', () {
       final tree = NodeTree();
       final symbol = Symbol.fromString(
@@ -19,7 +53,7 @@ void main() {
         operand: '',
       );
 
-      start(symbol, tree);
+      expect(start(symbol, tree), isNull);
       expect(symbol.nodes.length, equals(0));
       expect(tree.nodes.length, equals(0));
       expect(tree.labels.length, equals(0));
@@ -36,7 +70,7 @@ void main() {
           operand: 'LABEL',
         );
 
-        start(symbol, tree);
+        expect(start(symbol, tree), isNull);
         expect(symbol.nodes.length, equals(2));
         expect(tree.startLabel, equals('MAIN2'));
         // labels
@@ -49,49 +83,7 @@ void main() {
         expect(tree.nodes[0].type, equals(Type.code));
         expect(tree.nodes[1].type, equals(Type.label));
         expect(
-            tree.nodes.first, equals(tree.labels['LABEL']?.references?.first));
-      });
-
-      test('address', () {
-        final tree = NodeTree();
-        final symbol = Symbol.fromString(
-          comment: 'label test',
-          label: 'MAIN3',
-          opecode: 'START',
-          operand: '1234',
-        );
-
-        start(symbol, tree);
-        expect(symbol.nodes.length, equals(2));
-        expect(tree.startLabel, equals('MAIN3'));
-        expect(tree.labels.length, equals(0));
-        // nodes
-        expect(tree.nodes.length, equals(2));
-        expect(tree.nodes[0].code, equals(0x6400));
-        expect(tree.nodes[0].type, equals(Type.code));
-        expect(tree.nodes[1].code, equals(1234));
-        expect(tree.nodes[1].type, equals(Type.code));
-      });
-
-      test('hex address', () {
-        final tree = NodeTree();
-        final symbol = Symbol.fromString(
-          comment: 'label test',
-          label: 'MAIN3',
-          opecode: 'START',
-          operand: '#1234',
-        );
-
-        start(symbol, tree);
-        expect(symbol.nodes.length, equals(2));
-        expect(tree.startLabel, equals('MAIN3'));
-        expect(tree.labels.length, equals(0));
-        // nodes
-        expect(tree.nodes.length, equals(2));
-        expect(tree.nodes[0].code, equals(0x6400));
-        expect(tree.nodes[0].type, equals(Type.code));
-        expect(tree.nodes[1].code, equals(0x1234));
-        expect(tree.nodes[1].type, equals(Type.code));
+            tree.nodes.last, equals(tree.labels['LABEL']?.references?.first));
       });
     });
   });
