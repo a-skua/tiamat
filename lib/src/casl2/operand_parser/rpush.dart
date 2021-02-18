@@ -1,10 +1,18 @@
+import '../core/error.dart';
 import '../core/symbol.dart';
 import '../core/node_tree.dart';
 import 'push.dart';
 import 'util.dart';
 
 /// A macro of CASL2, named RPUSH.
-void rpush(final Symbol s, final NodeTree t) {
+Error? rpush(final Symbol s, final NodeTree t) {
+  if (s.operand.isNotEmpty) {
+    return Error(
+      'operand must be empty',
+      ErrorType.operand,
+    );
+  }
+
   {
     final symbols = <Symbol>[
       Symbol.fromString(opecode: 'PUSH', operand: '0,GR1'),
@@ -16,7 +24,10 @@ void rpush(final Symbol s, final NodeTree t) {
       Symbol.fromString(opecode: 'PUSH', operand: '0,GR7'),
     ];
     for (final symbol in symbols) {
-      push(symbol, t);
+      final error = push(symbol, t);
+      if (error != null) {
+        return error;
+      }
       s.nodes.addAll(symbol.nodes);
     }
   }
@@ -24,4 +35,6 @@ void rpush(final Symbol s, final NodeTree t) {
   if (s.label.isNotEmpty) {
     setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
   }
+
+  return null;
 }

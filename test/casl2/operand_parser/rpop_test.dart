@@ -10,6 +10,38 @@ void main() {
   final rand = Random();
 
   group('rpop', () {
+    group('error', () {
+      const testdata = [
+        'gr1,ge2',
+        'Gr2,GR2',
+        'GR,GR2',
+        'GR8,GR5',
+        'GRX,GR8',
+        'GR7,GR6,GR0',
+        'GR7,GR8,GR0',
+        'GR7,Label',
+        'GR7',
+        'GR0,LABEL56789',
+      ];
+
+      for (var i = 0; i < testdata.length; i++) {
+        final data = testdata[i];
+        test('$i', () {
+          final tree = NodeTree();
+          final symbol = Symbol.fromString(
+            comment: 'error',
+            opecode: 'RPOP',
+            operand: data,
+          );
+
+          expect(rpop(symbol, tree), isNotNull);
+          expect(tree.labels.length, equals(0));
+          expect(tree.nodes.length, equals(0));
+          expect(symbol.nodes.length, equals(0));
+        });
+      }
+    });
+
     test('with label', () {
       final label = 'LABEL';
       final tree = NodeTree()
@@ -34,7 +66,7 @@ void main() {
       final baseLabelsLength = tree.labels.length;
       final baseNodesLength = tree.nodes.length;
 
-      rpop(symbol, tree);
+      expect(rpop(symbol, tree), isNull);
       final expected = <Node>[
         // POP     GR7
         Node(0x7170),
@@ -84,7 +116,7 @@ void main() {
       final baseLabelsLength = tree.labels.length;
       final baseNodesLength = tree.nodes.length;
 
-      rpop(symbol, tree);
+      expect(rpop(symbol, tree), isNull);
       final expected = <Node>[
         // POP     GR7
         Node(0x7170),

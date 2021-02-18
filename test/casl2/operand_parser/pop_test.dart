@@ -10,6 +10,39 @@ void main() {
   final rand = Random();
 
   group('pop', () {
+    group('error', () {
+      const testdata = [
+        "'hello, world'",
+        '',
+        '0',
+        '-1',
+        'GR1,#FFFF',
+        'LABEL,#F',
+        'LABEL10,F',
+        '0LABEL,12',
+        'LABEL0,-12',
+        'LABEL6789,12',
+        'GR8',
+      ];
+
+      for (var i = 0; i < testdata.length; i++) {
+        final data = testdata[i];
+        test('$i', () {
+          final tree = NodeTree();
+          final symbol = Symbol.fromString(
+            comment: 'error',
+            opecode: 'POP',
+            operand: data,
+          );
+
+          expect(pop(symbol, tree), isNotNull);
+          expect(tree.labels.length, equals(0));
+          expect(tree.nodes.length, equals(0));
+          expect(symbol.nodes.length, equals(0));
+        });
+      }
+    });
+
     group('r', () {
       group('address with index', () {
         for (var i = 0; i < 16; i++) {
@@ -39,7 +72,7 @@ void main() {
             final baseLabelsLength = tree.labels.length;
             final baseNodesLength = tree.nodes.length;
 
-            pop(symbol, tree);
+            expect(pop(symbol, tree), isNull);
             expect(symbol.nodes.length, equals(1));
             expect(tree.nodes.length, equals(baseNodesLength + 1));
             if (label.isEmpty) {

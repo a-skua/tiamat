@@ -1,3 +1,4 @@
+import '../core/error.dart';
 import '../core/symbol.dart';
 import '../core/node_tree.dart';
 import 'automata/pattern4.dart';
@@ -8,11 +9,12 @@ import 'svc.dart';
 import 'pop.dart';
 
 /// A macro of CASL2, named OUT.
-void output(final Symbol s, final NodeTree t) {
+Error? output(final Symbol s, final NodeTree t) {
   final result = automata(s.operand);
 
-  // TODO: make error handling.
-  assert(result.hasNotError);
+  if (result.hasError) {
+    return result.error;
+  }
 
   // |BUF,255[EOF]
   // |```````^ length!
@@ -41,15 +43,19 @@ void output(final Symbol s, final NodeTree t) {
     for (final symbol in symbols) {
       switch (String.fromCharCodes(symbol.opecode)) {
         case 'PUSH':
+          // TODO
           push(symbol, t);
           break;
         case 'LAD':
+          // TODO
           lad(symbol, t);
           break;
         case 'SVC':
+          // TODO
           svc(symbol, t);
           break;
         case 'POP':
+          // TODO
           pop(symbol, t);
           break;
       }
@@ -59,4 +65,6 @@ void output(final Symbol s, final NodeTree t) {
   if (s.label.isNotEmpty) {
     setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
   }
+
+  return null;
 }

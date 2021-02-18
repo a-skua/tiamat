@@ -1,10 +1,18 @@
+import '../core/error.dart';
 import '../core/symbol.dart';
 import '../core/node_tree.dart';
 import 'pop.dart';
 import 'util.dart';
 
 /// A macro of CASL2, named RPOP.
-void rpop(final Symbol s, final NodeTree t) {
+Error? rpop(final Symbol s, final NodeTree t) {
+  if (s.operand.isNotEmpty) {
+    return Error(
+      'operand must be empty',
+      ErrorType.operand,
+    );
+  }
+
   {
     final symbols = <Symbol>[
       Symbol.fromString(opecode: 'POP', operand: 'GR7'),
@@ -16,7 +24,10 @@ void rpop(final Symbol s, final NodeTree t) {
       Symbol.fromString(opecode: 'POP', operand: 'GR1'),
     ];
     for (final symbol in symbols) {
-      pop(symbol, t);
+      final error = pop(symbol, t);
+      if (error != null) {
+        return error;
+      }
       s.nodes.addAll(symbol.nodes);
     }
   }
@@ -24,4 +35,6 @@ void rpop(final Symbol s, final NodeTree t) {
   if (s.label.isNotEmpty) {
     setLabel(String.fromCharCodes(s.label), s.nodes.first, t.labels);
   }
+
+  return null;
 }

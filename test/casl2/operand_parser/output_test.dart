@@ -10,6 +10,39 @@ void main() {
   final rand = Random();
 
   group('out', () {
+    group('error', () {
+      const testdata = [
+        'GR0',
+        "'hello, world'",
+        '',
+        '0',
+        '-1',
+        'GR1,#FFFF',
+        'LABEL,#F',
+        'LABEL10,F',
+        '0LABEL,12',
+        'LABEL0,-12',
+        'LABEL6789,12',
+      ];
+
+      for (var i = 0; i < testdata.length; i++) {
+        final data = testdata[i];
+        test('$i', () {
+          final tree = NodeTree();
+          final symbol = Symbol.fromString(
+            comment: 'error',
+            opecode: 'OUT',
+            operand: data,
+          );
+
+          expect(output(symbol, tree), isNotNull);
+          expect(tree.labels.length, equals(0));
+          expect(tree.nodes.length, equals(0));
+          expect(symbol.nodes.length, equals(0));
+        });
+      }
+    });
+
     group('adr,len', () {
       group('without label', () {
         group('label,decimal', () {
@@ -41,7 +74,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -106,7 +139,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -169,7 +202,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -232,7 +265,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -296,7 +329,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -360,7 +393,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -426,7 +459,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -493,7 +526,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -558,7 +591,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -623,7 +656,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -689,7 +722,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
@@ -755,7 +788,7 @@ void main() {
               final baseLabelsLength = tree.labels.length;
               final baseNodesLength = tree.nodes.length;
 
-              output(symbol, tree);
+              expect(output(symbol, tree), isNull);
               final expected = <Node>[
                 // PUSH    0,GR1
                 Node(0x7001),
