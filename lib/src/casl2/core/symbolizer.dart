@@ -11,19 +11,19 @@ List<Symbol> symbolize(List<Token> tokens) {
 
   for (final token in tokens) {
     switch (token.type) {
-      case Type.comment:
+      case TokenType.comment:
         comment.add(token.rune);
         break;
-      case Type.label:
+      case TokenType.label:
         label.add(token.rune);
         break;
-      case Type.opecode:
+      case TokenType.opecode:
         opecode.add(token.rune);
         break;
-      case Type.operand:
+      case TokenType.operand:
         operand.add(token.rune);
         break;
-      case Type.endLine:
+      case TokenType.endLine:
         symbols.add(Symbol(
           comment: List.of(comment),
           label: List.of(label),

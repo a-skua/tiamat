@@ -1,5 +1,5 @@
 /// Type of Token
-enum Type {
+enum TokenType {
   comment,
   label,
   opecode,
@@ -10,7 +10,7 @@ enum Type {
 /// Token
 class Token {
   final int rune;
-  final Type type;
+  final TokenType type;
 
   const Token(this.rune, this.type);
 }

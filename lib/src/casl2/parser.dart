@@ -16,8 +16,15 @@ Result<List<int>> parse(final List<Symbol> s) {
   }
 
   // labeling
-  for (final label in tree.labels.values) {
-    assert(label.entity != null);
+  tree.labels.forEach((final name, final label) {
+    if (label.entity == null) {
+      errors.add(Error(
+        '---\n'
+        'label \'$name\' is not defined.',
+        ErrorType.label,
+      ));
+      return;
+    }
 
     final root = label.entity;
     if (root != null) {
@@ -26,7 +33,7 @@ Result<List<int>> parse(final List<Symbol> s) {
         node.code = index;
       }
     }
-  }
+  });
 
   return Result(
     List.generate(

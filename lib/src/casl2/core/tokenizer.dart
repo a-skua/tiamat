@@ -30,10 +30,10 @@ List<Token> tokenize(String s) {
           // |; comment\n
           // |`````````^
           state = _State.label;
-          tokens.add(Token(c, Type.endLine));
+          tokens.add(Token(c, TokenType.endLine));
           break;
         }
-        tokens.add(Token(c, Type.comment));
+        tokens.add(Token(c, TokenType.comment));
         break;
       case _State.label:
         if (c == tab || c == space) {
@@ -49,7 +49,7 @@ List<Token> tokenize(String s) {
           // NOTE: wrong format.
           // |LABEL\n
           // |`````^
-          tokens.add(Token(c, Type.endLine));
+          tokens.add(Token(c, TokenType.endLine));
           break;
         }
         if (c == semicolon) {
@@ -57,10 +57,10 @@ List<Token> tokenize(String s) {
           // |LABEL; comment
           // |`````^
           state = _State.comment;
-          tokens.add(Token(c, Type.comment));
+          tokens.add(Token(c, TokenType.comment));
           break;
         }
-        tokens.add(Token(c, Type.label));
+        tokens.add(Token(c, TokenType.label));
         break;
       case _State.endLabel:
         if (c == semicolon) {
@@ -74,14 +74,14 @@ List<Token> tokenize(String s) {
           // |LABEL   ; comment
           // |````````^
           state = _State.comment;
-          tokens.add(Token(c, Type.comment));
+          tokens.add(Token(c, TokenType.comment));
           break;
         }
         if (c != tab && c != space) {
           // |LABEL   NOP
           // |````````^
           state = _State.opecode;
-          tokens.add(Token(c, Type.opecode));
+          tokens.add(Token(c, TokenType.opecode));
           break;
         }
         break;
@@ -90,7 +90,7 @@ List<Token> tokenize(String s) {
           // |LABEL   NOP\n
           // |```````````^
           state = _State.label;
-          tokens.add(Token(c, Type.endLine));
+          tokens.add(Token(c, TokenType.endLine));
           break;
         }
         if (c == semicolon) {
@@ -98,7 +98,7 @@ List<Token> tokenize(String s) {
           // |LABEL   NOP; comment
           // |```````````^
           state = _State.comment;
-          tokens.add(Token(c, Type.comment));
+          tokens.add(Token(c, TokenType.comment));
         }
         if (c == tab || c == space) {
           // |LABEL   ADDA    GR0,GR1
@@ -106,35 +106,35 @@ List<Token> tokenize(String s) {
           state = _State.endOpecode;
           break;
         }
-        tokens.add(Token(c, Type.opecode));
+        tokens.add(Token(c, TokenType.opecode));
         break;
       case _State.endOpecode:
         if (c == newline) {
           // |LABEL   NOP     \n
           // |````````````````^
           state = _State.label;
-          tokens.add(Token(c, Type.endLine));
+          tokens.add(Token(c, TokenType.endLine));
           break;
         }
         if (c == semicolon) {
           // |LABEL   NOP     ; comment
           // |````````````````^
           state = _State.comment;
-          tokens.add(Token(c, Type.comment));
+          tokens.add(Token(c, TokenType.comment));
           break;
         }
         if (c == quote) {
           // |LABEL   DC      'hello, world'
           // |````````````````^
           state = _State.string;
-          tokens.add(Token(c, Type.operand));
+          tokens.add(Token(c, TokenType.operand));
           break;
         }
         if (c != tab && c != space) {
           // |LABEL   ADDA    GR0,GR1
           // |````````````````^
           state = _State.operand;
-          tokens.add(Token(c, Type.operand));
+          tokens.add(Token(c, TokenType.operand));
           break;
         }
         break;
@@ -143,14 +143,14 @@ List<Token> tokenize(String s) {
           // |LABEL   ADDA    GR0,GR1\n
           // |```````````````````````^
           state = _State.label;
-          tokens.add(Token(c, Type.endLine));
+          tokens.add(Token(c, TokenType.endLine));
           break;
         }
         if (c == quote) {
           // |LABEL   DC      0,'hello, world'
           // |``````````````````^
           state = _State.string;
-          tokens.add(Token(c, Type.operand));
+          tokens.add(Token(c, TokenType.operand));
           break;
         }
         if (c == tab || c == space) {
@@ -159,21 +159,21 @@ List<Token> tokenize(String s) {
           state = _State.endOperand;
           break;
         }
-        tokens.add(Token(c, Type.operand));
+        tokens.add(Token(c, TokenType.operand));
         break;
       case _State.endOperand:
         if (c == newline) {
           // |LABEL   ADDA    GR0,GR1 \n
           // |````````````````````````^
           state = _State.label;
-          tokens.add(Token(c, Type.endLine));
+          tokens.add(Token(c, TokenType.endLine));
           break;
         }
         if (c != tab && c != space) {
           // |LABEL   ADDA    GR0,GR1 comment
           // |````````````````````````^
           state = _State.comment;
-          tokens.add(Token(c, Type.comment));
+          tokens.add(Token(c, TokenType.comment));
           break;
         }
         break;
@@ -185,24 +185,24 @@ List<Token> tokenize(String s) {
           // |LABEL   DC      'it''a small world'
           // |```````````````````^
           state = _State.metaChar;
-          tokens.add(Token(c, Type.operand));
+          tokens.add(Token(c, TokenType.operand));
           break;
         }
-        tokens.add(Token(c, Type.operand));
+        tokens.add(Token(c, TokenType.operand));
         break;
       case _State.metaChar:
         if (c == quote) {
           // |LABEL   DC      'it''a small world'
           // |````````````````````^
           state = _State.string;
-          tokens.add(Token(c, Type.operand));
+          tokens.add(Token(c, TokenType.operand));
           break;
         }
         if (c == newline) {
           // |LABEL   DC      'hello, world'\n
           // |``````````````````````````````^
           state = _State.label;
-          tokens.add(Token(c, Type.endLine));
+          tokens.add(Token(c, TokenType.endLine));
           break;
         }
         if (c == tab || c == space) {
@@ -214,7 +214,7 @@ List<Token> tokenize(String s) {
         // |LABEL   DC      'hello, world',-1
         // |``````````````````````````````^
         state = _State.operand;
-        tokens.add(Token(c, Type.operand));
+        tokens.add(Token(c, TokenType.operand));
         break;
     }
   }

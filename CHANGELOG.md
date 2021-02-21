@@ -1,3 +1,7 @@
+## 0.3.0-nullsafety
+- changed Casl2.
+- `Casl2.compile` thorws CompileException
+  when parse error.
 ## 0.2.0-nullsafety
 - refactoring Comet2.
 - add class `Device` and remove field `Comet2.sv`

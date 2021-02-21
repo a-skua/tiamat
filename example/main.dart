@@ -56,8 +56,14 @@ void main() {
 
   final casl2 = Casl2();
 
-  final code = casl2.compile(asm);
-  print('compiled:\n$code\n');
+  final code = <int>[];
+  try {
+    code.addAll(casl2.compile(asm));
+    print('compiled:\n$code\n');
+  } catch (e) {
+    print(e);
+    return;
+  }
 
   final comet2 = Comet2()..device = DeviceCLI();
   comet2.load(code);

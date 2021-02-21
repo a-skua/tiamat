@@ -13,11 +13,25 @@ Error? parse(Symbol s, NodeTree t) {
   if (parse != null) {
     final error = parse(s, t);
     if (error != null) {
-      return error;
+      // TODO
+      final label = String.fromCharCodes(s.label);
+      final operand = String.fromCharCodes(s.operand);
+      final comment = String.fromCharCodes(s.comment);
+      return Error(
+        '---\n'
+        'info\n'
+        '\tlabel:\t $label\n'
+        '\topecode: $opecode\n'
+        '\toperand: $operand\n'
+        '\tcomment: $comment\n'
+        '${error.detail}',
+        ErrorType.operand,
+      );
     }
   } else {
     return Error(
-      'Not implements $opecode.',
+      '---\n'
+      'Not implements $opecode',
       ErrorType.opecode,
     );
   }

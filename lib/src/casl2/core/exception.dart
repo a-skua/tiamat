@@ -1,5 +1,6 @@
 import 'error.dart';
 
+/// CASL2's compiled exception
 class CompileException {
   final List<Error> _errors;
 

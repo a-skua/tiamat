@@ -10,7 +10,11 @@ typedef Tokenizer = List<Token> Function(String);
 typedef Symbolizer = List<Symbol> Function(List<Token>);
 typedef Parser = Result<List<int>> Function(List<Symbol>);
 
+/// CASL2 instance.
 class Casl2 {
+  /// compile CASL2 to code.
+  ///
+  /// throws CompileException when parse failed.
   List<int> compile(final String s) {
     // TODO
     final result = this.parse(this.symbolize(this.tokenize(s)));
