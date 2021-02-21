@@ -1,15 +1,27 @@
+import 'core/error.dart';
 import 'core/symbol.dart';
+import 'core/error.dart';
 import 'core/node_tree.dart';
 import 'operand_parser/operand_parser.dart';
 
-typedef Parser = void Function(Symbol, NodeTree);
+typedef Parser = Error? Function(Symbol, NodeTree);
 
-void parse(Symbol s, NodeTree t) {
-  final parse = _map[String.fromCharCodes(s.opecode)];
-  assert(parse != null);
+Error? parse(Symbol s, NodeTree t) {
+  final opecode = String.fromCharCodes(s.opecode);
+  final parse = _map[opecode];
+
   if (parse != null) {
-    parse(s, t);
+    final error = parse(s, t);
+    if (error != null) {
+      return error;
+    }
+  } else {
+    return Error(
+      'Not implements $opecode.',
+      ErrorType.opecode,
+    );
   }
+  return null;
 }
 
 final _map = <String, Parser>{

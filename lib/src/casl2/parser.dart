@@ -1,11 +1,18 @@
+import 'core/error.dart';
+import 'core/result.dart';
 import 'core/node_tree.dart';
 import 'core/symbol.dart';
 import 'operand_parser.dart' as operand;
 
-List<int> parse(final List<Symbol> s) {
+Result<List<int>> parse(final List<Symbol> s) {
   final tree = NodeTree();
+  final errors = <Error>[];
+
   for (final symbol in s) {
-    operand.parse(symbol, tree);
+    final error = operand.parse(symbol, tree);
+    if (error != null) {
+      errors.add(error);
+    }
   }
 
   // labeling
@@ -21,8 +28,11 @@ List<int> parse(final List<Symbol> s) {
     }
   }
 
-  return List.generate(
-    tree.nodes.length,
-    (i) => tree.nodes[i].code,
+  return Result(
+    List.generate(
+      tree.nodes.length,
+      (i) => tree.nodes[i].code,
+    ),
+    errors,
   );
 }

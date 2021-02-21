@@ -43,20 +43,28 @@ Error? output(final Symbol s, final NodeTree t) {
     for (final symbol in symbols) {
       switch (String.fromCharCodes(symbol.opecode)) {
         case 'PUSH':
-          // TODO
-          push(symbol, t);
+          final error = push(symbol, t);
+          if (error != null) {
+            return error;
+          }
           break;
         case 'LAD':
-          // TODO
-          lad(symbol, t);
+          final error = lad(symbol, t);
+          if (error != null) {
+            return error;
+          }
           break;
         case 'SVC':
-          // TODO
-          svc(symbol, t);
+          final error = svc(symbol, t);
+          if (error != null) {
+            return error;
+          }
           break;
         case 'POP':
-          // TODO
-          pop(symbol, t);
+          final error = pop(symbol, t);
+          if (error != null) {
+            return error;
+          }
           break;
       }
       s.nodes.addAll(symbol.nodes);
