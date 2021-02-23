@@ -13,6 +13,9 @@ class Comet2 {
   /// Resource.
   final Resource resource = Resource();
 
+  /// COMET2 is active
+  bool _isActive = true;
+
   Comet2() {
     this.resource.supervisorCall =
         (final int code) => supervisorCall(this.resource, this.device, code);
@@ -24,13 +27,20 @@ class Comet2 {
     this.resource.memory.setAll(pr.value, code);
   }
 
+  /// To stop COMET2.
+  void stop() {
+    this._isActive = false;
+  }
+
   /// Execute.
   void exec() {
     final sp = this.resource.stackPointer;
     final pr = this.resource.programRegister;
     final ram = this.resource.memory;
 
-    while (sp.value != 0) {
+    this._isActive = true;
+
+    while (this._isActive && sp.value != 0) {
       final op = (ram[pr.value] >> 8) & 0xff;
       instruction(this.resource, op);
     }
