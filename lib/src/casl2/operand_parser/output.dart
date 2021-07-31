@@ -41,6 +41,13 @@ Error? output(final Symbol s, final NodeTree t) {
       Symbol.fromString(opecode: 'POP', operand: 'GR2'),
       Symbol.fromString(opecode: 'POP', operand: 'GR1'),
     ];
+    print('--- START DEBUG ---');
+    print('label is ${result.label}');
+    print('has label: ${result.hasLabel}');
+    print('address is ${result.address}');
+    print('has address: ${result.hasAddress}');
+    print('symbols: ${symbols}');
+    print('--- END   DEBUG ---');
     for (final symbol in symbols) {
       switch (String.fromCharCodes(symbol.opecode)) {
         case 'PUSH':
