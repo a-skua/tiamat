@@ -32,4 +32,8 @@ class Node {
       this._code = c;
     }
   }
+
+  String toString() {
+    return '0x${this._code.toRadixString(16).padLeft(4, '0')}';
+  }
 }

@@ -37,4 +37,12 @@ class Symbol {
       operand: operand.runes.toList(),
     );
   }
+
+  String toString() {
+    final label =
+        this.label.isEmpty ? '' : '[${String.fromCharCodes(this.label)}]';
+    final opecode = String.fromCharCodes(this.opecode);
+    final operand = String.fromCharCodes(this.operand);
+    return '$label $opecode $operand: ${this.nodes}';
+  }
 }

@@ -17,21 +17,19 @@ Result<List<int>> parse(final List<Symbol> s) {
 
   // labeling
   tree.labels.forEach((final name, final label) {
-    if (label.entity == null) {
-      errors.add(Error(
-        '---\n'
-        'label \'$name\' is not defined.',
-        ErrorType.label,
-      ));
-      return;
-    }
-
     final root = label.entity;
     if (root != null) {
       final index = tree.nodes.indexOf(root);
       for (final node in label.references) {
         node.code = index;
       }
+    } else {
+      errors.add(Error(
+        '---\n'
+        'label \'$name\' is not defined.',
+        ErrorType.label,
+      ));
+      return;
     }
   });
 

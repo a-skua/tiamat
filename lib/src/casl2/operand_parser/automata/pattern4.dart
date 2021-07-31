@@ -28,16 +28,19 @@ class ExResult extends Result {
   final int? address;
   final int length;
   ExResult(
-    State lastState, {
-    required this.length,
-    this.label = null,
-    this.address = null,
-    Error? error = null,
+    State lastState,
+    this.length, {
+    this.label,
+    this.address,
+    Error? error,
     List<Node> values = const [],
   }) : super(values, lastState, error: error);
 
-  bool get hasLabel => this.label != null;
-  bool get hasAddress => this.address != null;
+  bool get hasLabel => label != null;
+  bool get hasAddress => address != null;
+
+  String getLabel() => label ?? '';
+  int getAddress() => address ?? 0;
 }
 
 /// An automata of fourth pattern.
@@ -327,7 +330,7 @@ ExResult automata(final List<int> runes) {
         break;
       case State.error:
       default:
-        return ExResult(state, length: 0, error: error);
+        return ExResult(state, 0, error: error);
     }
   }
 
@@ -339,9 +342,9 @@ ExResult automata(final List<int> runes) {
   if (pointer == 4 && state == State.hexLength) {
     final length = int.parse(String.fromCharCodes(temporary), radix: 16);
     if (address != null) {
-      return ExResult(state, length: length, address: address);
+      return ExResult(state, length, address: address);
     } else {
-      return ExResult(state, length: length, label: label);
+      return ExResult(state, length, label: label);
     }
   }
 
@@ -353,15 +356,15 @@ ExResult automata(final List<int> runes) {
   if (state == State.length) {
     final length = int.parse(String.fromCharCodes(temporary));
     if (address != null) {
-      return ExResult(state, length: length, address: address);
+      return ExResult(state, length, address: address);
     } else {
-      return ExResult(state, length: length, label: label);
+      return ExResult(state, length, label: label);
     }
   }
 
   return ExResult(
     state,
-    length: 0,
+    0,
     error: Error(
       'syntax error',
       ErrorType.operand,

@@ -13,4 +13,8 @@ class Token {
   final TokenType type;
 
   const Token(this.rune, this.type);
+
+  String toString() {
+    return '0x${(this.rune & 0xffff).toRadixString(16).padLeft(4, '0')}';
+  }
 }

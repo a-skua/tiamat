@@ -31,10 +31,11 @@ Error? input(final Symbol s, final NodeTree t) {
     final symbols = <Symbol>[
       Symbol.fromString(opecode: 'PUSH', operand: '0,GR1'),
       Symbol.fromString(opecode: 'PUSH', operand: '0,GR2'),
-      if (result.label != null)
-        Symbol.fromString(opecode: 'LAD', operand: 'GR1,${result.label}'),
-      if (result.address != null)
-        Symbol.fromString(opecode: 'LAD', operand: 'GR1,${result.address}'),
+      if (result.hasLabel)
+        Symbol.fromString(opecode: 'LAD', operand: 'GR1,${result.getLabel()}'),
+      if (result.hasAddress)
+        Symbol.fromString(
+            opecode: 'LAD', operand: 'GR1,${result.getAddress()}'),
       Symbol.fromString(opecode: 'LAD', operand: 'GR2,${result.length}'),
       Symbol.fromString(opecode: 'SVC', operand: '1'),
       Symbol.fromString(opecode: 'POP', operand: 'GR2'),
