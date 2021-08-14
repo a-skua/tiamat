@@ -3,14 +3,21 @@ import 'package:tiamat/src/casl2/lexer/lexer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('lexer', testNext);
+  test('lexer', testNextToken);
 }
 
 List<int> toRunes(final String s) {
   return s.runes.toList();
 }
 
-void testNext() {
+/// Expected token struct
+class ExpectedToken {
+  final String value;
+  final TokenType type;
+  const ExpectedToken(this.value, this.type);
+}
+
+void testNextToken() {
   final input = '''
 MAIN    START           ; コメント
         CALL    COUNT1  ; COUNT1呼び出し
@@ -38,93 +45,93 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 '''
       .trim();
 
-  final tests = <Token>[
-    Token('MAIN'.runes, TokenType.label),
-    Token('START'.runes, TokenType.opecode),
-    Token('; コメント'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('CALL'.runes, TokenType.opecode),
-    Token('COUNT1'.runes, TokenType.operand),
-    Token('; COUNT1呼び出し'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('RET'.runes, TokenType.opecode),
-    Token([], TokenType.eol),
-    Token('END'.runes, TokenType.opecode),
-    Token([], TokenType.eol),
-    Token([], TokenType.eol),
-    Token('COUNT1'.runes, TokenType.label),
-    Token('START'.runes, TokenType.opecode),
-    Token(';'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token(';       入力    GR1:検索する語'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token(';       処理    GR1中の\'1\'のビットの個数を求める'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token(';       出力    GR0:GR1中の\'1\'のビットの個数'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('PUSH'.runes, TokenType.opecode),
-    Token('0,GR1'.runes, TokenType.operand),
-    Token(';'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('PUSH'.runes, TokenType.opecode),
-    Token('0,GR2'.runes, TokenType.operand),
-    Token(';'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('SUBA'.runes, TokenType.opecode),
-    Token('GR2,GR2'.runes, TokenType.operand),
-    Token('; Count = 0'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('AND'.runes, TokenType.opecode),
-    Token('GR1,GR1'.runes, TokenType.operand),
-    Token('; 全部のビットが\'0\'?'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('JZE'.runes, TokenType.opecode),
-    Token('RETURN'.runes, TokenType.operand),
-    Token('; 全部のビットが\'0\'なら終了'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('MORE'.runes, TokenType.label),
-    Token('LAD'.runes, TokenType.opecode),
-    Token('GR2,1,GR2'.runes, TokenType.operand),
-    Token('; Count = Count + 1'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('LAD'.runes, TokenType.opecode),
-    Token('GR0,-1,GR1'.runes, TokenType.operand),
-    Token('; 最下位の\'1\'のビット1個を'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('AND'.runes, TokenType.opecode),
-    Token('GR1,GR0'.runes, TokenType.operand),
-    Token(';   \'0\'に変える'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('JNZ'.runes, TokenType.opecode),
-    Token('MORE'.runes, TokenType.operand),
-    Token('; \'1\'のビットが残っていれば繰り返し'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('RETURN'.runes, TokenType.label),
-    Token('LD'.runes, TokenType.opecode),
-    Token('GR0,GR2'.runes, TokenType.operand),
-    Token('; GR0 = Count'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('POP'.runes, TokenType.opecode),
-    Token('GR2'.runes, TokenType.operand),
-    Token(';'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('POP'.runes, TokenType.opecode),
-    Token('GR1'.runes, TokenType.operand),
-    Token(';'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('RET'.runes, TokenType.opecode),
-    Token('; 呼び出しプログラムへ戻る'.runes, TokenType.comment),
-    Token([], TokenType.eol),
-    Token('END'.runes, TokenType.opecode),
-    Token(';'.runes, TokenType.comment),
-    Token([], TokenType.eof),
+  final tests = <ExpectedToken>[
+    ExpectedToken('MAIN', TokenType.label),
+    ExpectedToken('START', TokenType.opecode),
+    ExpectedToken('; コメント', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('CALL', TokenType.opecode),
+    ExpectedToken('COUNT1', TokenType.operand),
+    ExpectedToken('; COUNT1呼び出し', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('RET', TokenType.opecode),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('END', TokenType.opecode),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('COUNT1', TokenType.label),
+    ExpectedToken('START', TokenType.opecode),
+    ExpectedToken(';', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken(';       入力    GR1:検索する語', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken(';       処理    GR1中の\'1\'のビットの個数を求める', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken(';       出力    GR0:GR1中の\'1\'のビットの個数', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('PUSH', TokenType.opecode),
+    ExpectedToken('0,GR1', TokenType.operand),
+    ExpectedToken(';', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('PUSH', TokenType.opecode),
+    ExpectedToken('0,GR2', TokenType.operand),
+    ExpectedToken(';', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('SUBA', TokenType.opecode),
+    ExpectedToken('GR2,GR2', TokenType.operand),
+    ExpectedToken('; Count = 0', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('AND', TokenType.opecode),
+    ExpectedToken('GR1,GR1', TokenType.operand),
+    ExpectedToken('; 全部のビットが\'0\'?', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('JZE', TokenType.opecode),
+    ExpectedToken('RETURN', TokenType.operand),
+    ExpectedToken('; 全部のビットが\'0\'なら終了', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('MORE', TokenType.label),
+    ExpectedToken('LAD', TokenType.opecode),
+    ExpectedToken('GR2,1,GR2', TokenType.operand),
+    ExpectedToken('; Count = Count + 1', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('LAD', TokenType.opecode),
+    ExpectedToken('GR0,-1,GR1', TokenType.operand),
+    ExpectedToken('; 最下位の\'1\'のビット1個を', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('AND', TokenType.opecode),
+    ExpectedToken('GR1,GR0', TokenType.operand),
+    ExpectedToken(';   \'0\'に変える', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('JNZ', TokenType.opecode),
+    ExpectedToken('MORE', TokenType.operand),
+    ExpectedToken('; \'1\'のビットが残っていれば繰り返し', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('RETURN', TokenType.label),
+    ExpectedToken('LD', TokenType.opecode),
+    ExpectedToken('GR0,GR2', TokenType.operand),
+    ExpectedToken('; GR0 = Count', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('POP', TokenType.opecode),
+    ExpectedToken('GR2', TokenType.operand),
+    ExpectedToken(';', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('POP', TokenType.opecode),
+    ExpectedToken('GR1', TokenType.operand),
+    ExpectedToken(';', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('RET', TokenType.opecode),
+    ExpectedToken('; 呼び出しプログラムへ戻る', TokenType.comment),
+    ExpectedToken('', TokenType.eol),
+    ExpectedToken('END', TokenType.opecode),
+    ExpectedToken(';', TokenType.comment),
+    ExpectedToken('', TokenType.eof),
   ];
 
   final l = Lexer(input);
   for (final tt in tests) {
     final token = l.nextToken();
     expect(token.type, equals(tt.type));
-    expect(token.runesAsString, equals(tt.runesAsString));
+    expect(token.runesAsString, equals(tt.value));
   }
 
   final eofToken = l.nextToken();
