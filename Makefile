@@ -4,5 +4,5 @@ fmt:
 tests:
 	pub run test
 
-webserve:
+serve:
 	webdev serve

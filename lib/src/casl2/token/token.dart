@@ -4,12 +4,13 @@ enum TokenType {
   label,
   opecode,
   operand,
-  endOfLine,
+  eol, // end of line
+  eof,
 }
 
 /// Token
 class Token {
-  final List<int> runes;
+  final Iterable<int> _runes;
   final TokenType type;
   final int startPosition;
   final int endPosition;
@@ -18,16 +19,21 @@ class Token {
   final int lineEndPosition;
 
   const Token(
-    this.rune,
+    this._runes,
     this.type, {
-    this.startPosition,
-    this.endPosition,
-    this.lineNumber,
-    this.lineStartPosition,
-    this.lineEndPosition,
+    this.startPosition = 0,
+    this.endPosition = 0,
+    this.lineNumber = 0,
+    this.lineStartPosition = 0,
+    this.lineEndPosition = 0,
   });
 
+  List<int> get runes => List.from(_runes);
+
+  String get runesAsString => String.fromCharCodes(_runes);
+
+  @override
   String toString() {
-    return '{type: $type, str: ${String.fromCharCodes(runes)}}';
+    return '{type: $type, str: ${String.fromCharCodes(_runes)}}';
   }
 }
