@@ -26,3 +26,19 @@ virtual computer COMET2 emulator and virtual language CASL2 compiler.
   LAD GR2,32
   SVC 1
 ```
+
+## Specification
+
+[IPA Shiken Yougo ver 4.2](https://www.jitec.ipa.go.jp/1_13download/shiken_yougo_ver4_2.pdf)
+
+### CASL2 Format
+```
+# with operand
+[<label>]<space><opecode><spece><operand>[<space>[<comment>]]
+
+# without operand
+[<label>]<space><opecode>[<space>[<semicoron>[<comment>]]]
+
+# comment line
+[<space>]<semicoron>[<comment>]
+```
