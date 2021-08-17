@@ -1,13 +1,13 @@
-/// JIS X 0201 0x20-0x7E
-const latin = ' !"#\$%&\'()*+,-./'
+/// JIS X 0201 0x21-0x7E
+const latin = '!"#\$%&\'()*+,-./'
     '0123456789:;<=>?'
-    '@ABCDEFGHIJKLMN0'
+    '@ABCDEFGHIJKLMNO'
     'PQRSTUVWXYZ[¥]^_'
     '`abcdefghijklmno'
     'pqrstuvwxyz{|}~';
 
 final _latinCode =
-    List.generate(latin.runes.length, (i) => 0x20 + i, growable: false);
+    List.generate(latin.runes.length, (i) => 0x21 + i, growable: false);
 
 final _latinRuneAsCode = Map.fromIterables(latin.runes, _latinCode);
 final _latinCodeAsRune = Map.fromIterables(_latinCode, latin.runes);
