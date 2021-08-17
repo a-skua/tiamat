@@ -1,3 +1,4 @@
+import 'dart:collection';
 import '../token/token.dart';
 
 /// space
@@ -9,6 +10,13 @@ final newline = '\n'.runes.first;
 
 /// comment
 final semicolon = ';'.runes.first;
+
+final comma = ','.runes.first;
+final sharp = '#'.runes.first;
+final minus = '-'.runes.first;
+final quote = '\''.runes.first;
+final decNumbers = HashSet<int>.from('0123456789'.runes);
+final hexNumbers = HashSet<int>.from(decNumbers)..addAll('ABCDEF'.runes);
 
 const tokenEOF = Token([], TokenType.eof);
 
@@ -102,12 +110,42 @@ class Lexer {
           return nextToken();
         }
 
+        if (_isSeparation) {
+          _readChar();
+          return nextToken();
+        }
+
+        if (_isSpace) {
+          _expectedStatus = ExpectedStatus.expectComment;
+          return nextToken();
+        }
+
+        if (_isDec) {
+          final start = _currentIndex;
+          _readDec();
+          final end = _currentIndex;
+          return _getToken(start, end, TokenType.dec);
+        }
+
+        if (_isHex) {
+          final start = _currentIndex;
+          _readHex();
+          final end = _currentIndex;
+          return _getToken(start, end, TokenType.hex);
+        }
+
+        if (_isString) {
+          final start = _currentIndex;
+          _readString();
+          final end = _currentIndex;
+          return _getToken(start, end, TokenType.string);
+        }
+
         final start = _currentIndex;
-        _readOperand();
+        _readIdent();
         final end = _currentIndex;
 
-        _expectedStatus = ExpectedStatus.expectComment;
-        return _getToken(start, end, TokenType.operand);
+        return _getToken(start, end, TokenType.ident);
       case ExpectedStatus.expectComment:
         _skipSpace();
         _expectedStatus = ExpectedStatus.comment;
@@ -146,7 +184,38 @@ class Lexer {
 
   void _readOpecode() => _readLetter();
 
-  void _readOperand() => _readLetter();
+  void _readIdent() {
+    while (!isLast && !_isSpace && !_isNewline && !_isSeparation) {
+      _readChar();
+    }
+  }
+
+  void _readDec() {
+    _readChar();
+    while (_isDecNumber) {
+      _readChar();
+    }
+  }
+
+  void _readHex() {
+    _readChar();
+    while (hexNumbers.contains(current)) {
+      _readChar();
+    }
+  }
+
+  void _readString() {
+    _readChar();
+    while (true) {
+      if (current == quote && next == quote) {
+        _readChar();
+      } else if (current == quote) {
+        _readChar();
+        break;
+      }
+      _readChar();
+    }
+  }
 
   void _readComment() {
     while (!isLast && !_isNewline) {
@@ -175,9 +244,27 @@ class Lexer {
 
   bool get _isSpace => current == space || current == tab;
   bool get _isComment => current == semicolon;
+  bool get _isDec => current == minus || _isDecNumber;
+  bool get _isDecNumber => decNumbers.contains(current);
+  bool get _isHex => current == sharp;
+  bool get _isString => current == quote;
+  bool get _isSeparation => current == comma;
   bool get _isNewline => current == newline;
 
   bool get isLast => _currentIndex >= _runes.length;
 
-  int get current => _runes[_currentIndex];
+  int? get current => () {
+        if (isLast) {
+          return null;
+        }
+        return _runes[_currentIndex];
+      }();
+
+  int? get next => () {
+        final nextIndex = _currentIndex + 1;
+        if (nextIndex >= _runes.length) {
+          return null;
+        }
+        return _runes[nextIndex];
+      }();
 }

@@ -3,8 +3,11 @@ enum TokenType {
   comment,
   label,
   opecode,
-  operand,
-  eol, // end of line
+  ident, // GR0 ~ GR7, LABEL
+  dec, // -32768 ~ 32767
+  hex, // #0000 ~ FFFF
+  string, // 'STRING'
+  eol,
   eof,
 }
 
