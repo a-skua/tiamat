@@ -5,14 +5,12 @@ final space = ' '.runes.first;
 final tab = '\t'.runes.first;
 
 /// newline
-final ret = '\r'.runes.first;
 final newline = '\n'.runes.first;
 
 /// comment
 final semicolon = ';'.runes.first;
 
 const tokenEOF = Token([], TokenType.eof);
-const tokenEOL = Token([], TokenType.eol);
 
 /// expected current status.
 enum ExpectedStatus {
@@ -30,6 +28,8 @@ enum ExpectedStatus {
 class Lexer {
   late final List<int> _runes;
   var _currentIndex = 0;
+  var _currentLine = 0;
+  var _currentLineStartIndex = 0;
 
   /// lexical state.
   var _expectedStatus = ExpectedStatus.label;
@@ -65,7 +65,7 @@ class Lexer {
         final end = _currentIndex;
 
         _expectedStatus = ExpectedStatus.expectOpecode;
-        return Token(_runes.getRange(start, end), TokenType.label);
+        return _getToken(start, end, TokenType.label);
       case ExpectedStatus.expectOpecode:
         _skipSpace();
         if (_isComment) {
@@ -86,7 +86,7 @@ class Lexer {
         final end = _currentIndex;
 
         _expectedStatus = ExpectedStatus.expectOperand;
-        return Token(_runes.getRange(start, end), TokenType.opecode);
+        return _getToken(start, end, TokenType.opecode);
       case ExpectedStatus.expectOperand:
         _skipSpace();
         if (_isComment) {
@@ -107,7 +107,7 @@ class Lexer {
         final end = _currentIndex;
 
         _expectedStatus = ExpectedStatus.expectComment;
-        return Token(_runes.getRange(start, end), TokenType.operand);
+        return _getToken(start, end, TokenType.operand);
       case ExpectedStatus.expectComment:
         _skipSpace();
         _expectedStatus = ExpectedStatus.comment;
@@ -118,12 +118,28 @@ class Lexer {
         final end = _currentIndex;
 
         _expectedStatus = ExpectedStatus.eol;
-        return Token(_runes.getRange(start, end), TokenType.comment);
+        return _getToken(start, end, TokenType.comment);
       case ExpectedStatus.eol:
         _expectedStatus = ExpectedStatus.label;
+        final start = _currentIndex;
+        final eol = _getToken(start, start + 1, TokenType.eol);
         _readChar();
-        return tokenEOL;
+        _currentLine += 1;
+        _currentLineStartIndex = _currentIndex;
+        return eol;
     }
+  }
+
+  Token _getToken(int start, int end, TokenType type) {
+    return Token(
+      _runes.getRange(start, end),
+      type,
+      start: start,
+      end: end,
+      line: _currentLine,
+      lineStart: start - _currentLineStartIndex,
+      lineEnd: end - _currentLineStartIndex,
+    );
   }
 
   void _readLabel() => _readLetter();
@@ -159,7 +175,7 @@ class Lexer {
 
   bool get _isSpace => current == space || current == tab;
   bool get _isComment => current == semicolon;
-  bool get _isNewline => current == ret || current == newline;
+  bool get _isNewline => current == newline;
 
   bool get isLast => _currentIndex >= _runes.length;
 

@@ -12,20 +12,20 @@ enum TokenType {
 class Token {
   final Iterable<int> _runes;
   final TokenType type;
-  final int startPosition;
-  final int endPosition;
-  final int lineNumber;
-  final int lineStartPosition;
-  final int lineEndPosition;
+  final int start;
+  final int end;
+  final int line;
+  final int lineStart;
+  final int lineEnd;
 
   const Token(
     this._runes,
     this.type, {
-    this.startPosition = 0,
-    this.endPosition = 0,
-    this.lineNumber = 0,
-    this.lineStartPosition = 0,
-    this.lineEndPosition = 0,
+    this.start = 0,
+    this.end = 0,
+    this.line = 0,
+    this.lineStart = 0,
+    this.lineEnd = 0,
   });
 
   List<int> get runes => List.from(_runes);
