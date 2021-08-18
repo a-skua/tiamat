@@ -11,6 +11,29 @@ enum TokenType {
   eof,
 }
 
+String tokenTypeAsString(TokenType type) {
+  switch (type) {
+    case TokenType.comment:
+      return 'COMMENT';
+    case TokenType.label:
+      return 'LABEL';
+    case TokenType.opecode:
+      return 'OPECODE';
+    case TokenType.ident:
+      return 'IDENT';
+    case TokenType.dec:
+      return 'DEC';
+    case TokenType.hex:
+      return 'HEX';
+    case TokenType.string:
+      return 'STRING';
+    case TokenType.eol:
+      return 'EOL';
+    case TokenType.eof:
+      return 'EOF';
+  }
+}
+
 /// Token
 class Token {
   final Iterable<int> _runes;
@@ -35,8 +58,10 @@ class Token {
 
   String get runesAsString => String.fromCharCodes(_runes);
 
+  String get typeAsString => tokenTypeAsString(type);
+
   @override
   String toString() {
-    return '{type: $type, str: ${String.fromCharCodes(_runes)}}';
+    return '$typeAsString($runesAsString)';
   }
 }

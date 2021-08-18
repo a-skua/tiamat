@@ -23,7 +23,7 @@ MAIN    START                   ; コメント
         CALL    COUNT1          ; COUNT1呼び出し
         RET
         DC      'hello','world' ; 文字定数
-        DC      'Is''s a small world'
+        DC      'It''s a small world'
         DC      12,-34,56,-78   ; 10進定数
         DC      #1234,#CDEF     ; 16進定数
         END
@@ -66,7 +66,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
     ExpectedToken('; 文字定数', TokenType.comment),
     ExpectedToken('\n', TokenType.eol),
     ExpectedToken('DC', TokenType.opecode),
-    ExpectedToken("'Is''s a small world'", TokenType.string),
+    ExpectedToken("'It''s a small world'", TokenType.string),
     ExpectedToken('\n', TokenType.eol),
     ExpectedToken('DC', TokenType.opecode),
     ExpectedToken('12', TokenType.dec),
@@ -182,4 +182,5 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   final eofToken = l.nextToken();
   expect(eofToken.type, equals(TokenType.eof));
   expect(eofToken.runesAsString, equals(''));
+  expect(eofToken.toString(), equals('EOF()'));
 }
