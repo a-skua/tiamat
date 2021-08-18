@@ -10,20 +10,30 @@ class Parser {
   Root parseProgram() {
     final stmts = <Node>[];
 
+    while (true) {
+      final stmt = _nextStmt();
+      if (stmt == null) {
+        return Root(stmts);
+      }
+      stmts.add(stmt);
+    }
+  }
+
+  Statement? _nextStmt() {
+    var token = _lexer.nextToken();
+    if (token.type == TokenType.eof) {
+      return null;
+    }
+
+    // FIXME skip empty
+    while (token.type == TokenType.eol || token.type == TokenType.comment) {
+      token = _lexer.nextToken();
+    }
+
     Token? label;
     Token? opecode;
-    List<Token> operand = [];
+    var operand = <Token>[];
     while (true) {
-      final token = _lexer.nextToken();
-      if (token.type == TokenType.eof) {
-        stmts.add(Statement(
-          opecode as Token,
-          operand,
-          label: label,
-        ));
-        break;
-      }
-
       switch (token.type) {
         case TokenType.label:
           label = token;
@@ -33,21 +43,17 @@ class Parser {
           break;
         case TokenType.comment:
           break;
+        case TokenType.eof:
         case TokenType.eol:
-          stmts.add(Statement(
+          return Statement(
             opecode as Token,
             operand,
             label: label,
-          ));
-          label = null;
-          opecode = null;
-          operand = [];
-          break;
+          );
         default:
           operand.add(token);
       }
+      token = _lexer.nextToken();
     }
-
-    return Root(stmts);
   }
 }

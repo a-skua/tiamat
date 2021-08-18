@@ -16,6 +16,25 @@ MAIN    START                   ; コメント
         DC      12,-34,56,-78   ; 10進定数
         DC      #1234,#CDEF     ; 16進定数
         END
+
+COUNT1  START                   ;
+;       入力    GR1:検索する語
+;       処理    GR1中の'1'のビットの個数を求める
+;       出力    GR0:GR1中の'1'のビットの個数
+        PUSH    0,GR1           ;
+        PUSH    0,GR2           ;
+        SUBA    GR2,GR2         ; Count = 0
+        AND     GR1,GR1         ; 全部のビットが'0'?
+        JZE     RETURN          ; 全部のビットが'0'なら終了
+MORE    LAD     GR2,1,GR2       ; Count = Count + 1
+        LAD     GR0,-1,GR1      ; 最下位の'1'のビット1個を
+        AND     GR1,GR0         ;   '0'に変える
+        JNZ     MORE            ; '1'のビットが残っていれば繰り返し
+RETURN  LD      GR0,GR2         ; GR0 = Count
+        POP     GR2             ;
+        POP     GR1             ;
+        RET                     ; 呼び出しプログラムへ戻る
+        END                     ;
 '''
       .trim();
 
@@ -24,7 +43,7 @@ MAIN    START                   ; コメント
   final expected = 'BLOCK('
       'STATEMENT(LABEL(MAIN),OPECODE(START))'
       ','
-      'STATEMENT(OPECODE(CALL),OPERAND(IDENT(COUNT1)))'
+      'STATEMENT(OPECODE(CALL),OPERAND(IDENT(COUNT1)))' // TODO COUNT1 is label
       ','
       'STATEMENT(OPECODE(RET))'
       ','
@@ -35,6 +54,36 @@ MAIN    START                   ; コメント
       'STATEMENT(OPECODE(DC),OPERAND(DEC(12),DEC(-34),DEC(56),DEC(-78)))'
       ','
       'STATEMENT(OPECODE(DC),OPERAND(HEX(#1234),HEX(#CDEF)))'
+      ','
+      'STATEMENT(OPECODE(END))'
+      ','
+      'STATEMENT(LABEL(COUNT1),OPECODE(START))'
+      ','
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),IDENT(GR1)))' // TODO GR1 is register
+      ','
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),IDENT(GR2)))'
+      ','
+      'STATEMENT(OPECODE(SUBA),OPERAND(IDENT(GR2),IDENT(GR2)))'
+      ','
+      'STATEMENT(OPECODE(AND),OPERAND(IDENT(GR1),IDENT(GR1)))'
+      ','
+      'STATEMENT(OPECODE(JZE),OPERAND(IDENT(RETURN)))'
+      ','
+      'STATEMENT(LABEL(MORE),OPECODE(LAD),OPERAND(IDENT(GR2),DEC(1),IDENT(GR2)))'
+      ','
+      'STATEMENT(OPECODE(LAD),OPERAND(IDENT(GR0),DEC(-1),IDENT(GR1)))'
+      ','
+      'STATEMENT(OPECODE(AND),OPERAND(IDENT(GR1),IDENT(GR0)))'
+      ','
+      'STATEMENT(OPECODE(JNZ),OPERAND(IDENT(MORE)))'
+      ','
+      'STATEMENT(LABEL(RETURN),OPECODE(LD),OPERAND(IDENT(GR0),IDENT(GR2)))'
+      ','
+      'STATEMENT(OPECODE(POP),OPERAND(IDENT(GR2)))'
+      ','
+      'STATEMENT(OPECODE(POP),OPERAND(IDENT(GR1)))'
+      ','
+      'STATEMENT(OPECODE(RET))'
       ','
       'STATEMENT(OPECODE(END))'
       ')';
