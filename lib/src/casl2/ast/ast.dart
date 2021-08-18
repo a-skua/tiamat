@@ -1,9 +1,23 @@
-class Node {}
+abstract class Node {}
 
-class Satement extends Node {}
+class Statement implements Node {
+  final String label;
+  final String opecode;
+  final List<Node> _operand;
 
-class BlockStatement extends Statement {
-  final List<Statement> _statements = [];
+  Statement(
+    this.opecode,
+    this._operand, {
+    this.label = '',
+  });
 }
 
-class Program extends BlockStatement {}
+class StatementBlock implements Node {
+  final List<Statement> _statements;
+
+  StatementBlock(this._statements);
+}
+
+class Root extends StatementBlock {
+  Root() : super([]);
+}
