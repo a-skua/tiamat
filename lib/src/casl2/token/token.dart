@@ -3,7 +3,8 @@ enum TokenType {
   comment,
   label,
   opecode,
-  ident, // GR0 ~ GR7, LABEL
+  ident, // LABEL
+  gr, //  GR0 ~ GR7
   dec, // -32768 ~ 32767
   hex, // #0000 ~ FFFF
   string, // 'STRING'
@@ -21,6 +22,8 @@ String tokenTypeAsString(TokenType type) {
       return 'OPECODE';
     case TokenType.ident:
       return 'IDENT';
+    case TokenType.gr:
+      return 'GR';
     case TokenType.dec:
       return 'DEC';
     case TokenType.hex:

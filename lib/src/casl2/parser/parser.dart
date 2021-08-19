@@ -21,13 +21,14 @@ class Parser {
 
   Statement? _nextStmt() {
     var token = _lexer.nextToken();
-    if (token.type == TokenType.eof) {
-      return null;
-    }
 
     // FIXME skip empty
     while (token.type == TokenType.eol || token.type == TokenType.comment) {
       token = _lexer.nextToken();
+    }
+
+    if (token.type == TokenType.eof) {
+      return null;
     }
 
     Token? label;

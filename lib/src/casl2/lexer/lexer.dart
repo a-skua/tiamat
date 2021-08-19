@@ -18,6 +18,10 @@ final quote = '\''.runes.first;
 final decNumbers = HashSet<int>.from('0123456789'.runes);
 final hexNumbers = HashSet<int>.from(decNumbers)..addAll('ABCDEF'.runes);
 
+bool isSpace(final int? rune) => rune == space || rune == tab;
+bool isNewline(final int? rune) => rune == newline;
+bool isSeparation(final int? rune) => rune == comma;
+
 const tokenEOF = Token([], TokenType.eof);
 
 /// expected current status.
@@ -141,6 +145,13 @@ class Lexer {
           return _getToken(start, end, TokenType.string);
         }
 
+        if (_isGR) {
+          final start = _currentIndex;
+          _readIdent();
+          final end = _currentIndex;
+          return _getToken(start, end, TokenType.gr);
+        }
+
         final start = _currentIndex;
         _readIdent();
         final end = _currentIndex;
@@ -207,7 +218,7 @@ class Lexer {
   void _readString() {
     _readChar();
     while (true) {
-      if (current == quote && next == quote) {
+      if (current == quote && _next == quote) {
         _readChar();
       } else if (current == quote) {
         _readChar();
@@ -242,16 +253,39 @@ class Lexer {
     _currentIndex += 1;
   }
 
-  bool get _isSpace => current == space || current == tab;
+  bool get _isSpace => isSpace(current);
   bool get _isComment => current == semicolon;
   bool get _isDec => current == minus || _isDecNumber;
   bool get _isDecNumber => decNumbers.contains(current);
   bool get _isHex => current == sharp;
+  bool get _isGR => () {
+        final start = _currentIndex;
+        final end = start + 3;
+        switch (String.fromCharCodes(_runes.getRange(start, end))) {
+          case 'GR0':
+          case 'GR1':
+          case 'GR2':
+          case 'GR3':
+          case 'GR4':
+          case 'GR5':
+          case 'GR6':
+          case 'GR7':
+            if (_isLast(end) ||
+                isSpace(_runes[end]) ||
+                isSeparation(_runes[end])) {
+              return true;
+            }
+            return false;
+          default:
+            return false;
+        }
+      }();
   bool get _isString => current == quote;
-  bool get _isSeparation => current == comma;
-  bool get _isNewline => current == newline;
+  bool get _isSeparation => isSeparation(current);
+  bool get _isNewline => isNewline(current);
+  bool _isLast(final int index) => index >= _runes.length;
 
-  bool get isLast => _currentIndex >= _runes.length;
+  bool get isLast => _isLast(_currentIndex);
 
   int? get current => () {
         if (isLast) {
@@ -260,11 +294,18 @@ class Lexer {
         return _runes[_currentIndex];
       }();
 
-  int? get next => () {
+  int? get _next => () {
         final nextIndex = _currentIndex + 1;
         if (nextIndex >= _runes.length) {
           return null;
         }
         return _runes[nextIndex];
       }();
+
+  List<int> _range(final int start, final int end) {
+    if (start < 0 || end >= _runes.length) {
+      return [];
+    }
+    return List.from(_runes.getRange(start, end));
+  }
 }
