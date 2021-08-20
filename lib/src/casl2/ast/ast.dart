@@ -4,17 +4,34 @@ abstract class Node {
   List<int> toCode();
 }
 
+/// Statement's root
+class Root implements Node {
+  List<int> toCode() => [];
+}
+
 class Statement implements Node {
+  final Node _parent;
   final Token? label;
   final Token opecode;
   final List<Token> _operand;
   List<Token> get operand => List.from(_operand);
 
   Statement(
+    this._parent,
     this.opecode,
     this._operand, {
     this.label,
   });
+
+  int getPosition() {
+    if (_parent is Root) {
+      return toCode().length;
+    } else if (_parent is Statement) {
+      return toCode().length + (_parent as Statement).getPosition();
+    } else {
+      return 0;
+    }
+  }
 
   @override
   List<int> toCode() => []; // TODO
@@ -46,6 +63,7 @@ class StatementBlock implements Node {
   String toString() => 'BLOCK(${_statements.join(',')})';
 }
 
-class Root extends StatementBlock {
-  Root(List<Node> nodes) : super(nodes);
+/// Parser return this Node
+class Program extends StatementBlock {
+  Program(List<Node> nodes) : super(nodes);
 }

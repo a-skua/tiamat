@@ -7,19 +7,21 @@ class Parser {
 
   Parser(this._lexer);
 
-  Root parseProgram() {
+  Program parseProgram() {
     final stmts = <Node>[];
 
+    Node node = Root();
     while (true) {
-      final stmt = _nextStmt();
+      final stmt = _nextStmt(node);
       if (stmt == null) {
-        return Root(stmts);
+        return Program(stmts);
       }
       stmts.add(stmt);
+      node = stmt;
     }
   }
 
-  Statement? _nextStmt() {
+  Statement? _nextStmt(Node parent) {
     var token = _lexer.nextToken();
 
     // FIXME skip empty
@@ -47,6 +49,7 @@ class Parser {
         case TokenType.eof:
         case TokenType.eol:
           return Statement(
+            parent,
             opecode as Token,
             operand,
             label: label,

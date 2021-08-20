@@ -46,9 +46,7 @@ class Lexer {
   /// lexical state.
   var _expectedStatus = ExpectedStatus.label;
 
-  Lexer(String str) {
-    _runes = str.runes.toList(growable: false);
-  }
+  Lexer(this._runes);
 
   Token nextToken() {
     if (isLast) {
@@ -75,8 +73,12 @@ class Lexer {
         final start = _currentIndex;
         _readLabel();
         final end = _currentIndex;
-
         _expectedStatus = ExpectedStatus.expectOpecode;
+
+        if (_isGR(start, end)) {
+          final gr = String.fromCharCodes(_runes.getRange(start, end));
+          return _getError(start, end, '`$gr` cannot be used as label');
+        }
         return _getToken(start, end, TokenType.label);
       case ExpectedStatus.expectOpecode:
         _skipSpace();
@@ -145,17 +147,13 @@ class Lexer {
           return _getToken(start, end, TokenType.string);
         }
 
-        if (_isGR) {
-          final start = _currentIndex;
-          _readIdent();
-          final end = _currentIndex;
-          return _getToken(start, end, TokenType.gr);
-        }
-
         final start = _currentIndex;
         _readIdent();
         final end = _currentIndex;
 
+        if (_isGR(start, end)) {
+          return _getToken(start, end, TokenType.gr);
+        }
         return _getToken(start, end, TokenType.ident);
       case ExpectedStatus.expectComment:
         _skipSpace();
@@ -183,6 +181,18 @@ class Lexer {
     return Token(
       _runes.getRange(start, end),
       type,
+      start: start,
+      end: end,
+      line: _currentLine,
+      lineStart: start - _currentLineStartIndex,
+      lineEnd: end - _currentLineStartIndex,
+    );
+  }
+
+  Token _getError(int start, int end, String error) {
+    return ErrorToken(
+      _runes.getRange(start, end),
+      error,
       start: start,
       end: end,
       line: _currentLine,
@@ -258,32 +268,26 @@ class Lexer {
   bool get _isDec => current == minus || _isDecNumber;
   bool get _isDecNumber => decNumbers.contains(current);
   bool get _isHex => current == sharp;
-  bool get _isGR => () {
-        final start = _currentIndex;
-        final end = start + 3;
-        switch (String.fromCharCodes(_runes.getRange(start, end))) {
-          case 'GR0':
-          case 'GR1':
-          case 'GR2':
-          case 'GR3':
-          case 'GR4':
-          case 'GR5':
-          case 'GR6':
-          case 'GR7':
-            if (_isLast(end) ||
-                isSpace(_runes[end]) ||
-                isSeparation(_runes[end])) {
-              return true;
-            }
-            return false;
-          default:
-            return false;
-        }
-      }();
   bool get _isString => current == quote;
   bool get _isSeparation => isSeparation(current);
   bool get _isNewline => isNewline(current);
   bool _isLast(final int index) => index >= _runes.length;
+
+  bool _isGR(int start, int end) {
+    switch (String.fromCharCodes(_runes.getRange(start, end))) {
+      case 'GR0':
+      case 'GR1':
+      case 'GR2':
+      case 'GR3':
+      case 'GR4':
+      case 'GR5':
+      case 'GR6':
+      case 'GR7':
+        return true;
+      default:
+        return false;
+    }
+  }
 
   bool get isLast => _isLast(_currentIndex);
 

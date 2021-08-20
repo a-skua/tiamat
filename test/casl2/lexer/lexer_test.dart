@@ -3,7 +3,8 @@ import 'package:tiamat/src/casl2/lexer/lexer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('lexer', testNextToken);
+  test('next token', testNextToken);
+  test('label error', testLabelError);
 }
 
 List<int> toRunes(final String s) {
@@ -169,17 +170,11 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 
   final runes = input.runes.toList();
   var currentLine = 0;
-  final l = Lexer(input);
+  final l = Lexer(runes);
   for (final tt in tests) {
     final token = l.nextToken();
 
-    expect(token.type, equals(tt.type));
-    expect(token.runesAsString, equals(tt.value));
-    expect(
-      String.fromCharCodes(runes.getRange(token.start, token.end)),
-      token.runesAsString,
-    );
-    expect(token.line, equals(currentLine));
+    testToken(token, runes, currentLine, tt);
 
     if (token.type == TokenType.eol) {
       currentLine += 1;
@@ -190,4 +185,78 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   expect(eofToken.type, equals(TokenType.eof));
   expect(eofToken.runesAsString, equals(''));
   expect(eofToken.toString(), equals('EOF()'));
+}
+
+void testLabelError() {
+  final input = '''
+MAIN    START                   ; コメント
+        JUMP    GR1
+        SUBA    GR1,GR1
+GR1     SUBA    GR2,GR2         ; ラベルエラー
+        RET
+        END
+'''
+      .trim();
+
+  final tests = [
+    ExpectedToken('MAIN', TokenType.label),
+    ExpectedToken('START', TokenType.opecode),
+    ExpectedToken('; コメント', TokenType.comment),
+    ExpectedToken('\n', TokenType.eol),
+    ExpectedToken('JUMP', TokenType.opecode),
+    ExpectedToken('GR1', TokenType.gr),
+    ExpectedToken('\n', TokenType.eol),
+    ExpectedToken('SUBA', TokenType.opecode),
+    ExpectedToken('GR1', TokenType.gr),
+    ExpectedToken('GR1', TokenType.gr),
+    ExpectedToken('\n', TokenType.eol),
+    ExpectedToken('GR1', TokenType.error),
+    ExpectedToken('SUBA', TokenType.opecode),
+    ExpectedToken('GR2', TokenType.gr),
+    ExpectedToken('GR2', TokenType.gr),
+    ExpectedToken('; ラベルエラー', TokenType.comment),
+    ExpectedToken('\n', TokenType.eol),
+    ExpectedToken('RET', TokenType.opecode),
+    ExpectedToken('\n', TokenType.eol),
+    ExpectedToken('END', TokenType.opecode),
+  ];
+
+  final expectedError = [
+    '`GR1` cannot be used as label',
+  ].iterator;
+
+  final runes = input.runes.toList();
+  var currentLine = 0;
+  final l = Lexer(runes);
+  for (final tt in tests) {
+    final token = l.nextToken();
+
+    testToken(token, runes, currentLine, tt);
+    // test error
+    if (token is ErrorToken) {
+      expect(expectedError.moveNext(), isTrue);
+      expect(token.type, equals(TokenType.error));
+      expect(token.error, equals(expectedError.current));
+    }
+
+    if (token.type == TokenType.eol) {
+      currentLine += 1;
+    }
+  }
+
+  final eofToken = l.nextToken();
+  expect(eofToken.type, equals(TokenType.eof));
+  expect(eofToken.runesAsString, equals(''));
+  expect(eofToken.toString(), equals('EOF()'));
+}
+
+/// tester
+void testToken(Token token, List<int> runes, int line, ExpectedToken expected) {
+  expect(token.type, equals(expected.type));
+  expect(token.runesAsString, equals(expected.value));
+  expect(
+    String.fromCharCodes(runes.getRange(token.start, token.end)),
+    token.runesAsString,
+  );
+  expect(token.line, equals(line));
 }

@@ -10,6 +10,7 @@ enum TokenType {
   string, // 'STRING'
   eol,
   eof,
+  error,
 }
 
 String tokenTypeAsString(TokenType type) {
@@ -34,6 +35,8 @@ String tokenTypeAsString(TokenType type) {
       return 'EOL';
     case TokenType.eof:
       return 'EOF';
+    case TokenType.error:
+      return 'ERROR';
   }
 }
 
@@ -67,4 +70,25 @@ class Token {
   String toString() {
     return '$typeAsString($runesAsString)';
   }
+}
+
+class ErrorToken extends Token {
+  final String error;
+  ErrorToken(
+    Iterable<int> runes,
+    this.error, {
+    int start = 0,
+    int end = 0,
+    int line = 0,
+    int lineStart = 0,
+    int lineEnd = 0,
+  }) : super(
+          runes,
+          TokenType.error,
+          start: start,
+          end: end,
+          line: line,
+          lineStart: lineStart,
+          lineEnd: lineEnd,
+        );
 }
