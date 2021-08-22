@@ -1,9 +1,21 @@
+import 'package:tiamat/src/casl2/ast/ast.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
+import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
+import 'dart:math';
 
 void main() {
   test('parse', testPaarse);
+  test('to code', testParseNode);
+}
+
+class ExpectedStatement {
+  final String label;
+  final String opecode;
+  final String operand;
+
+  ExpectedStatement(this.label, this.opecode, this.operand);
 }
 
 void testPaarse() {
@@ -37,14 +49,16 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         RET                     ; 呼び出しプログラムへ戻る
         END                     ;
 '''
-      .trim();
+      .trim()
+      .runes
+      .toList();
 
   final parser = Parser(Lexer(input));
 
   final expected = 'BLOCK('
       'STATEMENT(LABEL(MAIN),OPECODE(START))'
       ','
-      'STATEMENT(OPECODE(CALL),OPERAND(IDENT(COUNT1)))' // TODO COUNT1 is label
+      'STATEMENT(OPECODE(CALL),OPERAND(IDENT(COUNT1)))'
       ','
       'STATEMENT(OPECODE(RET))'
       ','
@@ -62,7 +76,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       ','
       'STATEMENT(LABEL(COUNT1),OPECODE(START))'
       ','
-      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR1)))' // TODO GR1 is register
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR1)))'
       ','
       'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR2)))'
       ','
@@ -91,5 +105,142 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       'STATEMENT(OPECODE(END))'
       ')';
 
-  expect(parser.parseProgram().toString(), equals(expected));
+  final program = parser.parseProgram();
+  expect(program.toString(), equals(expected));
+
+  final tests = [
+    ExpectedStatement('MAIN', 'START', ''),
+    ExpectedStatement('', 'CALL', 'COUNT1'),
+    ExpectedStatement('', 'RET', ''),
+    ExpectedStatement('', 'DC', "'hello','world'"),
+    ExpectedStatement('', 'DC', "'It''s a small world'"),
+    ExpectedStatement('', 'DC', '12,-34,56,-78'),
+    ExpectedStatement('', 'DC', '#1234,#CDEF'),
+    ExpectedStatement('GR1234', 'DC', 'GR1234,MAIN'),
+    ExpectedStatement('', 'END', ''),
+    ExpectedStatement('COUNT1', 'START', ''),
+    ExpectedStatement('', 'PUSH', '0,GR1'),
+    ExpectedStatement('', 'PUSH', '0,GR2'),
+    ExpectedStatement('', 'SUBA', 'GR2,GR2'),
+    ExpectedStatement('', 'AND', 'GR1,GR1'),
+    ExpectedStatement('', 'JZE', 'RETURN'),
+    ExpectedStatement('MORE', 'LAD', 'GR2,1,GR2'),
+    ExpectedStatement('', 'LAD', 'GR0,-1,GR1'),
+    ExpectedStatement('', 'AND', 'GR1,GR0'),
+    ExpectedStatement('', 'JNZ', 'MORE'),
+    ExpectedStatement('RETURN', 'LD', 'GR0,GR2'),
+    ExpectedStatement('', 'POP', 'GR2'),
+    ExpectedStatement('', 'POP', 'GR1'),
+    ExpectedStatement('', 'RET', ''),
+    ExpectedStatement('', 'END', ''),
+  ];
+
+  final stmts = program.statements;
+  expect(stmts.length, equals(tests.length));
+
+  for (var i = 0; i < tests.length; i += 1) {
+    final test = tests[i];
+    final stmt = stmts[i];
+
+    if (stmt is Statement) {
+      expect(stmt.label, equals(test.label));
+      expect(stmt.opecode, equals(test.opecode));
+      expect(stmt.operand, equals(test.operand));
+    }
+  }
+}
+
+void testParseNode() {
+  final input = '''
+MAIN    START                   ; コメント
+        CALL    COUNT1          ; COUNT1呼び出し
+        RET
+        DC      'hello','world' ; 文字定数
+        DC      'it''s a small world'
+        DC      12,-34,56,-78   ; 10進定数
+        DC      #1234,#CDEF     ; 16進定数
+GR1234  DC      GR1234,MAIN     ; アドレス定数
+        END
+
+COUNT1  START                   ;
+;       入力    GR1:検索する語
+;       処理    GR1中の'1'のビットの個数を求める
+;       出力    GR0:GR1中の'1'のビットの個数
+        PUSH    0,GR1           ;
+        PUSH    0,GR2           ;
+        SUBA    GR2,GR2         ; Count = 0
+        AND     GR1,GR1         ; 全部のビットが'0'?
+        JZE     RETURN          ; 全部のビットが'0'なら終了
+MORE    LAD     GR2,1,GR2       ; Count = Count + 1
+        LAD     GR0,-1,GR1      ; 最下位の'1'のビット1個を
+        AND     GR1,GR0         ;   '0'に変える
+        JNZ     MORE            ; '1'のビットが残っていれば繰り返し
+RETURN  LD      GR0,GR2         ; GR0 = Count
+        POP     GR2             ;
+        POP     GR1             ;
+        RET                     ; 呼び出しプログラムへ戻る
+        END                     ;
+'''
+      .trim()
+      .runes
+      .toList();
+
+  final program = Parser(Lexer(input)).parseProgram();
+  final base = Random().nextInt(1 << 10);
+
+  program.env.programStart = base;
+
+  final tests = <int>[
+    // MAIN    START
+    //         CALL    COUNT1
+    0x8000, 39 + base,
+    //         RET
+    0x8100,
+    //         DC      'hello','world'
+    ...'hello'.runes.map((rune) => runeAsCode(rune) ?? 0).toList(),
+    ...'world'.runes.map((rune) => runeAsCode(rune) ?? 0).toList(),
+    //         DC      'it''s a small world'
+    ..."it's a small world".runes.map((rune) => runeAsCode(rune) ?? 0).toList(),
+    //         DC      12,-34,56,-78
+    12, -34, 56, -78,
+    //         DC      #1234,#CDEF
+    0x1234, 0xcdef,
+    // GR1234  DC      GR1234,MAIN
+    37 + base, 0 + base,
+    //         END
+    // COUNT1  START
+    //         PUSH    0,GR1
+    0x7001, 0,
+    //         PUSH    0,GR2
+    0x7002, 0,
+    //         SUBA    GR2,GR2
+    0x2522,
+    //         AND     GR1,GR1
+    0x3411,
+    //         JZE     RETURN
+    0x6300, 54 + base,
+    // MORE    LAD     GR2,1,GR2
+    0x1222, 1,
+    //         LAD     GR0,-1,GR1
+    0x1201, -1,
+    //         AND     GR1,GR0
+    0x3410,
+    //         JNZ     MORE
+    0x6200, 47 + base,
+    // RETURN  LD      GR0,GR2
+    0x1402,
+    //         POP     GR2
+    0x7120,
+    //         POP     GR1
+    0x7110,
+    //         RET
+    0x8100,
+    //         END
+  ];
+
+  final code = program.toCode();
+  expect(code.length, equals(tests.length));
+  for (var i = 0; i < tests.length; i += 1) {
+    expect(code[i], equals(tests[i]));
+  }
 }
