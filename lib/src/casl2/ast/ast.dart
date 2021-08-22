@@ -2,7 +2,7 @@ import '../token/token.dart';
 
 // Lang environment
 class Env {
-  int programStart = 0;
+  int startPoint = 0;
   final labels = <String, Statement>{};
 }
 
@@ -34,15 +34,15 @@ class LabelCode implements Code {
   int _getValue() {
     final stmt = _env.labels[_label];
     if (stmt == null) {
-      return _base + _env.programStart;
+      return _base + _env.startPoint;
     } else {
-      return stmt.getPosition() + _base + _env.programStart;
+      return stmt.position + _base + _env.startPoint;
     }
   }
 }
 
 abstract class Node {
-  List<int> toCode();
+  List<int> get code;
 
   int get size;
 }
@@ -50,7 +50,7 @@ abstract class Node {
 /// Statement's root
 class Root implements Node {
   @override
-  List<int> toCode() => [];
+  List<int> get code => [];
 
   @override
   int get size => 0;
@@ -83,17 +83,19 @@ class Statement implements Node {
   String get opecode => _opecode.runesAsString;
   String get operand => _operand.map((token) => token.runesAsString).join(',');
 
-  int getPosition() {
+  int get position => _getPosition();
+
+  int _getPosition() {
     final parent = _parent;
     if (parent is Statement) {
-      return parent.getPosition() + parent.size;
+      return parent.position + parent.size;
     } else {
       return 0;
     }
   }
 
   @override
-  List<int> toCode() => _code.map((code) => code.value).toList(); // TODO
+  List<int> get code => _code.map((code) => code.value).toList(); // TODO
 
   @override
   int get size => _code.length;
@@ -121,12 +123,12 @@ class StatementBlock implements Node {
   List<Node> get statements => List.from(_statements);
 
   @override
-  List<int> toCode() => _toCode();
+  List<int> get code => _getCode();
 
-  List<int> _toCode() {
+  List<int> _getCode() {
     final code = <int>[];
     for (final stmt in _statements) {
-      code.addAll(stmt.toCode());
+      code.addAll(stmt.code);
     }
     return code;
   }

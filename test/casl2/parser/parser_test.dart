@@ -188,7 +188,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   final program = Parser(Lexer(input)).parseProgram();
   final base = Random().nextInt(1 << 10);
 
-  program.env.programStart = base;
+  program.env.startPoint = base;
 
   final tests = <int>[
     // MAIN    START
@@ -238,7 +238,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
     //         END
   ];
 
-  final code = program.toCode();
+  final code = program.code;
   expect(code.length, equals(tests.length));
   for (var i = 0; i < tests.length; i += 1) {
     expect(code[i], equals(tests[i]));
