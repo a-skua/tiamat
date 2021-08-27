@@ -149,6 +149,39 @@ class StatementBlock implements Node {
   String toString() => 'BLOCK(${_statements.join(',')})';
 }
 
+/// error
+class ErrorNode extends Node {
+  final String _error;
+
+  /// errors [start] position.
+  final int start;
+
+  /// errors [end] position.
+  final int end;
+
+  /// errors [lineStart] position.
+  final int lineStart;
+
+  /// errors [lineNumber].
+  final int lineNumber;
+
+  ErrorNode(
+    this._error, {
+    this.start = 0,
+    this.end = 0,
+    this.lineStart = 0,
+    this.lineNumber = 1,
+  });
+
+  String get error => _error;
+
+  @override
+  List<int> get code => [];
+
+  @override
+  int get size => 0;
+}
+
 /// Parser return this Node
 class Program extends StatementBlock {
   final Env env;

@@ -1,30 +1,20 @@
-import 'core/exception.dart';
-import 'core/result.dart';
-import 'core/tokenizer.dart' as tokenizer;
-import 'core/symbolizer.dart' as symbolizer;
-import 'parser.dart' as parser;
-import 'core/token.dart';
-import 'core/symbol.dart';
-
-typedef Tokenizer = List<Token> Function(String);
-typedef Symbolizer = List<Symbol> Function(List<Token>);
-typedef Parser = Result<List<int>> Function(List<Symbol>);
+import './lexer/lexer.dart';
+import './parser/parser.dart';
+import './ast/ast.dart';
 
 /// CASL2 instance.
 class Casl2 {
-  /// compile CASL2 to code.
-  ///
-  /// throws CompileException when parse failed.
-  List<int> compile(final String s) {
-    // TODO
-    final result = this.parse(this.symbolize(this.tokenize(s)));
-    if (result.errors.isNotEmpty) {
-      throw CompileException(result.errors);
-    }
-    return result.value;
+  final Program _program;
+
+  factory Casl2.compile(String src) {
+    final parser = Parser(Lexer(src.runes.toList()));
+    return Casl2._internal(parser.parseProgram());
   }
 
-  Tokenizer tokenize = tokenizer.tokenize;
-  Symbolizer symbolize = symbolizer.symbolize;
-  Parser parse = parser.parse;
+  Casl2._internal(this._program);
+
+  List<int> getCode([final int startPoint = 0]) {
+    _program.env.startPoint = startPoint;
+    return _program.code;
+  }
 }

@@ -169,15 +169,17 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   ];
 
   final runes = input.runes.toList();
-  var currentLine = 0;
+  var currentLineStart = 0;
+  var currentLineNumber = 1;
   final l = Lexer(runes);
   for (final tt in tests) {
     final token = l.nextToken();
 
-    testToken(token, runes, currentLine, tt);
+    testToken(token, runes, currentLineStart, currentLineNumber, tt);
 
     if (token.type == TokenType.eol) {
-      currentLine += 1;
+      currentLineStart = token.end;
+      currentLineNumber += 1;
     }
   }
 
@@ -226,12 +228,13 @@ GR1     SUBA    GR2,GR2         ; ラベルエラー
   ].iterator;
 
   final runes = input.runes.toList();
-  var currentLine = 0;
+  var currentLineStart = 0;
+  var currentLineNumber = 1;
   final l = Lexer(runes);
   for (final tt in tests) {
     final token = l.nextToken();
 
-    testToken(token, runes, currentLine, tt);
+    testToken(token, runes, currentLineStart, currentLineNumber, tt);
     // test error
     if (token is ErrorToken) {
       expect(expectedError.moveNext(), isTrue);
@@ -240,7 +243,8 @@ GR1     SUBA    GR2,GR2         ; ラベルエラー
     }
 
     if (token.type == TokenType.eol) {
-      currentLine += 1;
+      currentLineStart = token.end;
+      currentLineNumber += 1;
     }
   }
 
@@ -251,12 +255,14 @@ GR1     SUBA    GR2,GR2         ; ラベルエラー
 }
 
 /// tester
-void testToken(Token token, List<int> runes, int line, ExpectedToken expected) {
+void testToken(Token token, List<int> runes, int lineStart, int lineNumber,
+    ExpectedToken expected) {
   expect(token.type, equals(expected.type));
   expect(token.runesAsString, equals(expected.value));
   expect(
     String.fromCharCodes(runes.getRange(token.start, token.end)),
     token.runesAsString,
   );
-  expect(token.line, equals(line));
+  expect(token.lineStart, equals(lineStart));
+  expect(token.lineNumber, equals(lineNumber));
 }

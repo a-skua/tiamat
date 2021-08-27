@@ -40,8 +40,8 @@ enum ExpectedStatus {
 class Lexer {
   late final List<int> _runes;
   var _currentIndex = 0;
-  var _currentLine = 0;
-  var _currentLineStartIndex = 0;
+  var _currentLineNumber = 1;
+  var _currentLineStart = 0;
 
   /// lexical state.
   var _expectedStatus = ExpectedStatus.label;
@@ -171,8 +171,8 @@ class Lexer {
         final start = _currentIndex;
         final eol = _getToken(start, start + 1, TokenType.eol);
         _readChar();
-        _currentLine += 1;
-        _currentLineStartIndex = _currentIndex;
+        _currentLineStart = _currentIndex;
+        _currentLineNumber += 1;
         return eol;
     }
   }
@@ -183,9 +183,8 @@ class Lexer {
       type,
       start: start,
       end: end,
-      line: _currentLine,
-      lineStart: start - _currentLineStartIndex,
-      lineEnd: end - _currentLineStartIndex,
+      lineStart: _currentLineStart,
+      lineNumber: _currentLineNumber,
     );
   }
 
@@ -195,9 +194,8 @@ class Lexer {
       error,
       start: start,
       end: end,
-      line: _currentLine,
-      lineStart: start - _currentLineStartIndex,
-      lineEnd: end - _currentLineStartIndex,
+      lineNumber: _currentLineNumber,
+      lineStart: _currentLineStart,
     );
   }
 

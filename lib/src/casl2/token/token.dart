@@ -44,20 +44,26 @@ String tokenTypeAsString(TokenType type) {
 class Token {
   final Iterable<int> _runes;
   final TokenType type;
+
+  /// tokens [start] position.
   final int start;
+
+  /// tokens [end] position.
   final int end;
-  final int line;
+
+  /// tokens [lineStart] position.
   final int lineStart;
-  final int lineEnd;
+
+  /// tokens [lineNumber].
+  final int lineNumber;
 
   const Token(
     this._runes,
     this.type, {
     this.start = 0,
     this.end = 0,
-    this.line = 0,
     this.lineStart = 0,
-    this.lineEnd = 0,
+    this.lineNumber = 1,
   });
 
   List<int> get runes => List.from(_runes);
@@ -72,6 +78,7 @@ class Token {
   }
 }
 
+/// error
 class ErrorToken extends Token {
   final String error;
   ErrorToken(
@@ -79,16 +86,14 @@ class ErrorToken extends Token {
     this.error, {
     int start = 0,
     int end = 0,
-    int line = 0,
     int lineStart = 0,
-    int lineEnd = 0,
+    int lineNumber = 1,
   }) : super(
           runes,
           TokenType.error,
           start: start,
           end: end,
-          line: line,
           lineStart: lineStart,
-          lineEnd: lineEnd,
+          lineNumber: lineNumber,
         );
 }

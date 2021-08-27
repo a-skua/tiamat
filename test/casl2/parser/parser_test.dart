@@ -1,5 +1,6 @@
 import 'package:tiamat/src/casl2/ast/ast.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
+import 'package:tiamat/src/casl2/token/token.dart';
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
 import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
@@ -8,6 +9,8 @@ import 'dart:math';
 void main() {
   test('parse', testPaarse);
   test('to code', testParseNode);
+  test('token to code', testTokenToCode);
+  test('reg to int', testParseRegToInt);
 }
 
 class ExpectedStatement {
@@ -242,5 +245,130 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   expect(code.length, equals(tests.length));
   for (var i = 0; i < tests.length; i += 1) {
     expect(code[i], equals(tests[i]));
+  }
+}
+
+class TestTokenToCode {
+  Token token;
+  List<Code> expected;
+
+  TestTokenToCode(this.token, this.expected);
+}
+
+void testTokenToCode() {
+  final tests = <TestTokenToCode>[
+    TestTokenToCode(
+      Token(
+        "'hello, world'".runes,
+        TokenType.string,
+      ),
+      'hello, world'
+          .runes
+          .map((rune) => LiteralCode(runeAsCode(rune) ?? 0))
+          .toList(),
+    ),
+    TestTokenToCode(
+      Token(
+        "'it''s a small world'".runes,
+        TokenType.string,
+      ),
+      "it's a small world"
+          .runes
+          .map((rune) => LiteralCode(runeAsCode(rune) ?? 0))
+          .toList(),
+    ),
+    TestTokenToCode(
+      Token(
+        '#FFFF'.runes,
+        TokenType.hex,
+      ),
+      [LiteralCode(0xffff)],
+    ),
+    TestTokenToCode(
+      Token(
+        '#0000'.runes,
+        TokenType.hex,
+      ),
+      [LiteralCode(0x0000)],
+    ),
+    TestTokenToCode(
+      Token(
+        '-1'.runes,
+        TokenType.dec,
+      ),
+      [LiteralCode(-1)],
+    ),
+    TestTokenToCode(
+      Token(
+        '12345'.runes,
+        TokenType.dec,
+      ),
+      [LiteralCode(12345)],
+    ),
+    TestTokenToCode(
+      Token(
+        'LABEL'.runes,
+        TokenType.ident,
+      ),
+      [LiteralCode(0)], // FIXME
+    ),
+  ];
+
+  for (final test in tests) {
+    final actual = tokenToCode(test.token, Env());
+    final expected = test.expected;
+    expect(actual.length, equals(expected.length));
+    for (var i = 0; i < actual.length; i += 1) {
+      expect(actual[i].value, equals(expected[i].value));
+    }
+  }
+}
+
+class TestParseRegToInt {
+  final Token token;
+  final int expected;
+
+  TestParseRegToInt(this.token, this.expected);
+}
+
+void testParseRegToInt() {
+  final tests = [
+    TestParseRegToInt(
+      Token('GR0'.runes, TokenType.gr),
+      0,
+    ),
+    TestParseRegToInt(
+      Token('GR1'.runes, TokenType.gr),
+      1,
+    ),
+    TestParseRegToInt(
+      Token('GR2'.runes, TokenType.gr),
+      2,
+    ),
+    TestParseRegToInt(
+      Token('GR3'.runes, TokenType.gr),
+      3,
+    ),
+    TestParseRegToInt(
+      Token('GR4'.runes, TokenType.gr),
+      4,
+    ),
+    TestParseRegToInt(
+      Token('GR5'.runes, TokenType.gr),
+      5,
+    ),
+    TestParseRegToInt(
+      Token('GR6'.runes, TokenType.gr),
+      6,
+    ),
+    TestParseRegToInt(
+      Token('GR7'.runes, TokenType.gr),
+      7,
+    ),
+  ];
+
+  for (final test in tests) {
+    final actual = parseRegToInt(test.token);
+    expect(actual, equals(test.expected));
   }
 }

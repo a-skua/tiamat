@@ -55,7 +55,7 @@ class Parser {
           return parseNode(
             parent,
             label,
-            opecode as Token, // TODO error handling!
+            opecode,
             operand,
             env,
           );
@@ -67,217 +67,107 @@ class Parser {
   }
 }
 
-Node parseNode(
+/// operand pattern: r1,r2 | r,adr(,x)
+///
+/// [r1r2] and [radrx] is opecode.
+/// use [secondOpecode] when pattern is r,adr(,x)
+Node parseGeneralNode(
   Node parent,
   Token? label,
   Token opecode,
   List<Token> operand,
+  Env env, {
+  int r1r2 = 0,
+  int radrx = 0,
+}) {
+  if (operand.length == 2 && operand[1].type == TokenType.gr) {
+    // expect r1,r2
+    return Statement(
+      parent,
+      opecode,
+      operand,
+      label: label,
+      code: _parseR1R2(r1r2, operand, env),
+    );
+  }
+
+  return Statement(
+    parent,
+    opecode,
+    operand,
+    label: label,
+    code: _parseRAdrX(radrx, operand, env),
+  );
+}
+
+Node parseNode(
+  Node parent,
+  Token? label,
+  Token? opecode,
+  List<Token> operand,
   Env env,
 ) {
+  if (opecode == null) {
+    if (label == null) {
+      return ErrorNode('Fatal error: label and opecode not found.');
+    }
+
+    return ErrorNode(
+      'Syntax error: opecode not found.',
+      start: label.end,
+      end: label.end + 1,
+      lineStart: label.lineStart,
+      lineNumber: label.lineNumber,
+    );
+  }
+
   switch (opecode.runesAsString) {
     case 'LD':
-      return Statement(
+    case 'ADDA':
+    case 'SUBA':
+    case 'ADDL':
+    case 'SUBL':
+    case 'AND':
+    case 'OR':
+    case 'XOR':
+    case 'CPA':
+    case 'CPL':
+      return parseGeneralNode(
         parent,
+        label,
         opecode,
         operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x1400, operand, env)
-            : _parseRAdxX(0x1000, operand, env),
+        env,
+        radrx: radrxOpecode(opecode.runesAsString),
+        r1r2: r1r2opecode(opecode.runesAsString),
       );
     case 'ST':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseRAdxX(0x1100, operand, env),
-      );
     case 'LAD':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseRAdxX(0x1200, operand, env),
-      );
-    case 'ADDA':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x2400, operand, env)
-            : _parseRAdxX(0x2000, operand, env),
-      );
-    case 'SUBA':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x2500, operand, env)
-            : _parseRAdxX(0x2100, operand, env),
-      );
-    case 'ADDL':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x2600, operand, env)
-            : _parseRAdxX(0x2200, operand, env),
-      );
-    case 'SUBL':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x2700, operand, env)
-            : _parseRAdxX(0x2300, operand, env),
-      );
-    case 'AND':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x3400, operand, env)
-            : _parseRAdxX(0x3000, operand, env),
-      );
-    case 'OR':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x3500, operand, env)
-            : _parseRAdxX(0x3100, operand, env),
-      );
-    case 'XOR':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x3600, operand, env)
-            : _parseRAdxX(0x3200, operand, env),
-      );
-    case 'CPA':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x4400, operand, env)
-            : _parseRAdxX(0x4000, operand, env),
-      );
-    case 'CPL':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: operand[1].type == TokenType.gr // TODO error handling!
-            ? _parseR1R2(0x4500, operand, env)
-            : _parseRAdxX(0x4100, operand, env),
-      );
     case 'SLA':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseRAdxX(0x5000, operand, env),
-      );
     case 'SRA':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseRAdxX(0x5100, operand, env),
-      );
     case 'SLL':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseRAdxX(0x5200, operand, env),
-      );
     case 'SRL':
       return Statement(
         parent,
         opecode,
         operand,
         label: label,
-        code: _parseRAdxX(0x5300, operand, env),
+        code: _parseRAdrX(radrxOpecode(opecode.runesAsString), operand, env),
       );
     case 'JMI':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseAdrX(0x6100, operand, env),
-      );
     case 'JNZ':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseAdrX(0x6200, operand, env),
-      );
     case 'JZE':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseAdrX(0x6300, operand, env),
-      );
     case 'JUMP':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseAdrX(0x6400, operand, env),
-      );
     case 'JPL':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseAdrX(0x6500, operand, env),
-      );
     case 'JOV':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseAdrX(0x6600, operand, env),
-      );
     case 'PUSH':
+    case 'CALL':
       return Statement(
         parent,
         opecode,
         operand,
         label: label,
-        code: _parseAdrX(0x7000, operand, env),
+        code: _parseAdrX(adrxOpecode(opecode.runesAsString), operand, env),
       );
     case 'POP':
       return Statement(
@@ -287,16 +177,9 @@ Node parseNode(
         label: label,
         code: [
           LiteralCode(
-              0x7100 + (parseGR2Int(operand[0]) << 4)), // TODO error handling!
+            0x7100 + (parseRegToInt(operand[0]) << 4), // TODO error handling!
+          )
         ],
-      );
-    case 'CALL':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseAdrX(0x8000, operand, env),
       );
     case 'RET':
       return Statement(
@@ -304,9 +187,7 @@ Node parseNode(
         opecode,
         operand,
         label: label,
-        code: [
-          LiteralCode(0x8100),
-        ],
+        code: [LiteralCode(0x8100)],
       );
     case 'START':
     case 'END':
@@ -335,7 +216,7 @@ Node parseNode(
   }
 }
 
-List<Code> _parseRAdxX(
+List<Code> _parseRAdrX(
   final int opecode,
   final List<Token> operand,
   final Env env,
@@ -348,11 +229,14 @@ List<Code> _parseRAdxX(
   }
 
   if (operand.length == 3 && operand[2].type == TokenType.gr) {
-    final r = parseGR2Int(operand[0]);
-    final x = parseGR2Int(operand[2]);
+    final r = parseRegToInt(operand[0]);
+    final x = parseRegToInt(operand[2]);
     result.add(LiteralCode(opecode + (r << 4) + x));
+  } else {
+    final r = parseRegToInt(operand[0]);
+    result.add(LiteralCode(opecode + (r << 4)));
   }
-  result.add(tokenToCode(operand[1], env));
+  result.addAll(tokenToCode(operand[1], env));
 
   return result;
 }
@@ -368,8 +252,8 @@ List<Code> _parseR1R2(
     return result;
   }
 
-  final r1 = parseGR2Int(operand[0]);
-  final r2 = parseGR2Int(operand[1]);
+  final r1 = parseRegToInt(operand[0]);
+  final r2 = parseRegToInt(operand[1]);
   result.add(LiteralCode(opecode + (r1 << 4) + r2));
 
   return result;
@@ -383,12 +267,12 @@ List<Code> _parseAdrX(int opecode, List<Token> operand, Env env) {
   }
 
   if (operand.length == 2 && operand[1].type == TokenType.gr) {
-    result.add(LiteralCode(opecode + parseGR2Int(operand[1])));
+    result.add(LiteralCode(opecode + parseRegToInt(operand[1])));
   } else {
     result.add(LiteralCode(opecode));
   }
 
-  result.add(tokenToCode(operand[0], env));
+  result.addAll(tokenToCode(operand[0], env));
 
   return result;
 }
@@ -396,38 +280,135 @@ List<Code> _parseAdrX(int opecode, List<Token> operand, Env env) {
 List<Code> _parseDC(List<Token> operand, Env env) {
   final result = <Code>[];
   for (final token in operand) {
-    switch (token.type) {
-      case TokenType.string:
-        final runes = token.runes;
-        // `'is''s a small world'` to `is's a small world`
-        final str = String.fromCharCodes(runes.getRange(1, runes.length - 1))
-            .replaceAll("''", "'");
-        for (final rune in str.runes) {
-          result.add(LiteralCode(runeAsCode(rune) ?? 0));
-        }
-        break;
-      default:
-        result.add(tokenToCode(token, env));
-    }
+    result.addAll(tokenToCode(token, env));
   }
   return result;
 }
 
-Code tokenToCode(Token token, Env env) {
+/// Operand's token to code
+List<Code> tokenToCode(Token token, Env env) {
   switch (token.type) {
+    case TokenType.string:
+      // `'is''s a small world'` to `is's a small world`
+      final runes = token.runes;
+      final str = String.fromCharCodes(
+        runes.getRange(1, runes.length - 1),
+      ).replaceAll("''", "'");
+
+      final code = <Code>[];
+      for (final rune in str.runes) {
+        code.add(LiteralCode(runeAsCode(rune) ?? 0));
+      }
+      return code;
     case TokenType.dec:
-      return LiteralCode(int.parse(token.runesAsString));
+      return [
+        LiteralCode(int.parse(token.runesAsString)),
+      ];
     case TokenType.hex:
-      return LiteralCode(
-          int.parse(token.runesAsString.replaceFirst('#', '0x')));
+      return [
+        LiteralCode(int.parse(
+          token.runesAsString.replaceFirst('#', '0x'),
+        )),
+      ];
     case TokenType.ident:
-      return LabelCode(token.runesAsString, 0, env);
+      return [
+        LabelCode(token.runesAsString, 0, env),
+      ];
     default:
       // TODO error!
-      return LiteralCode(0);
+      return [];
   }
 }
 
-int parseGR2Int(Token token) {
+int parseRegToInt(Token token) {
   return int.parse(token.runesAsString.replaceFirst('GR', ''));
+}
+
+int r1r2opecode(String opecode) {
+  switch (opecode) {
+    case 'LD':
+      return 0x1400;
+    case 'ADDA':
+      return 0x2400;
+    case 'SUBA':
+      return 0x2500;
+    case 'ADDL':
+      return 0x2600;
+    case 'SUBL':
+      return 0x2700;
+    case 'AND':
+      return 0x3400;
+    case 'OR':
+      return 0x3500;
+    case 'XOR':
+      return 0x3600;
+    case 'CPA':
+      return 0x4400;
+    case 'CPL':
+      return 0x4500;
+    default:
+      return 0;
+  }
+}
+
+int radrxOpecode(String opecode) {
+  switch (opecode) {
+    case 'LD':
+      return 0x1000;
+    case 'ST':
+      return 0x1100;
+    case 'LAD':
+      return 0x1200;
+    case 'ADDA':
+      return 0x2000;
+    case 'SUBA':
+      return 0x2100;
+    case 'ADDL':
+      return 0x2200;
+    case 'SUBL':
+      return 0x2300;
+    case 'AND':
+      return 0x3000;
+    case 'OR':
+      return 0x3100;
+    case 'XOR':
+      return 0x3200;
+    case 'CPA':
+      return 0x4000;
+    case 'CPL':
+      return 0x4100;
+    case 'SLA':
+      return 0x5000;
+    case 'SRA':
+      return 0x5100;
+    case 'SLL':
+      return 0x5200;
+    case 'SRL':
+      return 0x5300;
+    default:
+      return 0;
+  }
+}
+
+int adrxOpecode(String opecode) {
+  switch (opecode) {
+    case 'JMI':
+      return 0x6100;
+    case 'JNZ':
+      return 0x6200;
+    case 'JZE':
+      return 0x6300;
+    case 'JUMP':
+      return 0x6400;
+    case 'JPL':
+      return 0x6500;
+    case 'JOV':
+      return 0x6600;
+    case 'PUSH':
+      return 0x7000;
+    case 'CALL':
+      return 0x8000;
+    default:
+      return 0;
+  }
 }
