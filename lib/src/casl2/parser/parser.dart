@@ -9,19 +9,32 @@ class Parser {
   Parser(this._lexer);
 
   Program parseProgram() {
-    final stmts = <Node>[];
-
+    final stmts = <Statement>[];
     final env = Env();
-    Node node = Root();
+    final errors = <ErrorNode>[];
+
+    Node parent = Root();
     while (true) {
-      final stmt = _nextStmt(node, env);
-      if (stmt == null) {
-        return Program(stmts, env);
-      } else {
-        env.labels[(stmt as Statement).label] = stmt; // TODO
+      final node = _nextStmt(parent, env);
+      if (node == null) {
+        return Program(
+          stmts,
+          env: env,
+          errors: errors,
+        );
+      }
+
+      if (node is ErrorNode) {
+        errors.add(node);
+        continue;
+      }
+
+      final stmt = node as Statement;
+      if (stmt.label.isNotEmpty) {
+        env.labels[stmt.label] = stmt;
       }
       stmts.add(stmt);
-      node = stmt;
+      parent = stmt;
     }
   }
 
@@ -58,6 +71,7 @@ class Parser {
             opecode,
             operand,
             env,
+            current: token,
           );
         default:
           operand.add(token);
@@ -72,52 +86,189 @@ class Parser {
 /// [r1r2] and [radrx] is opecode.
 /// use [secondOpecode] when pattern is r,adr(,x)
 Node parseGeneralNode(
-  Node parent,
-  Token? label,
-  Token opecode,
-  List<Token> operand,
-  Env env, {
-  int r1r2 = 0,
-  int radrx = 0,
-}) {
+  final Node parent,
+  final Token? label,
+  final Token opecode,
+  final List<Token> operand,
+  final Env env,
+) {
   if (operand.length == 2 && operand[1].type == TokenType.gr) {
-    // expect r1,r2
-    return Statement(
+    return parseR1r2Node(
       parent,
+      label,
       opecode,
       operand,
-      label: label,
-      code: _parseR1R2(r1r2, operand, env),
+      env,
     );
   }
 
+  return parseRadrxNode(
+    parent,
+    label,
+    opecode,
+    operand,
+    env,
+  );
+}
+
+Node parseRadrxNode(
+  final Node parent,
+  final Token? label,
+  final Token opecode,
+  final List<Token> operand,
+  final Env env,
+) {
+  if (operand.isEmpty) {
+    return ErrorNode(
+      '[SYNTAX ERROR] ${opecode.runesAsString} has required operands.',
+      start: opecode.start,
+      end: opecode.end,
+      lineStart: opecode.lineStart,
+      lineNumber: opecode.lineNumber,
+    );
+  }
+
+  if (operand.length < 2 || operand.length > 3) {
+    return ErrorNode(
+      '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 2 or 3 operands.',
+      start: opecode.start,
+      end: opecode.end,
+      lineStart: opecode.lineStart,
+      lineNumber: opecode.lineNumber,
+    );
+  }
+
+  if (operand[0].type != TokenType.gr) {
+    final r = operand[0];
+    return ErrorNode(
+      '[SYNTAX ERROR] ${r.runesAsString} is not an expected value. value expects between GR0 and GR7.',
+      start: r.start,
+      end: r.end,
+      lineStart: r.lineStart,
+      lineNumber: r.lineNumber,
+    );
+  }
+
+  if (operand.length == 3 && operand[2].type != TokenType.gr) {
+    final x = operand[2];
+    return ErrorNode(
+      '[SYNTAX ERROR] ${x.runesAsString} is not an expected value. value expects between GR1 and GR7.',
+      start: x.start,
+      end: x.end,
+      lineStart: x.lineStart,
+      lineNumber: x.lineNumber,
+    );
+  }
+
+  if (operand.length == 3 && operand[2].runesAsString == 'GR0') {
+    final x = operand[2];
+    return ErrorNode(
+      '[SYNTAX ERROR] ${x.runesAsString} is not an expected value. value expects between GR1 and GR7.',
+      start: x.start,
+      end: x.end,
+      lineStart: x.lineStart,
+      lineNumber: x.lineNumber,
+    );
+  }
+
+  final r = operand[0];
+  final adr = operand[1];
+  final x = operand.length == 3 ? operand[2] : Token('GR0'.runes, TokenType.gr);
+
+  final baseOpecode = radrxOpecode(opecode.runesAsString);
+  final indexR = parseRegToInt(r);
+  final indexX = parseRegToInt(x);
   return Statement(
     parent,
     opecode,
     operand,
     label: label,
-    code: _parseRAdrX(radrx, operand, env),
+    code: [
+      LiteralCode(baseOpecode + (indexR << 4) + indexX),
+      ...tokenToCode(adr, env),
+    ],
   );
 }
 
+Node parseR1r2Node(
+  final Node parent,
+  final Token? label,
+  final Token opecode,
+  final List<Token> operand,
+  final Env env,
+) {
+  if (operand.isEmpty) {
+    return ErrorNode(
+      '[SYNTAX ERROR] ${opecode.runesAsString} has required operands.',
+      start: opecode.start,
+      end: opecode.end,
+      lineStart: opecode.lineStart,
+      lineNumber: opecode.lineNumber,
+    );
+  }
+  if (operand.length != 2) {
+    return ErrorNode(
+      '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 2 operands.',
+      start: opecode.start,
+      end: opecode.end,
+      lineStart: opecode.lineStart,
+      lineNumber: opecode.lineNumber,
+    );
+  }
+  final r1 = operand[0];
+  final r2 = operand[1];
+
+  if (r1.type != TokenType.gr) {
+    return ErrorNode(
+      '[SYNTAX ERROR] ${r1.runesAsString} is not an expected value. value expects between GR0 and GR7.',
+      start: r1.start,
+      end: r1.end,
+      lineStart: r1.lineStart,
+      lineNumber: r1.lineNumber,
+    );
+  }
+
+  if (r2.type != TokenType.gr) {
+    return ErrorNode(
+      '[SYNTAX ERROR] ${r2.runesAsString} is not an expected value. value expects between GR0 and GR7.',
+      start: r2.start,
+      end: r2.end,
+      lineStart: r2.lineStart,
+      lineNumber: r2.lineNumber,
+    );
+  }
+
+  final baseOpecode = r1r2opecode(opecode.runesAsString);
+  final indexR1 = parseRegToInt(r1);
+  final indexR2 = parseRegToInt(r2);
+  // expect r1,r2
+  return Statement(
+    parent,
+    opecode,
+    operand,
+    label: label,
+    code: [
+      LiteralCode(baseOpecode + (indexR1 << 4) + indexR2),
+    ],
+  );
+}
+
+/// parse to node
 Node parseNode(
   Node parent,
   Token? label,
   Token? opecode,
   List<Token> operand,
-  Env env,
-) {
+  Env env, {
+  required Token current,
+}) {
   if (opecode == null) {
-    if (label == null) {
-      return ErrorNode('Fatal error: label and opecode not found.');
-    }
-
     return ErrorNode(
-      'Syntax error: opecode not found.',
-      start: label.end,
-      end: label.end + 1,
-      lineStart: label.lineStart,
-      lineNumber: label.lineNumber,
+      '[SYNTAX ERROR] opecode not found.',
+      start: current.end,
+      end: current.end + 1,
+      lineStart: current.lineStart,
+      lineNumber: current.lineNumber,
     );
   }
 
@@ -138,8 +289,6 @@ Node parseNode(
         opecode,
         operand,
         env,
-        radrx: radrxOpecode(opecode.runesAsString),
-        r1r2: r1r2opecode(opecode.runesAsString),
       );
     case 'ST':
     case 'LAD':
@@ -147,12 +296,12 @@ Node parseNode(
     case 'SRA':
     case 'SLL':
     case 'SRL':
-      return Statement(
+      return parseRadrxNode(
         parent,
+        label,
         opecode,
         operand,
-        label: label,
-        code: _parseRAdrX(radrxOpecode(opecode.runesAsString), operand, env),
+        env,
       );
     case 'JMI':
     case 'JNZ':
@@ -214,49 +363,6 @@ Node parseNode(
         label: label,
       );
   }
-}
-
-List<Code> _parseRAdrX(
-  final int opecode,
-  final List<Token> operand,
-  final Env env,
-) {
-  final result = <Code>[];
-
-  if (operand.length != 2 && operand.length != 3) {
-    // TODO error!
-    return result;
-  }
-
-  if (operand.length == 3 && operand[2].type == TokenType.gr) {
-    final r = parseRegToInt(operand[0]);
-    final x = parseRegToInt(operand[2]);
-    result.add(LiteralCode(opecode + (r << 4) + x));
-  } else {
-    final r = parseRegToInt(operand[0]);
-    result.add(LiteralCode(opecode + (r << 4)));
-  }
-  result.addAll(tokenToCode(operand[1], env));
-
-  return result;
-}
-
-List<Code> _parseR1R2(
-  final int opecode,
-  final List<Token> operand,
-  final Env env,
-) {
-  final result = <Code>[];
-  if (operand.length != 2) {
-    // TODO error!
-    return result;
-  }
-
-  final r1 = parseRegToInt(operand[0]);
-  final r2 = parseRegToInt(operand[1]);
-  result.add(LiteralCode(opecode + (r1 << 4) + r2));
-
-  return result;
 }
 
 List<Code> _parseAdrX(int opecode, List<Token> operand, Env env) {

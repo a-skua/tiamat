@@ -116,7 +116,7 @@ class Statement implements Node {
 }
 
 class StatementBlock implements Node {
-  final List<Node> _statements;
+  final List<Statement> _statements;
 
   StatementBlock(this._statements);
 
@@ -151,7 +151,7 @@ class StatementBlock implements Node {
 
 /// error
 class ErrorNode extends Node {
-  final String _error;
+  final String error;
 
   /// errors [start] position.
   final int start;
@@ -166,24 +166,32 @@ class ErrorNode extends Node {
   final int lineNumber;
 
   ErrorNode(
-    this._error, {
+    this.error, {
     this.start = 0,
     this.end = 0,
     this.lineStart = 0,
     this.lineNumber = 1,
   });
 
-  String get error => _error;
-
   @override
   List<int> get code => [];
 
   @override
   int get size => 0;
+
+  @override
+  String toString() {
+    return '(line $lineNumber) $error';
+  }
 }
 
 /// Parser return this Node
 class Program extends StatementBlock {
   final Env env;
-  Program(List<Node> nodes, this.env) : super(nodes);
+  final List<ErrorNode> errors;
+  Program(
+    List<Statement> statements, {
+    required this.env,
+    required this.errors,
+  }) : super(statements);
 }

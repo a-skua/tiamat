@@ -11,6 +11,7 @@ void main() {
   test('to code', testParseNode);
   test('token to code', testTokenToCode);
   test('reg to int', testParseRegToInt);
+  test('parse error', testParseError);
 }
 
 class ExpectedStatement {
@@ -370,5 +371,38 @@ void testParseRegToInt() {
   for (final test in tests) {
     final actual = parseRegToInt(test.token);
     expect(actual, equals(test.expected));
+  }
+}
+
+void testParseError() {
+  final input = '''
+\tADDA
+ SUBA GR1
+ ADDL\tGR,GR2
+LABEL
+
+        SUBL    R,ADR,GR0
+        AND     GR0,ADR,GR0
+        AND     GR0,ADR,X
+''';
+
+  final tests = <String>[
+    '(line 1) [SYNTAX ERROR] ADDA has required operands.',
+    '(line 2) [SYNTAX ERROR] SUBA wrong number of operands. wants 2 or 3 operands.',
+    '(line 3) [SYNTAX ERROR] GR is not an expected value. value expects between GR0 and GR7.',
+    '(line 4) [SYNTAX ERROR] opecode not found.',
+    '(line 6) [SYNTAX ERROR] R is not an expected value. value expects between GR0 and GR7.',
+    '(line 7) [SYNTAX ERROR] GR0 is not an expected value. value expects between GR1 and GR7.',
+    '(line 8) [SYNTAX ERROR] X is not an expected value. value expects between GR1 and GR7.',
+  ];
+  final program = Parser(Lexer(input.runes.toList())).parseProgram();
+
+  expect(program.errors.length, equals(tests.length));
+
+  for (var i = 0; i < tests.length; i += 1) {
+    final actual = program.errors[i].toString();
+    final expected = tests[i];
+
+    expect(actual, equals(expected));
   }
 }
