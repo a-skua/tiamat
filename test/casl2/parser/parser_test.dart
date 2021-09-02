@@ -1,5 +1,6 @@
 import 'package:tiamat/src/casl2/ast/ast.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
+import 'package:tiamat/src/casl2/parser/util.dart';
 import 'package:tiamat/src/casl2/token/token.dart';
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
 import 'package:tiamat/src/charcode/charcode.dart';
@@ -26,6 +27,7 @@ void testPaarse() {
   final input = '''
 MAIN    START                   ; コメント
         CALL    COUNT1          ; COUNT1呼び出し
+        IN      GR1234,2        ; マクロ
         RET
         DC      'hello','world' ; 文字定数
         DC      'It''s a small world'
@@ -63,6 +65,14 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       'STATEMENT(LABEL(MAIN),OPECODE(START))'
       ','
       'STATEMENT(OPECODE(CALL),OPERAND(IDENT(COUNT1)))'
+      ','
+      'BLOCK('
+      'STATEMENT(OPECODE(LAD),OPERAND(GR(GR1),IDENT(GR1234)))'
+      ','
+      'STATEMENT(OPECODE(LAD),OPERAND(GR(GR2),DEC(2)))'
+      ','
+      'STATEMENT(OPECODE(SVC),OPERAND(DEC(1)))'
+      ')'
       ','
       'STATEMENT(OPECODE(RET))'
       ','
@@ -110,48 +120,8 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       ')';
 
   final program = parser.parseProgram();
+  expect(program.errors.length, equals(0));
   expect(program.toString(), equals(expected));
-
-  final tests = [
-    ExpectedStatement('MAIN', 'START', ''),
-    ExpectedStatement('', 'CALL', 'COUNT1'),
-    ExpectedStatement('', 'RET', ''),
-    ExpectedStatement('', 'DC', "'hello','world'"),
-    ExpectedStatement('', 'DC', "'It''s a small world'"),
-    ExpectedStatement('', 'DC', '12,-34,56,-78'),
-    ExpectedStatement('', 'DC', '#1234,#CDEF'),
-    ExpectedStatement('GR1234', 'DC', 'GR1234,MAIN'),
-    ExpectedStatement('', 'END', ''),
-    ExpectedStatement('COUNT1', 'START', ''),
-    ExpectedStatement('', 'PUSH', '0,GR1'),
-    ExpectedStatement('', 'PUSH', '0,GR2'),
-    ExpectedStatement('', 'SUBA', 'GR2,GR2'),
-    ExpectedStatement('', 'AND', 'GR1,GR1'),
-    ExpectedStatement('', 'JZE', 'RETURN'),
-    ExpectedStatement('MORE', 'LAD', 'GR2,1,GR2'),
-    ExpectedStatement('', 'LAD', 'GR0,-1,GR1'),
-    ExpectedStatement('', 'AND', 'GR1,GR0'),
-    ExpectedStatement('', 'JNZ', 'MORE'),
-    ExpectedStatement('RETURN', 'LD', 'GR0,GR2'),
-    ExpectedStatement('', 'POP', 'GR2'),
-    ExpectedStatement('', 'POP', 'GR1'),
-    ExpectedStatement('', 'RET', ''),
-    ExpectedStatement('', 'END', ''),
-  ];
-
-  final stmts = program.statements;
-  expect(stmts.length, equals(tests.length));
-
-  for (var i = 0; i < tests.length; i += 1) {
-    final test = tests[i];
-    final stmt = stmts[i];
-
-    if (stmt is Statement) {
-      expect(stmt.label, equals(test.label));
-      expect(stmt.opecode, equals(test.opecode));
-      expect(stmt.operand, equals(test.operand));
-    }
-  }
 }
 
 void testParseNode() {
@@ -369,7 +339,7 @@ void testParseRegToInt() {
   ];
 
   for (final test in tests) {
-    final actual = parseRegToInt(test.token);
+    final actual = registerToNumber(test.token);
     expect(actual, equals(test.expected));
   }
 }
@@ -387,7 +357,7 @@ LABEL
 ''';
 
   final tests = <String>[
-    '(line 1) [SYNTAX ERROR] ADDA has required operands.',
+    '(line 1) [SYNTAX ERROR] ADDA wrong number of operands. wants 2 or 3 operands.',
     '(line 2) [SYNTAX ERROR] SUBA wrong number of operands. wants 2 or 3 operands.',
     '(line 3) [SYNTAX ERROR] GR is not an expected value. value expects between GR0 and GR7.',
     '(line 4) [SYNTAX ERROR] opecode not found.',

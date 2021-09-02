@@ -115,10 +115,24 @@ class Statement implements Node {
   }
 }
 
-class StatementBlock implements Node {
+class BlockStatement extends Statement {
   final List<Statement> _statements;
 
-  StatementBlock(this._statements);
+  BlockStatement(this._statements,
+      {required Node parent,
+      required Token opecode,
+      required List<Token> operand,
+      Token? label})
+      : super(parent, opecode, operand, label: label);
+
+  factory BlockStatement.onlyStatements(final List<Statement> stmts) {
+    return BlockStatement(
+      stmts,
+      parent: Root(),
+      opecode: Token(''.runes, TokenType.opecode),
+      operand: [],
+    );
+  }
 
   List<Node> get statements => List.from(_statements);
 
@@ -186,12 +200,27 @@ class ErrorNode extends Node {
 }
 
 /// Parser return this Node
-class Program extends StatementBlock {
+class Program implements Node {
   final Env env;
-  final List<ErrorNode> errors;
+  late final List<ErrorNode> _errors;
+  final Statement _statement;
+
   Program(
-    List<Statement> statements, {
+    this._statement, {
     required this.env,
-    required this.errors,
-  }) : super(statements);
+    required List<ErrorNode> errors,
+  }) {
+    _errors = errors;
+  }
+
+  List<ErrorNode> get errors => List.from(_errors, growable: false);
+
+  @override
+  List<int> get code => _statement.code;
+
+  @override
+  int get size => _statement.size;
+
+  @override
+  String toString() => _statement.toString();
 }
