@@ -113,6 +113,24 @@ class Statement implements Node {
 
     return 'STATEMENT(${stmt.join(',')})';
   }
+
+  String toStringWithIndent({final prefix = ''}) {
+    const indent = '    ';
+    final stmt = <String>[
+      if (_label != null) _label.toString(),
+      _opecode.toString(),
+      if (_operand.isNotEmpty)
+        '''
+OPERAND(
+${_operand.map((final str) => '$prefix$indent$indent$str').join(',\n')}
+$prefix$indent)''',
+    ];
+
+    return '''
+${prefix}STATEMENT(
+${stmt.map((final str) => '$prefix$indent$str').join(',\n')}
+$prefix)''';
+  }
 }
 
 class BlockStatement extends Statement {
@@ -161,6 +179,15 @@ class BlockStatement extends Statement {
 
   @override
   String toString() => 'BLOCK(${_statements.join(',')})';
+
+  @override
+  String toStringWithIndent({final prefix = ''}) {
+    const indent = '    ';
+    return '''
+${prefix}BLOCK(
+${_statements.map((stmt) => stmt.toStringWithIndent(prefix: '$prefix$indent')).join(',\n')}
+$prefix)''';
+  }
 }
 
 /// error
@@ -214,6 +241,8 @@ class Program implements Node {
   }
 
   List<ErrorNode> get errors => List.from(_errors, growable: false);
+
+  Statement get statement => _statement;
 
   @override
   List<int> get code => _statement.code;

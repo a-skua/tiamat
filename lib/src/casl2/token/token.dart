@@ -11,6 +11,8 @@ enum TokenType {
   eol,
   eof,
   error,
+  separation, // ','
+  space, // '\t' or ' '
 }
 
 String tokenTypeAsString(TokenType type) {
@@ -37,6 +39,10 @@ String tokenTypeAsString(TokenType type) {
       return 'EOF';
     case TokenType.error:
       return 'ERROR';
+    case TokenType.separation:
+      return 'SEPARATION';
+    case TokenType.space:
+      return 'SPACE';
   }
 }
 

@@ -46,7 +46,9 @@ class Lexer {
   /// lexical state.
   var _expectedStatus = ExpectedStatus.label;
 
-  Lexer(this._runes);
+  Lexer(Iterable<int> runes) {
+    _runes = runes.toList();
+  }
 
   Token nextToken() {
     if (isLast) {
@@ -77,11 +79,14 @@ class Lexer {
 
         if (_isGR(start, end)) {
           final gr = String.fromCharCodes(_runes.getRange(start, end));
-          return _getError(start, end, '`$gr` cannot be used as label');
+          return _getError(start, end, '$gr cannot be used as label');
         }
         return _getToken(start, end, TokenType.label);
       case ExpectedStatus.expectOpecode:
-        _skipSpace();
+        if (_isSpace) {
+          return _getSpace();
+        }
+
         if (_isComment) {
           _expectedStatus = ExpectedStatus.comment;
           return nextToken();
@@ -102,7 +107,10 @@ class Lexer {
         _expectedStatus = ExpectedStatus.expectOperand;
         return _getToken(start, end, TokenType.opecode);
       case ExpectedStatus.expectOperand:
-        _skipSpace();
+        if (_isSpace) {
+          return _getSpace();
+        }
+
         if (_isComment) {
           _expectedStatus = ExpectedStatus.comment;
           return nextToken();
@@ -117,8 +125,10 @@ class Lexer {
         }
 
         if (_isSeparation) {
+          final start = _currentIndex;
           _readChar();
-          return nextToken();
+          final end = _currentIndex;
+          return _getToken(start, end, TokenType.separation);
         }
 
         if (_isSpace) {
@@ -156,7 +166,10 @@ class Lexer {
         }
         return _getToken(start, end, TokenType.ident);
       case ExpectedStatus.expectComment:
-        _skipSpace();
+        if (_isSpace) {
+          return _getSpace();
+        }
+
         _expectedStatus = ExpectedStatus.comment;
         return nextToken();
       case ExpectedStatus.comment:
@@ -175,6 +188,23 @@ class Lexer {
         _currentLineNumber += 1;
         return eol;
     }
+  }
+
+  Token _getSpace() {
+    final start = _currentIndex;
+    while (!isLast && _isSpace) {
+      _readChar();
+    }
+    final end = _currentIndex;
+
+    return Token(
+      _runes.getRange(start, end),
+      TokenType.space,
+      start: start,
+      end: end,
+      lineStart: _currentLineStart,
+      lineNumber: _currentLineNumber,
+    );
   }
 
   Token _getToken(int start, int end, TokenType type) {
@@ -244,12 +274,6 @@ class Lexer {
 
   void _readLetter() {
     while (!isLast && !_isSpace && !_isNewline) {
-      _readChar();
-    }
-  }
-
-  void _skipSpace() {
-    while (!isLast && _isSpace) {
       _readChar();
     }
   }

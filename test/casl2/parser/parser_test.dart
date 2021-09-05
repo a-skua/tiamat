@@ -59,7 +59,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       .runes
       .toList();
 
-  final parser = Parser(Lexer(input));
+  final parser = Parser.fromLexer(Lexer(input));
 
   final expected = 'BLOCK('
       'STATEMENT(LABEL(MAIN),OPECODE(START))'
@@ -159,7 +159,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       .runes
       .toList();
 
-  final program = Parser(Lexer(input)).parseProgram();
+  final program = Parser.fromLexer(Lexer(input)).parseProgram();
   final base = Random().nextInt(1 << 10);
 
   program.env.startPoint = base;
@@ -354,6 +354,7 @@ LABEL
         SUBL    R,ADR,GR0
         AND     GR0,ADR,GR0
         AND     GR0,ADR,X
+GR1     AND
 ''';
 
   final tests = <String>[
@@ -364,8 +365,9 @@ LABEL
     '(line 6) [SYNTAX ERROR] R is not an expected value. value expects between GR0 and GR7.',
     '(line 7) [SYNTAX ERROR] GR0 is not an expected value. value expects between GR1 and GR7.',
     '(line 8) [SYNTAX ERROR] X is not an expected value. value expects between GR1 and GR7.',
+    '(line 9) [SYNTAX ERROR] GR1 cannot be used as label',
   ];
-  final program = Parser(Lexer(input.runes.toList())).parseProgram();
+  final program = Parser.fromLexer(Lexer(input.runes.toList())).parseProgram();
 
   expect(program.errors.length, equals(tests.length));
 

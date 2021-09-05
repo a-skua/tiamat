@@ -6,15 +6,12 @@ import './ast/ast.dart';
 class Casl2 {
   final Program _program;
 
-  factory Casl2.compile(String src) {
-    final parser = Parser(Lexer(src.runes.toList()));
-    return Casl2._internal(parser.parseProgram());
+  Casl2(this._program);
+
+  factory Casl2.compile(final String src) {
+    final parser = Parser.fromLexer(Lexer(src.runes.toList()));
+    return Casl2(parser.parseProgram());
   }
 
-  Casl2._internal(this._program);
-
-  List<int> getCode([final int startPoint = 0]) {
-    _program.env.startPoint = startPoint;
-    return _program.code;
-  }
+  Program get program => _program;
 }

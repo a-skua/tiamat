@@ -5,9 +5,25 @@ import './util.dart';
 import './macro.dart';
 
 class Parser {
-  final Lexer _lexer;
+  final List<Token> _tokens;
+  var _currentIndex = 0;
 
-  Parser(this._lexer);
+  Parser(this._tokens);
+
+  factory Parser.fromLexer(final Lexer lexer) {
+    final tokens = <Token>[];
+    while (true) {
+      final token = lexer.nextToken();
+      tokens.add(token);
+      if (token.type == TokenType.eof) {
+        break;
+      }
+    }
+
+    return Parser(tokens);
+  }
+
+  List<Token> get tokens => List.from(_tokens);
 
   Program parseProgram() {
     final stmts = <Statement>[];
@@ -40,11 +56,11 @@ class Parser {
   }
 
   Node? _nextStmt(Node parent, Env env) {
-    var token = _lexer.nextToken();
+    var token = _nextToken();
 
     // FIXME skip empty
     while (token.type == TokenType.eol || token.type == TokenType.comment) {
-      token = _lexer.nextToken();
+      token = _nextToken();
     }
 
     if (token.type == TokenType.eof) {
@@ -62,8 +78,28 @@ class Parser {
         case TokenType.opecode:
           opecode = token;
           break;
+        case TokenType.space:
+        case TokenType.separation:
         case TokenType.comment:
           break;
+        case TokenType.error:
+          final error = token as ErrorToken;
+
+          // skip line
+          token = _nextToken();
+          while (token.type != TokenType.error &&
+              token.type != TokenType.eol &&
+              token.type != TokenType.eof) {
+            token = _nextToken();
+          }
+
+          return ErrorNode(
+            '[SYNTAX ERROR] ${error.error}',
+            start: error.start,
+            end: error.end,
+            lineStart: error.lineStart,
+            lineNumber: error.lineNumber,
+          );
         case TokenType.eof:
         case TokenType.eol:
           return parseNode(
@@ -77,8 +113,17 @@ class Parser {
         default:
           operand.add(token);
       }
-      token = _lexer.nextToken();
+      token = _nextToken();
     }
+  }
+
+  Token _nextToken() {
+    if (_currentIndex >= _tokens.length) {
+      return _tokens.last;
+    }
+    final token = _tokens[_currentIndex];
+    _currentIndex += 1;
+    return token;
   }
 }
 
@@ -149,6 +194,7 @@ Node parseNode(
         env,
       );
     case 'POP':
+      // TODO error handling!
       return Statement(
         parent,
         opecode,
@@ -156,8 +202,7 @@ Node parseNode(
         label: label,
         code: [
           LiteralCode(
-            0x7100 +
-                (registerToNumber(operand[0]) << 4), // TODO error handling!
+            0x7100 + (registerToNumber(operand[0]) << 4),
           )
         ],
       );
@@ -178,12 +223,22 @@ Node parseNode(
         label: label,
       );
     case 'DC':
+      // TODO error handling!
       return Statement(
         parent,
         opecode,
         operand,
         label: label,
         code: _parseDC(operand, env),
+      );
+    case 'DS':
+      // TODO error handling!
+      return Statement(
+        parent,
+        opecode,
+        operand,
+        label: label,
+        code: _parseDS(operand, env),
       );
     default:
       return parseMacro(
@@ -206,7 +261,7 @@ Node parseMacro(
   final macro = macros[opecode.runesAsString];
   if (macro == null) {
     return ErrorNode(
-      '[SYNTAX ERROR] opecode not found.',
+      '[SYNTAX ERROR] ${opecode.runesAsString} not found.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
@@ -229,4 +284,9 @@ List<Code> _parseDC(List<Token> operand, Env env) {
     result.addAll(tokenToCode(token, env));
   }
   return result;
+}
+
+List<Code> _parseDS(List<Token> operand, Env env) {
+  return List.generate(
+      int.parse(operand[0].runesAsString), (i) => LiteralCode(0));
 }

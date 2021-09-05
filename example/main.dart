@@ -1,4 +1,5 @@
 import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/casl2.dart';
 
 class DeviceCLI extends Device {
   final input = () {
@@ -21,42 +22,59 @@ class DeviceCLI extends Device {
 }
 
 void main() {
-  const asm = 'MAIN\tSTART\n'
-      'LOOP\tIN\tIBUF,31\n'
-      '\tOUT\tOUT,38\n'
-      '\tLAD\tGR1,0\n'
-      '\tLD\tGR0,IBUF,GR1\n'
-      '\tCPL\tGR0,EXIT,GR1\n'
-      '\tJNZ\tLOOP\n'
-      '\tLAD\tGR1,1,GR1\n'
-      '\tLD\tGR0,IBUF,GR1\n'
-      '\tCPL\tGR0,EXIT,GR1\n'
-      '\tJNZ\tLOOP\n'
-      '\tLAD\tGR1,1,GR1\n'
-      '\tLD\tGR0,IBUF,GR1\n'
-      '\tCPL\tGR0,EXIT,GR1\n'
-      '\tJNZ\tLOOP\n'
-      '\tLAD\tGR1,1,GR1\n'
-      '\tLD\tGR0,IBUF,GR1\n'
-      '\tCPL\tGR0,EXIT,GR1\n'
-      '\tJNZ\tLOOP\n'
-      '\tLAD\tGR1,1,GR1\n'
-      '\tLD\tGR0,IBUF,GR1\n'
-      '\tCPL\tGR0,EXIT,GR1\n'
-      '\tJNZ\tLOOP\n'
-      'END\tOUT\tMSG,32\n'
-      '\tRET\n'
-      'EXIT\tDC\t\'exit\',-1\n'
-      'OUT\tDC\t\'input:\'\n'
-      'IBUF\tDS\t31\n'
-      'EOF\tDC\t#FFFF\n'
-      'MSG\tDC\t\'goodbye!\',-1\n'
-      '\tEND\n';
-  print('casl2:\n$asm');
+  const asm = '''
+; サンプルコード
+MAIN    START
+; GR1     AND     GR1,GR1       ; ラベルエラー
+LOOP    IN      IBUF,31       ; マクロ
+        OUT     OUT,38        ; マクロ
+        LAD     GR1,0
+        LD      GR0,IBUF,GR1  コメント
+        CPL     GR0,EXIT,GR1  ; コメント
+        JNZ     LOOP
+        LAD     GR1,1,GR1
+        LD      GR0,IBUF,GR1
+        CPL     GR0,EXIT,GR1
+        JNZ     LOOP
+        LAD     GR1,1,GR1
+        LD      GR0,IBUF,GR1
+        CPL     GR0,EXIT,GR1
+        JNZ     LOOP
+        LAD     GR1,1,GR1
+        LD      GR0,IBUF,GR1
+        CPL     GR0,EXIT,GR1
+        JNZ     LOOP
+        LAD     GR1,1,GR1
+        LD      GR0,IBUF,GR1
+        CPL     GR0,EXIT,GR1
+        JNZ     LOOP
+END     OUT     MSG,32        ; マクロ
+        RET
+EXIT    DC      'exit',-1
+OUT     DC      'input:'
+IBUF    DS      31
+EOF     DC      #FFFF
+MSG     DC      'goodbye!',-1
+        END
+''';
+  print('casl2:');
+  syntaxHighlight(asm);
 
   final casl2 = Casl2.compile(asm);
 
-  final code = casl2.getCode();
+  final program = casl2.program;
+  final errors = program.errors;
+  if (errors.isNotEmpty) {
+    for (final error in errors) {
+      print(error);
+    }
+    return;
+  }
+  final code = program.code;
+
+  print('\nstatement:\n${program.statement.toStringWithIndent(prefix: '> ')}');
+  print(program.statement);
+  print('\ncode:\n$code\n');
 
   final comet2 = Comet2()..device = DeviceCLI();
   comet2.load(code);
@@ -67,4 +85,46 @@ void main() {
     final gr = comet2.resource.generalRegisters;
     print('GR$i:${gr[i].value}');
   }
+}
+
+void syntaxHighlight(final String asm) {
+  const white = 255;
+  const yellow = 220;
+  const orange = 208;
+  const green = 120;
+  const red = 196;
+  const gray = 240;
+
+  final parser = Parser.fromLexer(Lexer(asm.runes));
+
+  var str = '';
+  for (final token in parser.tokens) {
+    switch (token.type) {
+      case TokenType.label:
+        str += '\u001b[38;5;${yellow}m${token.runesAsString}';
+        break;
+      case TokenType.hex:
+      case TokenType.dec:
+        str += '\u001b[38;5;92m${token.runesAsString}';
+        break;
+      case TokenType.ident:
+        str += '\u001b[38;5;${yellow}m${token.runesAsString}';
+        break;
+      case TokenType.gr:
+        str += '\u001b[38;5;${orange}m${token.runesAsString}';
+        break;
+      case TokenType.string:
+        str += '\u001b[38;5;${green}m${token.runesAsString}';
+        break;
+      case TokenType.error:
+        str += '\u001b[38;5;${red}m${token.runesAsString}';
+        break;
+      case TokenType.comment:
+        str += '\u001b[38;5;${gray}m${token.runesAsString}';
+        break;
+      default:
+        str += '\u001b[38;5;${white}m${token.runesAsString}';
+    }
+  }
+  print(str);
 }
