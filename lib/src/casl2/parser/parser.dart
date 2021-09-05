@@ -194,17 +194,12 @@ Node parseNode(
         env,
       );
     case 'POP':
-      // TODO error handling!
-      return Statement(
+      return parseRNode(
         parent,
+        label,
         opecode,
         operand,
-        label: label,
-        code: [
-          LiteralCode(
-            0x7100 + (registerToNumber(operand[0]) << 4),
-          )
-        ],
+        env,
       );
     case 'RET':
       return Statement(

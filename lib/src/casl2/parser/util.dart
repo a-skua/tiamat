@@ -199,6 +199,39 @@ Node parseR1r2Node(
   );
 }
 
+Node parseRNode(
+  final Node parent,
+  final Token? label,
+  final Token opecode,
+  final List<Token> operand,
+  final Env env,
+) {
+  if (operand.length != 1) {
+    return ErrorNode(
+      '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 1 operands.',
+      start: opecode.start,
+      end: opecode.end,
+      lineStart: opecode.lineStart,
+      lineNumber: opecode.lineNumber,
+    );
+  }
+
+  final baseOpecode = rOpecode(opecode.runesAsString);
+  final r = operand[0];
+
+  return Statement(
+    parent,
+    opecode,
+    operand,
+    label: label,
+    code: [
+      LiteralCode(
+        baseOpecode + (registerToNumber(r) << 4),
+      )
+    ],
+  );
+}
+
 /// Operand's token to code
 ///
 /// TokenType: string, dec, hex, ident
@@ -267,7 +300,7 @@ int r1r2opecode(String opecode) {
   }
 }
 
-int radrxOpecode(String opecode) {
+int radrxOpecode(final String opecode) {
   switch (opecode) {
     case 'LD':
       return 0x1000;
@@ -306,7 +339,7 @@ int radrxOpecode(String opecode) {
   }
 }
 
-int adrxOpecode(String opecode) {
+int adrxOpecode(final String opecode) {
   switch (opecode) {
     case 'JMI':
       return 0x6100;
@@ -326,6 +359,15 @@ int adrxOpecode(String opecode) {
       return 0x8000;
     case 'SVC':
       return 0xf000;
+    default:
+      return 0;
+  }
+}
+
+int rOpecode(final String opecode) {
+  switch (opecode) {
+    case 'POP':
+      return 0x7100;
     default:
       return 0;
   }
