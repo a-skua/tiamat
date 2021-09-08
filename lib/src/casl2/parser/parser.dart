@@ -4,26 +4,32 @@ import '../token/token.dart';
 import './util.dart';
 import './macro.dart';
 
-class Parser {
+class _SimpleLexer implements LexerInterface {
   final List<Token> _tokens;
   var _currentIndex = 0;
 
-  Parser(this._tokens);
+  _SimpleLexer(this._tokens);
 
-  factory Parser.fromLexer(final Lexer lexer) {
-    final tokens = <Token>[];
-    while (true) {
-      final token = lexer.nextToken();
-      tokens.add(token);
-      if (token.type == TokenType.eof) {
-        break;
-      }
+  @override
+  Token nextToken() {
+    if (_currentIndex >= _tokens.length) {
+      return _tokens.last;
     }
 
-    return Parser(tokens);
+    final token = _tokens[_currentIndex];
+    _currentIndex += 1;
+    return token;
   }
+}
 
-  List<Token> get tokens => List.from(_tokens);
+class Parser {
+  final LexerInterface _lexer;
+
+  Parser(this._lexer);
+
+  factory Parser.fromTokens(List<Token> tokens) {
+    return Parser(_SimpleLexer(tokens));
+  }
 
   Program parseProgram() {
     final stmts = <Statement>[];
@@ -56,11 +62,11 @@ class Parser {
   }
 
   Node? _nextStmt(Node parent, Env env) {
-    var token = _nextToken();
+    var token = _lexer.nextToken();
 
     // FIXME skip empty
     while (token.type == TokenType.eol || token.type == TokenType.comment) {
-      token = _nextToken();
+      token = _lexer.nextToken();
     }
 
     if (token.type == TokenType.eof) {
@@ -86,11 +92,11 @@ class Parser {
           final error = token as ErrorToken;
 
           // skip line
-          token = _nextToken();
+          token = _lexer.nextToken();
           while (token.type != TokenType.error &&
               token.type != TokenType.eol &&
               token.type != TokenType.eof) {
-            token = _nextToken();
+            token = _lexer.nextToken();
           }
 
           return ErrorNode(
@@ -113,17 +119,8 @@ class Parser {
         default:
           operand.add(token);
       }
-      token = _nextToken();
+      token = _lexer.nextToken();
     }
-  }
-
-  Token _nextToken() {
-    if (_currentIndex >= _tokens.length) {
-      return _tokens.last;
-    }
-    final token = _tokens[_currentIndex];
-    _currentIndex += 1;
-    return token;
   }
 }
 

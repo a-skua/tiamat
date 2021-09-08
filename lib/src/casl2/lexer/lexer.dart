@@ -36,8 +36,12 @@ enum ExpectedStatus {
   eol,
 }
 
+abstract class LexerInterface {
+  Token nextToken();
+}
+
 /// lexical analysis.
-class Lexer {
+class Lexer implements LexerInterface {
   late final List<int> _runes;
   var _currentIndex = 0;
   var _currentLineNumber = 1;
@@ -50,6 +54,11 @@ class Lexer {
     _runes = runes.toList();
   }
 
+  factory Lexer.fromString(String src) {
+    return Lexer(src.runes);
+  }
+
+  @override
   Token nextToken() {
     if (isLast) {
       return tokenEOF;

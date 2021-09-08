@@ -13,14 +13,7 @@ void main() {
   test('token to code', testTokenToCode);
   test('reg to int', testParseRegToInt);
   test('parse error', testParseError);
-}
-
-class ExpectedStatement {
-  final String label;
-  final String opecode;
-  final String operand;
-
-  ExpectedStatement(this.label, this.opecode, this.operand);
+  test('label position', testLabelPosition);
 }
 
 void testPaarse() {
@@ -54,12 +47,9 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         POP     GR1             ;
         RET                     ; 呼び出しプログラムへ戻る
         END                     ;
-'''
-      .trim()
-      .runes
-      .toList();
+''';
 
-  final parser = Parser.fromLexer(Lexer(input));
+  final parser = Parser(Lexer.fromString(input));
 
   final expected = 'BLOCK('
       'STATEMENT(LABEL(MAIN),OPECODE(START))'
@@ -154,12 +144,9 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         POP     GR1             ;
         RET                     ; 呼び出しプログラムへ戻る
         END                     ;
-'''
-      .trim()
-      .runes
-      .toList();
+''';
 
-  final program = Parser.fromLexer(Lexer(input)).parseProgram();
+  final program = Parser(Lexer.fromString(input)).parseProgram();
   final base = Random().nextInt(1 << 10);
 
   program.env.startPoint = base;
@@ -219,16 +206,16 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   }
 }
 
-class TestTokenToCode {
+class _TestTokenToCode {
   Token token;
   List<Code> expected;
 
-  TestTokenToCode(this.token, this.expected);
+  _TestTokenToCode(this.token, this.expected);
 }
 
 void testTokenToCode() {
-  final tests = <TestTokenToCode>[
-    TestTokenToCode(
+  final tests = <_TestTokenToCode>[
+    _TestTokenToCode(
       Token(
         "'hello, world'".runes,
         TokenType.string,
@@ -238,7 +225,7 @@ void testTokenToCode() {
           .map((rune) => LiteralCode(runeAsCode(rune) ?? 0))
           .toList(),
     ),
-    TestTokenToCode(
+    _TestTokenToCode(
       Token(
         "'it''s a small world'".runes,
         TokenType.string,
@@ -248,35 +235,35 @@ void testTokenToCode() {
           .map((rune) => LiteralCode(runeAsCode(rune) ?? 0))
           .toList(),
     ),
-    TestTokenToCode(
+    _TestTokenToCode(
       Token(
         '#FFFF'.runes,
         TokenType.hex,
       ),
       [LiteralCode(0xffff)],
     ),
-    TestTokenToCode(
+    _TestTokenToCode(
       Token(
         '#0000'.runes,
         TokenType.hex,
       ),
       [LiteralCode(0x0000)],
     ),
-    TestTokenToCode(
+    _TestTokenToCode(
       Token(
         '-1'.runes,
         TokenType.dec,
       ),
       [LiteralCode(-1)],
     ),
-    TestTokenToCode(
+    _TestTokenToCode(
       Token(
         '12345'.runes,
         TokenType.dec,
       ),
       [LiteralCode(12345)],
     ),
-    TestTokenToCode(
+    _TestTokenToCode(
       Token(
         'LABEL'.runes,
         TokenType.ident,
@@ -295,44 +282,44 @@ void testTokenToCode() {
   }
 }
 
-class TestParseRegToInt {
+class _TestParseRegToInt {
   final Token token;
   final int expected;
 
-  TestParseRegToInt(this.token, this.expected);
+  _TestParseRegToInt(this.token, this.expected);
 }
 
 void testParseRegToInt() {
-  final tests = [
-    TestParseRegToInt(
+  final tests = <_TestParseRegToInt>[
+    _TestParseRegToInt(
       Token('GR0'.runes, TokenType.gr),
       0,
     ),
-    TestParseRegToInt(
+    _TestParseRegToInt(
       Token('GR1'.runes, TokenType.gr),
       1,
     ),
-    TestParseRegToInt(
+    _TestParseRegToInt(
       Token('GR2'.runes, TokenType.gr),
       2,
     ),
-    TestParseRegToInt(
+    _TestParseRegToInt(
       Token('GR3'.runes, TokenType.gr),
       3,
     ),
-    TestParseRegToInt(
+    _TestParseRegToInt(
       Token('GR4'.runes, TokenType.gr),
       4,
     ),
-    TestParseRegToInt(
+    _TestParseRegToInt(
       Token('GR5'.runes, TokenType.gr),
       5,
     ),
-    TestParseRegToInt(
+    _TestParseRegToInt(
       Token('GR6'.runes, TokenType.gr),
       6,
     ),
-    TestParseRegToInt(
+    _TestParseRegToInt(
       Token('GR7'.runes, TokenType.gr),
       7,
     ),
@@ -367,7 +354,7 @@ GR1     AND
     '(line 8) [SYNTAX ERROR] X is not an expected value. value expects between GR1 and GR7.',
     '(line 9) [SYNTAX ERROR] GR1 cannot be used as label',
   ];
-  final program = Parser.fromLexer(Lexer(input.runes.toList())).parseProgram();
+  final program = Parser(Lexer.fromString(input)).parseProgram();
 
   expect(program.errors.length, equals(tests.length));
 
@@ -376,5 +363,63 @@ GR1     AND
     final expected = tests[i];
 
     expect(actual, equals(expected));
+  }
+}
+
+class _TestLabelPosition {
+  final String label;
+  final int expected;
+
+  _TestLabelPosition(this.label, this.expected);
+}
+
+void testLabelPosition() {
+  final input = '''
+COUNT1  START                   ;
+;       入力    GR1:検索する語
+;       処理    GR1中の'1'のビットの個数を求める
+;       出力    GR0:GR1中の'1'のビットの個数
+        PUSH    0,GR1           ;
+        PUSH    0,GR2           ;
+        SUBA    GR2,GR2         ; Count = 0
+        AND     GR1,GR1         ; 全部のビットが'0'?
+        JZE     RETURN          ; 全部のビットが'0'なら終了
+MORE    LAD     GR2,1,GR2       ; Count = Count + 1
+        LAD     GR0,-1,GR1      ; 最下位の'1'のビット1個を
+        AND     GR1,GR0         ;   '0'に変える
+        JNZ     MORE            ; '1'のビットが残っていれば繰り返し
+RETURN  LD      GR0,GR2         ; GR0 = Count
+        POP     GR2             ;
+        POP     GR1             ;
+        RET                     ; 呼び出しプログラムへ戻る
+        END                     ;
+
+MAIN    START                   ; コメント
+        CALL    COUNT1          ; COUNT1呼び出し
+        IN      GR1234,2        ; マクロ
+        RET
+        DC      'hello','world' ; 文字定数
+        DC      'It''s a small world'
+        DC      12,-34,56,-78   ; 10進定数
+        DC      #1234,#CDEF     ; 16進定数
+GR1234  DC      GR1234,MAIN     ; アドレス定数
+        END
+''';
+
+  final tests = <_TestLabelPosition>[
+    _TestLabelPosition('COUNT1', 0),
+    _TestLabelPosition('MORE', 8),
+    _TestLabelPosition('RETURN', 15),
+    _TestLabelPosition('MAIN', 19),
+    _TestLabelPosition('GR1234', 62),
+  ];
+
+  final program = Parser(Lexer.fromString(input)).parseProgram();
+
+  for (final t in tests) {
+    final stmt = program.env.labels[t.label];
+    expect(stmt, isNotNull);
+
+    expect(stmt?.position, equals(t.expected));
   }
 }

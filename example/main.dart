@@ -95,10 +95,11 @@ void syntaxHighlight(final String asm) {
   const red = 196;
   const gray = 240;
 
-  final parser = Parser.fromLexer(Lexer(asm.runes));
+  final lexer = Lexer(asm.runes);
 
   var str = '';
-  for (final token in parser.tokens) {
+  while (!lexer.isLast) {
+    final token = lexer.nextToken();
     switch (token.type) {
       case TokenType.label:
         str += '\u001b[38;5;${yellow}m${token.runesAsString}';

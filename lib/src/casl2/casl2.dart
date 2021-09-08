@@ -9,7 +9,7 @@ class Casl2 {
   Casl2(this._program);
 
   factory Casl2.compile(final String src) {
-    final parser = Parser.fromLexer(Lexer(src.runes.toList()));
+    final parser = Parser(Lexer(src.runes));
     return Casl2(parser.parseProgram());
   }
 

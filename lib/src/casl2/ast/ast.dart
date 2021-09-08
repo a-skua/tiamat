@@ -3,7 +3,10 @@ import '../token/token.dart';
 // Lang environment
 class Env {
   int startPoint = 0;
+  String entryLabel = 'MAIN';
   final labels = <String, Statement>{};
+
+  int get entryPoint => labels[entryLabel]?.position ?? startPoint;
 }
 
 abstract class Code {
