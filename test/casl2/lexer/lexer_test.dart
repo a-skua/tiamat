@@ -44,6 +44,7 @@ MORE    LAD     GR2,1,GR2       ; Count = Count + 1
         AND     GR1,GR0         ;   '0'に変える
         JNZ     MORE            ; '1'のビットが残っていれば繰り返し
 RETURN  LD      GR0,GR2         ; GR0 = Count
+        ; LD      GR0,GR1         ; 不要ファイルのコメントアウト例
         POP     GR2             ;
         POP     GR1             ;
         RET                     ; 呼び出しプログラムへ戻る
@@ -221,6 +222,12 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
     ExpectedToken('GR2', TokenType.gr),
     ExpectedToken('         ', TokenType.space),
     ExpectedToken('; GR0 = Count', TokenType.comment),
+    ExpectedToken('\n', TokenType.eol),
+    ExpectedToken('        ', TokenType.space),
+    ExpectedToken(
+      '; LD      GR0,GR1         ; 不要ファイルのコメントアウト例',
+      TokenType.comment,
+    ),
     ExpectedToken('\n', TokenType.eol),
     ExpectedToken('        ', TokenType.space),
     ExpectedToken('POP', TokenType.opecode),

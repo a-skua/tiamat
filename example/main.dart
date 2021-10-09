@@ -31,6 +31,7 @@ LOOP    IN      IBUF,31       ; マクロ
         LAD     GR1,0
         LD      GR0,IBUF,GR1  コメント
         CPL     GR0,EXIT,GR1  ; コメント
+        ; LAD     GR0,0
         JNZ     LOOP
         LAD     GR1,1,GR1
         LD      GR0,IBUF,GR1

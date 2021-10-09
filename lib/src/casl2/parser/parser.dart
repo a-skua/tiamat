@@ -65,7 +65,9 @@ class Parser {
     var token = _lexer.nextToken();
 
     // FIXME skip empty
-    while (token.type == TokenType.eol || token.type == TokenType.comment) {
+    while (token.type == TokenType.space ||
+        token.type == TokenType.eol ||
+        token.type == TokenType.comment) {
       token = _lexer.nextToken();
     }
 

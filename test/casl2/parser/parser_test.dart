@@ -43,6 +43,9 @@ MORE    LAD     GR2,1,GR2       ; Count = Count + 1
         AND     GR1,GR0         ;   '0'に変える
         JNZ     MORE            ; '1'のビットが残っていれば繰り返し
 RETURN  LD      GR0,GR2         ; GR0 = Count
+        ; LD      GR0,GR1         ; 不要ファイルのコメントアウト例
+        RPUSH
+        RPOP
         POP     GR2             ;
         POP     GR1             ;
         RET                     ; 呼び出しプログラムへ戻る
@@ -99,6 +102,38 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       'STATEMENT(OPECODE(JNZ),OPERAND(IDENT(MORE)))'
       ','
       'STATEMENT(LABEL(RETURN),OPECODE(LD),OPERAND(GR(GR0),GR(GR2)))'
+      ','
+      'BLOCK('
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR1)))'
+      ','
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR2)))'
+      ','
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR3)))'
+      ','
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR4)))'
+      ','
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR5)))'
+      ','
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR6)))'
+      ','
+      'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR7)))'
+      ')'
+      ','
+      'BLOCK('
+      'STATEMENT(OPECODE(POP),OPERAND(GR(GR7)))'
+      ','
+      'STATEMENT(OPECODE(POP),OPERAND(GR(GR6)))'
+      ','
+      'STATEMENT(OPECODE(POP),OPERAND(GR(GR5)))'
+      ','
+      'STATEMENT(OPECODE(POP),OPERAND(GR(GR4)))'
+      ','
+      'STATEMENT(OPECODE(POP),OPERAND(GR(GR3)))'
+      ','
+      'STATEMENT(OPECODE(POP),OPERAND(GR(GR2)))'
+      ','
+      'STATEMENT(OPECODE(POP),OPERAND(GR(GR1)))'
+      ')'
       ','
       'STATEMENT(OPECODE(POP),OPERAND(GR(GR2)))'
       ','
