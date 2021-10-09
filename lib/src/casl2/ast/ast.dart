@@ -123,16 +123,14 @@ class Statement implements Node {
       if (_label != null) _label.toString(),
       _opecode.toString(),
       if (_operand.isNotEmpty)
-        '''
-OPERAND(
-${_operand.map((final str) => '$prefix$indent$indent$str').join(',\n')}
-$prefix$indent)''',
+        'OPERAND(\n'
+            '${_operand.map((final str) => '$prefix$indent$indent$str').join(',\n')}\n'
+            '$prefix$indent)',
     ];
 
-    return '''
-${prefix}STATEMENT(
-${stmt.map((final str) => '$prefix$indent$str').join(',\n')}
-$prefix)''';
+    return '${prefix}STATEMENT(\n'
+        '${stmt.map((final str) => '$prefix$indent$str').join(',\n')}\n'
+        '$prefix)';
   }
 }
 
@@ -186,10 +184,9 @@ class BlockStatement extends Statement {
   @override
   String toStringWithIndent({final prefix = ''}) {
     const indent = '    ';
-    return '''
-${prefix}BLOCK(
-${_statements.map((stmt) => stmt.toStringWithIndent(prefix: '$prefix$indent')).join(',\n')}
-$prefix)''';
+    return '${prefix}BLOCK(\n'
+        '${_statements.map((stmt) => stmt.toStringWithIndent(prefix: '$prefix$indent')).join(',\n')}\n'
+        '$prefix)';
   }
 }
 
