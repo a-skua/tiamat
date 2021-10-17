@@ -83,7 +83,9 @@ class Statement implements Node {
   }
 
   String get label => _label?.runesAsString ?? '';
+
   String get opecode => _opecode.runesAsString;
+
   String get operand => _operand.map((token) => token.runesAsString).join(',');
 
   int get position => _getPosition();
@@ -98,7 +100,7 @@ class Statement implements Node {
   }
 
   @override
-  List<int> get code => _code.map((code) => code.value).toList(); // TODO
+  List<int> get code => _code.map((code) => code.value).toList();
 
   @override
   int get size => _code.length;
@@ -156,27 +158,15 @@ class BlockStatement extends Statement {
   List<Node> get statements => List.from(_statements);
 
   @override
-  List<int> get code => _getCode();
-
-  List<int> _getCode() {
-    final code = <int>[];
-    for (final stmt in _statements) {
-      code.addAll(stmt.code);
-    }
-    return code;
-  }
+  List<int> get code =>
+      _statements.map((stmt) => stmt.code).reduce((all, code) {
+        all.addAll(code);
+        return all;
+      });
 
   @override
-  int get size => _size();
-
-  int _size() {
-    var size = 0;
-
-    for (final stmt in statements) {
-      size += stmt.size;
-    }
-    return size;
-  }
+  int get size =>
+      _statements.map((stmt) => stmt.size).reduce((sum, size) => sum + size);
 
   @override
   String toString() => 'BLOCK(${_statements.join(',')})';
@@ -229,27 +219,39 @@ class ErrorNode extends Node {
 /// Parser return this Node
 class Program implements Node {
   final Env env;
-  late final List<ErrorNode> _errors;
-  final Statement _statement;
+  final List<ErrorNode> _errors;
+  final List<Statement> _statements;
+  final List<Statement> _starts;
 
   Program(
-    this._statement, {
+    this._statements, {
     required this.env,
     required List<ErrorNode> errors,
-  }) {
-    _errors = errors;
-  }
+    required List<Statement> starts,
+  })  : _errors = errors,
+        _starts = starts;
 
   List<ErrorNode> get errors => List.from(_errors, growable: false);
 
-  Statement get statement => _statement;
+  List<Statement> get statements => List.from(_statements);
+
+  /// Statements: START
+  List<Statement> get starts => List.from(_starts);
 
   @override
-  List<int> get code => _statement.code;
+  List<int> get code =>
+      _statements.map((stmt) => stmt.code).reduce((all, code) {
+        all.addAll(code);
+        return all;
+      });
 
   @override
-  int get size => _statement.size;
+  int get size =>
+      _statements.map((stmt) => stmt.size).reduce((sum, size) => sum + size);
 
   @override
-  String toString() => _statement.toString();
+  String toString() => _statements.join(',');
+
+  @override
+  String toStringWithIndent() => _statements.join('\n');
 }

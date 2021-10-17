@@ -14,6 +14,7 @@ void main() {
   test('reg to int', testParseRegToInt);
   test('parse error', testParseError);
   test('label position', testLabelPosition);
+  test('start statements', testProgramStarts);
 }
 
 void testPaarse() {
@@ -54,8 +55,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 
   final parser = Parser(Lexer.fromString(input));
 
-  final expected = 'BLOCK('
-      'STATEMENT(LABEL(MAIN),OPECODE(START))'
+  final expected = 'STATEMENT(LABEL(MAIN),OPECODE(START))'
       ','
       'STATEMENT(OPECODE(CALL),OPERAND(IDENT(COUNT1)))'
       ','
@@ -141,8 +141,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       ','
       'STATEMENT(OPECODE(RET))'
       ','
-      'STATEMENT(OPECODE(END))'
-      ')';
+      'STATEMENT(OPECODE(END))';
 
   final program = parser.parseProgram();
   expect(program.errors.length, equals(0));
@@ -456,5 +455,55 @@ GR1234  DC      GR1234,MAIN     ; アドレス定数
     expect(stmt, isNotNull);
 
     expect(stmt?.position, equals(t.expected));
+  }
+}
+
+void testProgramStarts() {
+  final input = '''
+COUNT1  START                   ;
+;       入力    GR1:検索する語
+;       処理    GR1中の'1'のビットの個数を求める
+;       出力    GR0:GR1中の'1'のビットの個数
+        PUSH    0,GR1           ;
+        PUSH    0,GR2           ;
+        SUBA    GR2,GR2         ; Count = 0
+        AND     GR1,GR1         ; 全部のビットが'0'?
+        JZE     RETURN          ; 全部のビットが'0'なら終了
+MORE    LAD     GR2,1,GR2       ; Count = Count + 1
+        LAD     GR0,-1,GR1      ; 最下位の'1'のビット1個を
+        AND     GR1,GR0         ;   '0'に変える
+        JNZ     MORE            ; '1'のビットが残っていれば繰り返し
+RETURN  LD      GR0,GR2         ; GR0 = Count
+        POP     GR2             ;
+        POP     GR1             ;
+        RET                     ; 呼び出しプログラムへ戻る
+        END                     ;
+
+MAIN    START                   ; コメント
+        CALL    COUNT1          ; COUNT1呼び出し
+        IN      GR1234,2        ; マクロ
+        RET
+        DC      'hello','world' ; 文字定数
+        DC      'It''s a small world'
+        DC      12,-34,56,-78   ; 10進定数
+        DC      #1234,#CDEF     ; 16進定数
+GR1234  DC      GR1234,MAIN     ; アドレス定数
+        END
+''';
+
+  final program = Parser(Lexer.fromString(input)).parseProgram();
+
+  final tests = <String>[
+    'STATEMENT(LABEL(COUNT1),OPECODE(START))',
+    'STATEMENT(LABEL(MAIN),OPECODE(START))',
+  ];
+
+  expect(program.starts.length, equals(tests.length));
+
+  for (var i = 0; i < tests.length; i++) {
+    final test = tests[i];
+    final stmt = program.starts[i];
+
+    expect(stmt.toString(), equals(test));
   }
 }

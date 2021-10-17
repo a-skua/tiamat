@@ -25,13 +25,11 @@ void testParseMacro() {
     _TestParseMacro(
       input: 'LABEL IN BUF,32',
       expected: 'BLOCK('
-          'BLOCK('
           'STATEMENT(LABEL(LABEL),OPECODE(LAD),OPERAND(GR(GR1),IDENT(BUF)))'
           ','
           'STATEMENT(OPECODE(LAD),OPERAND(GR(GR2),DEC(32)))'
           ','
           'STATEMENT(OPECODE(SVC),OPERAND(DEC(1)))'
-          ')'
           ')',
       expectedCode: [0x1210, 0, 0x1220, 32, 0xf000, 1],
       expectedSize: 6,
@@ -39,13 +37,11 @@ void testParseMacro() {
     _TestParseMacro(
       input: 'LABEL OUT BUF,#0010',
       expected: 'BLOCK('
-          'BLOCK('
           'STATEMENT(LABEL(LABEL),OPECODE(LAD),OPERAND(GR(GR1),IDENT(BUF)))'
           ','
           'STATEMENT(OPECODE(LAD),OPERAND(GR(GR2),HEX(#0010)))'
           ','
           'STATEMENT(OPECODE(SVC),OPERAND(DEC(2)))'
-          ')'
           ')',
       expectedCode: [0x1210, 0, 0x1220, 0x10, 0xf000, 2],
       expectedSize: 6,
@@ -53,7 +49,6 @@ void testParseMacro() {
     _TestParseMacro(
       input: 'LABEL RPUSH',
       expected: 'BLOCK('
-          'BLOCK('
           'STATEMENT(LABEL(LABEL),OPECODE(PUSH),OPERAND(DEC(0),GR(GR1)))'
           ','
           'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR2)))'
@@ -67,7 +62,6 @@ void testParseMacro() {
           'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR6)))'
           ','
           'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR7)))'
-          ')'
           ')',
       expectedCode: [
         0x7001,
@@ -90,7 +84,6 @@ void testParseMacro() {
     _TestParseMacro(
       input: 'LABEL RPOP',
       expected: 'BLOCK('
-          'BLOCK('
           'STATEMENT(LABEL(LABEL),OPECODE(POP),OPERAND(GR(GR7)))'
           ','
           'STATEMENT(OPECODE(POP),OPERAND(GR(GR6)))'
@@ -104,7 +97,6 @@ void testParseMacro() {
           'STATEMENT(OPECODE(POP),OPERAND(GR(GR2)))'
           ','
           'STATEMENT(OPECODE(POP),OPERAND(GR(GR1)))'
-          ')'
           ')',
       expectedCode: [0x7170, 0x7160, 0x7150, 0x7140, 0x7130, 0x7120, 0x7110],
       expectedSize: 7,
