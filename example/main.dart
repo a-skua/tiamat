@@ -72,9 +72,14 @@ MSG     DC      'goodbye!',-1
     return;
   }
   final code = program.code;
+  final stmts = program.statements;
 
-  print('\nstatement:\n${program.statement.toStringWithIndent(prefix: '> ')}');
-  print(program.statement);
+  // Print any...
+  print(stmts);
+  print('\nparse statement:\n');
+  for (final stmt in stmts) {
+    print(stmt.toStringWithIndent(prefix: '> '));
+  }
   print('\ncode:\n$code\n');
 
   final comet2 = Comet2()..device = DeviceCLI();
