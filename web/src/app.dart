@@ -8,7 +8,7 @@ import './component/content_box.dart';
 import './component/editor.dart';
 import './component/information.dart';
 
-const version = '0.2.0+nullsafety';
+const version = '0.4.0';
 
 Element app() {
   final comet2 = Comet2();
