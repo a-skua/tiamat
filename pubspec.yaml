@@ -4,7 +4,7 @@ description: This is an emulator of the COMET2 and a compiler of the CASL2.
 repository: https://github.com/a-skua/tiamat
 
 environment:
-  sdk: ">=2.12.0-0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 dev_dependencies:
   test: ^1.16.0-nullsafety.13
   pedantic: ^1.10.0-nullsafety.3
