@@ -105,6 +105,7 @@ void testParseMacro() {
 
   for (final test in tests) {
     final program = Parser(Lexer.fromString(test.input)).parseProgram();
+    program.env.startPoint = 0;
 
     expect(program.errors.length, equals(0));
     expect(program.toString(), equals(test.expected));

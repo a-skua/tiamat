@@ -2,7 +2,7 @@ import '../token/token.dart';
 
 // Lang environment
 class Env {
-  int startPoint = 0;
+  int startPoint = 100;
   String entryLabel = 'MAIN';
   final labels = <String, Statement>{};
 
@@ -221,22 +221,19 @@ class Program implements Node {
   final Env env;
   final List<ErrorNode> _errors;
   final List<Statement> _statements;
-  final List<Statement> _starts;
+  // TODO Statement? to Statement
+  final Statement? start;
 
   Program(
     this._statements, {
     required this.env,
     required List<ErrorNode> errors,
-    required List<Statement> starts,
-  })  : _errors = errors,
-        _starts = starts;
+    Statement? this.start,
+  }) : _errors = errors;
 
   List<ErrorNode> get errors => List.from(_errors, growable: false);
 
   List<Statement> get statements => List.from(_statements);
-
-  /// Statements: START
-  List<Statement> get starts => List.from(_starts);
 
   @override
   List<int> get code =>

@@ -24,7 +24,7 @@ class DeviceCLI extends Device {
 void main() {
   const asm = '''
 ; サンプルコード
-MAIN    START
+DO      START
 ; GR1     AND     GR1,GR1       ; ラベルエラー
 LOOP    IN      IBUF,31       ; マクロ
         OUT     OUT,38        ; マクロ
@@ -57,6 +57,11 @@ IBUF    DS      31
 EOF     DC      #FFFF
 MSG     DC      'goodbye!',-1
         END
+
+MAIN    START
+        CALL DO
+        RET
+        END
 ''';
   print('casl2:');
   syntaxHighlight(asm);
@@ -83,9 +88,14 @@ MSG     DC      'goodbye!',-1
   print('\ncode:\n$code\n');
 
   final comet2 = Comet2()..device = DeviceCLI();
-  comet2.load(code);
 
+  comet2.init(
+    entry: program.start?.position ?? program.env.startPoint,
+    start: program.env.startPoint,
+  );
+  comet2.load(code);
   comet2.exec();
+
   print('\nresult:');
   for (var i = 0; i < 8; i++) {
     final gr = comet2.resource.generalRegisters;

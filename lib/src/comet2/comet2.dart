@@ -5,6 +5,12 @@ import 'supervisor_call.dart' show SupervisorCall, supervisorCall;
 
 /// COMET2 instance.
 class Comet2 {
+  /// [_entryPoint]: program entry point
+  int _entryPoint = 0;
+
+  /// [_startPoint]: program start point
+  int _startPoint = 0;
+
   /// I/O Device.
   ///
   /// Need to change when implementing the emulator.
@@ -21,10 +27,19 @@ class Comet2 {
         (final int code) => supervisorCall(this.resource, this.device, code);
   }
 
+  /// init environment
+  void init({
+    required final int entry,
+    required final int start,
+  }) {
+    _entryPoint = entry;
+    _startPoint = start;
+  }
+
   /// Load code on memory.
   void load(final List<int> code) {
     final pr = this.resource.programRegister;
-    this.resource.memory.setAll(pr.value, code);
+    this.resource.memory.setAll(_startPoint, code);
   }
 
   /// To stop COMET2.
@@ -40,6 +55,7 @@ class Comet2 {
 
     this._isActive = true;
 
+    pr.value = _entryPoint;
     while (this._isActive && sp.value != 0) {
       final op = (ram[pr.value] >> 8) & 0xff;
       instruction(this.resource, op);

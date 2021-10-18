@@ -33,6 +33,7 @@ class Parser {
 
   Program parseProgram() {
     final starts = <Statement>[];
+    Statement? start;
     final stmts = <Statement>[];
     final env = Env();
     final errors = <ErrorNode>[];
@@ -41,11 +42,19 @@ class Parser {
     while (true) {
       final node = _nextStmt(parent, env);
       if (node == null) {
+        if (start == null) {
+          if (starts.isNotEmpty) {
+            start = starts.first;
+          } else if (stmts.isNotEmpty) {
+            start = stmts.first;
+          }
+        }
+
         return Program(
           stmts,
           env: env,
           errors: errors,
-          starts: starts,
+          start: start,
         );
       }
 
@@ -60,6 +69,9 @@ class Parser {
       }
       if (stmt.opecode == 'START') {
         starts.add(stmt);
+        if (stmt.label == env.entryLabel) {
+          start = stmt;
+        }
       }
 
       stmts.add(stmt);
