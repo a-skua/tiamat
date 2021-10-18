@@ -8,10 +8,9 @@ import './component/content_box.dart';
 import './component/editor.dart';
 import './component/information.dart';
 
-const version = '0.2.0+nullsafety';
+const version = '0.4.0';
 
 Element app() {
-  final casl2 = Casl2();
   final comet2 = Comet2();
   final r = comet2.resource;
 
@@ -21,7 +20,7 @@ Element app() {
   final editor = Editor(asm);
   final output = TextAreaElement()..disabled = true;
   final input = TextAreaElement();
-  final control = ControlPanel(r, comet2, casl2, onPreExecute: () {
+  final control = ControlPanel(r, comet2, onPreExecute: () {
     inputValues.clear();
     inputValues.addAll((input.value ?? '').split('\n'));
     r.PR = 0;

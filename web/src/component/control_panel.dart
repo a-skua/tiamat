@@ -13,8 +13,7 @@ class ControlPanel {
 
   ControlPanel(
     Resource r,
-    Comet2 c,
-    Casl2 cc, {
+    Comet2 c, {
     required OnPreExecute onPreExecute,
     required OnUpdate onUpdate,
     required GetCode getCode,
@@ -38,8 +37,13 @@ class ControlPanel {
           ..onClick.listen((_) {
             onPreExecute();
 
-            final code = cc.compile(getCode());
-            c.load(code);
+            final program = Casl2.compile(getCode()).program;
+
+            c.init(
+              entry: program.start?.position ?? program.env.startPoint,
+              start: program.env.startPoint,
+            );
+            c.load(program.code);
             c.exec();
             onUpdate();
           })
