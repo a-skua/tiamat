@@ -5,12 +5,13 @@ class Register {
 
   int _value = 0;
 
+  /// Construct
+  ///
+  /// [bits] is greater than 0.
   Register(
     this.name, {
     this.bits = 16,
-  }) {
-    assert(bits > 0, 'bits must be greater than zero!');
-  }
+  });
 
   /// Get mask bits.
   int get maskBits => (-1).toUnsigned(this.bits);

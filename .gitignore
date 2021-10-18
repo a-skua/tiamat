@@ -10,3 +10,9 @@ doc/api
 # gh-pages
 .build.manifest
 packages
+
+# build
+*.exe
+*.js
+*.map
+*.deps

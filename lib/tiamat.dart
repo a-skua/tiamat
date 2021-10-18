@@ -1,2 +1,2 @@
-export 'src/casl2/casl2.dart';
-export 'src/comet2.dart';
+export './src/casl2/casl2.dart';
+export './src/comet2.dart';

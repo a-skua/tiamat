@@ -29,7 +29,9 @@ class Register {
     final element = Element.div()
       ..classes.add('register')
       ..nodes = [
-        Element.div()..classes.add('register-name')..nodes.add(Text(name)),
+        Element.div()
+          ..classes.add('register-name')
+          ..nodes.add(Text(name)),
         Element.div()
           ..classes.add('register-bits')
           ..nodes = [
