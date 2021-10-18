@@ -1,3 +1,9 @@
+## 0.4.0
+Breaking changes!
+
+- Cahnged Casl2 Parser.
+  See `example/main.dart` for usage.
+
 ## 0.3.0-nullsafety
 - changed Casl2.
 - `Casl2.compile` thorws CompileException
