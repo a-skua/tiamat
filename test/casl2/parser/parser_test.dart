@@ -553,6 +553,9 @@ void testStringError() {
 MAIN    START
         RET
 BUF     DC      'hello,world!
+        DC      '
+        ; test string
+        DC      'it''
         END
 ''';
   final want = 'STATEMENT(LABEL(MAIN),OPECODE(START))'
@@ -561,7 +564,9 @@ BUF     DC      'hello,world!
       ','
       'STATEMENT(OPECODE(END))';
   final errors = <String>[
-    '(line 3) [SYNTAX ERROR] Invalid String.',
+    '(line 3) [SYNTAX ERROR] Invalid String: \'hello,world!',
+    '(line 4) [SYNTAX ERROR] Invalid String: \'',
+    '(line 6) [SYNTAX ERROR] Invalid String: \'it\'\'',
   ];
 
   final program = Parser(Lexer.fromString(input)).parseProgram();

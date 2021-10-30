@@ -86,7 +86,7 @@ class Lexer implements LexerInterface {
         final end = _currentIndex;
         _expectedStatus = ExpectedStatus.expectOpecode;
 
-        if (_isGR(start, end)) {
+        if (_isGRToken(start, end)) {
           final gr = String.fromCharCodes(_runes.getRange(start, end));
           return _getError(start, end, '$gr cannot be used as label');
         }
@@ -163,8 +163,9 @@ class Lexer implements LexerInterface {
           final start = _currentIndex;
           _readString();
           final end = _currentIndex;
-          if (_previous != quote) {
-            return _getError(start, end, 'Invalid String.');
+          if (!_isStringToken(start, end)) {
+            final str = String.fromCharCodes(_runes.getRange(start, end));
+            return _getError(start, end, 'Invalid String: $str');
           }
           return _getToken(start, end, TokenType.string);
         }
@@ -173,7 +174,7 @@ class Lexer implements LexerInterface {
         _readIdent();
         final end = _currentIndex;
 
-        if (_isGR(start, end)) {
+        if (_isGRToken(start, end)) {
           return _getToken(start, end, TokenType.gr);
         }
         return _getToken(start, end, TokenType.ident);
@@ -309,7 +310,7 @@ class Lexer implements LexerInterface {
   bool get _isNewline => isNewline(current);
   bool _isLast(final int index) => index >= _runes.length;
 
-  bool _isGR(int start, int end) {
+  bool _isGRToken(final int start, final int end) {
     switch (String.fromCharCodes(_runes.getRange(start, end))) {
       case 'GR0':
       case 'GR1':
@@ -323,6 +324,17 @@ class Lexer implements LexerInterface {
       default:
         return false;
     }
+  }
+
+  bool _isStringToken(final int start, final int end) {
+    if (start >= end - 1) {
+      return false;
+    }
+
+    final str = String.fromCharCodes(_runes.getRange(start, end));
+    return _runes[start] == quote &&
+        _previous == quote &&
+        "'".allMatches(str).length % 2 == 0;
   }
 
   bool get isLast => _isLast(_currentIndex);
