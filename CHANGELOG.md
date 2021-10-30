@@ -1,3 +1,8 @@
+## 0.4.1
+Bugfix
+
+- Bugfix: Failed Parse String.
+
 ## 0.4.0
 Breaking changes!
 
