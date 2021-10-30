@@ -15,6 +15,8 @@ void main() {
   test('parse error', testParseError);
   test('label position', testLabelPosition);
   test('start statements', testProgramStart);
+  test('string error', testStringError);
+  test('separate and comment', testSeparateAndComment);
 }
 
 void testPaarse() {
@@ -544,4 +546,52 @@ GR1234  DC      GR1234,MAIN     ; アドレス定数
     final program = Parser(Lexer.fromString(test.input)).parseProgram();
     expect(program.start.toString(), equals(test.exStatement));
   }
+}
+
+void testStringError() {
+  final input = '''
+MAIN    START
+        RET
+BUF     DC      'hello,world!
+        END
+''';
+  final want = 'STATEMENT(LABEL(MAIN),OPECODE(START))'
+      ','
+      'STATEMENT(OPECODE(RET))'
+      ','
+      'STATEMENT(OPECODE(END))';
+  final errors = <String>[
+    '(line 3) [SYNTAX ERROR] Invalid String.',
+  ];
+
+  final program = Parser(Lexer.fromString(input)).parseProgram();
+  expect(program.toString(), equals(want));
+  expect(program.errors.length, equals(errors.length));
+
+  for (var i = 0; i < errors.length; i += 1) {
+    final got = program.errors[i].toString();
+    final want = errors[i];
+    expect(got, equals(want));
+  }
+}
+
+void testSeparateAndComment() {
+  final input = '''
+MAIN    START
+        RET
+        ; comment!
+BUF     DC      'hello, world!'
+        END
+''';
+  final want = 'STATEMENT(LABEL(MAIN),OPECODE(START))'
+      ','
+      'STATEMENT(OPECODE(RET))'
+      ','
+      'STATEMENT(LABEL(BUF),OPECODE(DC),OPERAND(STRING(\'hello, world!\')))'
+      ','
+      'STATEMENT(OPECODE(END))';
+
+  final program = Parser(Lexer.fromString(input)).parseProgram();
+  expect(program.toString(), equals(want));
+  expect(program.errors.length, equals(0));
 }

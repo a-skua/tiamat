@@ -163,6 +163,9 @@ class Lexer implements LexerInterface {
           final start = _currentIndex;
           _readString();
           final end = _currentIndex;
+          if (_previous != quote) {
+            return _getError(start, end, 'Invalid String.');
+          }
           return _getToken(start, end, TokenType.string);
         }
 
@@ -270,6 +273,8 @@ class Lexer implements LexerInterface {
       } else if (current == quote) {
         _readChar();
         break;
+      } else if (isLast || _isNewline) {
+        break;
       }
       _readChar();
     }
@@ -327,6 +332,13 @@ class Lexer implements LexerInterface {
           return null;
         }
         return _runes[_currentIndex];
+      }();
+
+  int? get _previous => () {
+        if (_currentIndex == 0) {
+          return null;
+        }
+        return _runes[_currentIndex - 1];
       }();
 
   int? get _next => () {
