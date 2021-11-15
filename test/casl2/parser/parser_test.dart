@@ -1,8 +1,7 @@
 import 'package:tiamat/src/casl2/ast/ast.dart';
-import 'package:tiamat/src/casl2/parser/parser.dart';
 import 'package:tiamat/src/casl2/parser/util.dart';
 import 'package:tiamat/src/casl2/token/token.dart';
-import 'package:tiamat/src/casl2/lexer/lexer.dart';
+import 'package:tiamat/src/casl2/casl2.dart';
 import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
 import 'dart:math';
@@ -55,7 +54,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         END                     ;
 ''';
 
-  final parser = Parser(Lexer.fromString(input));
+  final casl2 = Casl2.fromString(input);
 
   final expected = 'STATEMENT(LABEL(MAIN),OPECODE(START))'
       ','
@@ -145,9 +144,9 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       ','
       'STATEMENT(OPECODE(END))';
 
-  final program = parser.parseProgram();
-  expect(program.errors.length, equals(0));
-  expect(program.toString(), equals(expected));
+  final result = casl2.compile();
+  expect(result.errors.length, equals(0));
+  expect(result.toString(), equals(expected));
 }
 
 void testParseNode() {
@@ -182,10 +181,10 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         END                     ;
 ''';
 
-  final program = Parser(Lexer.fromString(input)).parseProgram();
+  final result = Casl2.fromString(input).compile();
   final base = Random().nextInt(1 << 10);
 
-  program.env.startPoint = base;
+  result.env.startPoint = base;
 
   final tests = <int>[
     // MAIN    START
@@ -235,7 +234,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
     //         END
   ];
 
-  final code = program.code;
+  final code = result.code;
   expect(code.length, equals(tests.length));
   for (var i = 0; i < tests.length; i += 1) {
     expect(code[i], equals(tests[i]));
@@ -390,12 +389,12 @@ GR1     AND
     '(line 8) [SYNTAX ERROR] X is not an expected value. value expects between GR1 and GR7.',
     '(line 9) [SYNTAX ERROR] GR1 cannot be used as label',
   ];
-  final program = Parser(Lexer.fromString(input)).parseProgram();
+  final result = Casl2.fromString(input).compile();
 
-  expect(program.errors.length, equals(tests.length));
+  expect(result.errors.length, equals(tests.length));
 
   for (var i = 0; i < tests.length; i += 1) {
-    final actual = program.errors[i].toString();
+    final actual = result.errors[i].toString();
     final expected = tests[i];
 
     expect(actual, equals(expected));
@@ -450,10 +449,10 @@ GR1234  DC      GR1234,MAIN     ; アドレス定数
     _TestLabelPosition('GR1234', 62),
   ];
 
-  final program = Parser(Lexer.fromString(input)).parseProgram();
+  final result = Casl2.fromString(input).compile();
 
   for (final t in tests) {
-    final stmt = program.env.labels[t.label];
+    final stmt = result.env.labels[t.label];
     expect(stmt, isNotNull);
 
     expect(stmt?.position, equals(t.expected));
@@ -543,8 +542,8 @@ GR1234  DC      GR1234,MAIN     ; アドレス定数
   ];
 
   for (final test in tests) {
-    final program = Parser(Lexer.fromString(test.input)).parseProgram();
-    expect(program.start.toString(), equals(test.exStatement));
+    final result = Casl2.fromString(test.input).compile();
+    expect(result.start.toString(), equals(test.exStatement));
   }
 }
 
@@ -569,12 +568,12 @@ BUF     DC      'hello,world!
     '(line 6) [SYNTAX ERROR] Invalid String: \'it\'\'',
   ];
 
-  final program = Parser(Lexer.fromString(input)).parseProgram();
-  expect(program.toString(), equals(want));
-  expect(program.errors.length, equals(errors.length));
+  final result = Casl2.fromString(input).compile();
+  expect(result.toString(), equals(want));
+  expect(result.errors.length, equals(errors.length));
 
   for (var i = 0; i < errors.length; i += 1) {
-    final got = program.errors[i].toString();
+    final got = result.errors[i].toString();
     final want = errors[i];
     expect(got, equals(want));
   }
@@ -596,7 +595,7 @@ BUF     DC      'hello, world!'
       ','
       'STATEMENT(OPECODE(END))';
 
-  final program = Parser(Lexer.fromString(input)).parseProgram();
-  expect(program.toString(), equals(want));
-  expect(program.errors.length, equals(0));
+  final result = Casl2.fromString(input).compile();
+  expect(result.toString(), equals(want));
+  expect(result.errors.length, equals(0));
 }

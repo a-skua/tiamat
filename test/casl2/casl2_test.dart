@@ -91,8 +91,8 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
     //         END
   ];
 
-  final program = Casl2.compile(input).program..env.startPoint = base;
-  final code = program.code;
+  final result = Casl2.fromString(input).compile()..env.startPoint = base;
+  final code = result.code;
   expect(code.length, equals(tests.length));
   for (var i = 0; i < tests.length; i += 1) {
     expect(code[i], equals(tests[i]));

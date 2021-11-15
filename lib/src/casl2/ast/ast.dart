@@ -50,14 +50,20 @@ abstract class Node {
   int get size;
 }
 
-/// Statement's root
-class Root implements Node {
+/// Empty node.
+class Empty implements Node {
   @override
   List<int> get code => [];
 
   @override
   int get size => 0;
 }
+
+/// Root merger node.
+class Root extends Empty {}
+
+/// End marker node.
+class End extends Empty {}
 
 class Statement implements Node {
   final Node _parent;
@@ -214,41 +220,4 @@ class ErrorNode extends Node {
   String toString() {
     return '(line $lineNumber) $error';
   }
-}
-
-/// Parser return this Node
-class Program implements Node {
-  final Env env;
-  final List<ErrorNode> _errors;
-  final List<Statement> _statements;
-  // TODO Statement? to Statement
-  final Statement? start;
-
-  Program(
-    this._statements, {
-    required this.env,
-    required List<ErrorNode> errors,
-    Statement? this.start,
-  }) : _errors = errors;
-
-  List<ErrorNode> get errors => List.from(_errors, growable: false);
-
-  List<Statement> get statements => List.from(_statements);
-
-  @override
-  List<int> get code =>
-      _statements.map((stmt) => stmt.code).reduce((all, code) {
-        all.addAll(code);
-        return all;
-      });
-
-  @override
-  int get size =>
-      _statements.map((stmt) => stmt.size).reduce((sum, size) => sum + size);
-
-  @override
-  String toString() => _statements.join(',');
-
-  @override
-  String toStringWithIndent() => _statements.join('\n');
 }

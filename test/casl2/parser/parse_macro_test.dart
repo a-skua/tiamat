@@ -1,5 +1,4 @@
-import 'package:tiamat/src/casl2/parser/parser.dart';
-import 'package:tiamat/src/casl2/lexer/lexer.dart';
+import 'package:tiamat/src/casl2/casl2.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -104,12 +103,12 @@ void testParseMacro() {
   ];
 
   for (final test in tests) {
-    final program = Parser(Lexer.fromString(test.input)).parseProgram();
-    program.env.startPoint = 0;
+    final result = Casl2.fromString(test.input).compile();
+    result.env.startPoint = 0;
 
-    expect(program.errors.length, equals(0));
-    expect(program.toString(), equals(test.expected));
-    expect(program.size, equals(test.expectedSize));
-    expect(program.code, equals(test.expectedCode));
+    expect(result.errors.length, equals(0));
+    expect(result.toString(), equals(test.expected));
+    expect(result.size, equals(test.expectedSize));
+    expect(result.code, equals(test.expectedCode));
   }
 }

@@ -66,18 +66,17 @@ MAIN    START
   print('casl2:');
   syntaxHighlight(asm);
 
-  final casl2 = Casl2.compile(asm);
+  final casl2 = Casl2.fromString(asm);
 
-  final program = casl2.program;
-  final errors = program.errors;
-  if (errors.isNotEmpty) {
-    for (final error in errors) {
+  final result = casl2.compile();
+  if (result.hasError) {
+    for (final error in result.errors) {
       print(error);
     }
     return;
   }
-  final code = program.code;
-  final stmts = program.statements;
+  final code = result.code;
+  final stmts = result.statements;
 
   // Print any...
   print(stmts);
@@ -90,8 +89,8 @@ MAIN    START
   final comet2 = Comet2()..device = DeviceCLI();
 
   comet2.init(
-    entry: program.start?.position ?? program.env.startPoint,
-    start: program.env.startPoint,
+    entry: result.start?.position ?? result.env.startPoint,
+    start: result.env.startPoint,
   );
   comet2.load(code);
   comet2.exec();

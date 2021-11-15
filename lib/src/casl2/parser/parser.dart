@@ -22,7 +22,11 @@ class _SimpleLexer implements LexerInterface {
   }
 }
 
-class Parser {
+abstract class ParserInterface {
+  Node nextStmt(Node parent, Env env);
+}
+
+class Parser implements ParserInterface {
   final LexerInterface _lexer;
 
   Parser(this._lexer);
@@ -31,55 +35,7 @@ class Parser {
     return Parser(_SimpleLexer(tokens));
   }
 
-  Program parseProgram() {
-    final starts = <Statement>[];
-    Statement? start;
-    final stmts = <Statement>[];
-    final env = Env();
-    final errors = <ErrorNode>[];
-
-    Node parent = Root();
-    while (true) {
-      final node = _nextStmt(parent, env);
-      if (node == null) {
-        if (start == null) {
-          if (starts.isNotEmpty) {
-            start = starts.first;
-          } else if (stmts.isNotEmpty) {
-            start = stmts.first;
-          }
-        }
-
-        return Program(
-          stmts,
-          env: env,
-          errors: errors,
-          start: start,
-        );
-      }
-
-      if (node is ErrorNode) {
-        errors.add(node);
-        continue;
-      }
-
-      final stmt = node as Statement;
-      if (stmt.label.isNotEmpty) {
-        env.labels[stmt.label] = stmt;
-      }
-      if (stmt.opecode == 'START') {
-        starts.add(stmt);
-        if (stmt.label == env.entryLabel) {
-          start = stmt;
-        }
-      }
-
-      stmts.add(stmt);
-      parent = stmt;
-    }
-  }
-
-  Node? _nextStmt(Node parent, Env env) {
+  Node nextStmt(Node parent, Env env) {
     var token = _lexer.nextToken();
 
     // FIXME skip empty
@@ -90,7 +46,7 @@ class Parser {
     }
 
     if (token.type == TokenType.eof) {
-      return null;
+      return End();
     }
 
     Token? label;
