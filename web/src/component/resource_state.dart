@@ -11,58 +11,62 @@ class ResourceState {
   var _stackPointer = Register('', () => 0, (_) {});
   var _programRegister = Register('', () => 0, (_) {});
 
-  ResourceState(Resource r) {
+  Resource resource = Resource();
+
+  ResourceState() {
+    // TODO continue...
     this._generalRegisters.addAll([
       for (var i = 0; i < 8; i++)
         Register(
           'GR$i',
-          () => r.getGR(i),
-          (v) => r.setGR(i, v),
+          () => resource.getGR(i),
+          (v) => resource.setGR(i, v),
         ),
     ]);
 
     this._stackPointer = Register(
       'SP',
-      () => r.SP,
-      (v) => r.SP = v,
+      () => resource.SP,
+      (v) => resource.SP = v,
     );
     this._programRegister = Register(
       'PR',
-      () => r.PR,
-      (v) => r.PR = v,
+      () => resource.PR,
+      (v) => resource.PR = v,
     );
     this._flagRegister.addAll([
       Register(
         'OF',
-        () => r.OF ? 1 : 0,
-        (v) => r.OF = v > 0,
+        () => resource.OF ? 1 : 0,
+        (v) => resource.OF = v > 0,
         bits: 1,
         hasSigned: false,
       ),
       Register(
         'SF',
-        () => r.SF ? 1 : 0,
-        (v) => r.SF = v > 0,
+        () => resource.SF ? 1 : 0,
+        (v) => resource.SF = v > 0,
         bits: 1,
         hasSigned: false,
       ),
       Register(
         'ZF',
-        () => r.ZF ? 1 : 0,
-        (v) => r.ZF = v > 0,
+        () => resource.ZF ? 1 : 0,
+        (v) => resource.ZF = v > 0,
         bits: 1,
         hasSigned: false,
       ),
     ]);
   }
 
-  void update() {
-    for (final r in this._generalRegisters) {
+  void update(Resource r) {
+    resource = r;
+    for (final r in _generalRegisters) {
       r.update();
     }
-    this._stackPointer.update();
-    this._programRegister.update();
-    for (final r in this._flagRegister) {
+    _stackPointer.update();
+    _programRegister.update();
+    for (final r in _flagRegister) {
       r.update();
     }
   }

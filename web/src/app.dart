@@ -11,39 +11,47 @@ import './component/information.dart';
 const version = '0.4.0';
 
 Element app() {
-  final comet2 = Comet2();
+  late final state = ResourceState();
+
+  final comet2 = Comet2(
+    onUpdate: (r) => state.update(r),
+  );
   final r = comet2.resource;
 
   final inputValues = <String>[];
 
-  final state = ResourceState(r);
   final editor = Editor(asm);
   final output = TextAreaElement()..disabled = true;
   final input = TextAreaElement();
-  final control = ControlPanel(r, comet2, onPreExecute: () {
-    inputValues.clear();
-    inputValues.addAll((input.value ?? '').split('\n'));
-    r.PR = 0;
-    r.SP = -1; // TODO bug
-  }, onUpdate: () {
-    state.update();
-  }, getCode: () {
-    return editor.value;
-  }, clearAll: () {
-    input.value = '';
-    output.value = '';
-    editor.value = '';
-    r.SP = -1;
-    r.FR = 0;
-    r.PR = 0;
-    for (var i = 0; i < 8; i++) {
-      r.setGR(i, 0);
-    }
-    state.update();
-  }, clearIO: () {
-    input.value = '';
-    output.value = '';
-  });
+  final control = ControlPanel(
+    r,
+    comet2,
+    onPreExecute: () {
+      inputValues.clear();
+      inputValues.addAll((input.value ?? '').split('\n'));
+      r.PR = 0;
+      r.SP = -1; // TODO bug
+    },
+    getCode: () {
+      return editor.value;
+    },
+    clearAll: () {
+      input.value = '';
+      output.value = '';
+      editor.value = '';
+      r.SP = -1;
+      r.FR = 0;
+      r.PR = 0;
+      for (var i = 0; i < 8; i++) {
+        r.setGR(i, 0);
+      }
+      state.update(r);
+    },
+    clearIO: () {
+      input.value = '';
+      output.value = '';
+    },
+  );
 
   comet2.device
     ..output = (s) {
@@ -54,6 +62,7 @@ Element app() {
       var x = 0;
       return () => s[x++ % s.length];
     }();
+  comet2.delay = 10;
 
   return Element.div()
     ..id = 'wrap'

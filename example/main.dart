@@ -86,20 +86,22 @@ MAIN    START
   }
   print('\ncode:\n$code\n');
 
-  final comet2 = Comet2()..device = DeviceCLI();
+  final comet2 = Comet2(
+    onUpdate: (final r) {
+      print(r);
+    },
+    onExit: (final r) {
+      print('\nresult:');
+      for (var i = 0; i < 8; i++) {
+        final gr = r.generalRegisters;
+        print('GR$i:${gr[i].value}');
+      }
+    },
+  )
+    ..device = DeviceCLI()
+    ..delay = 10;
 
-  comet2.init(
-    entry: result.start?.position ?? result.env.startPoint,
-    start: result.env.startPoint,
-  );
-  comet2.load(code);
-  comet2.exec();
-
-  print('\nresult:');
-  for (var i = 0; i < 8; i++) {
-    final gr = comet2.resource.generalRegisters;
-    print('GR$i:${gr[i].value}');
-  }
+  comet2.loadAndRun(result);
 }
 
 void syntaxHighlight(final String asm) {

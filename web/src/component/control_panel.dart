@@ -15,7 +15,6 @@ class ControlPanel {
     Resource r,
     Comet2 c, {
     required OnPreExecute onPreExecute,
-    required OnUpdate onUpdate,
     required GetCode getCode,
     required ClearAll clearAll,
     required ClearIO clearIO,
@@ -37,15 +36,12 @@ class ControlPanel {
           ..onClick.listen((_) {
             onPreExecute();
 
-            final program = Casl2.compile(getCode()).program;
+            final result = Casl2.fromString(getCode()).compile();
+            if (result.hasError) {
+              return;
+            }
 
-            c.init(
-              entry: program.start?.position ?? program.env.startPoint,
-              start: program.env.startPoint,
-            );
-            c.load(program.code);
-            c.exec();
-            onUpdate();
+            c.loadAndRun(result);
           })
       ];
   }
