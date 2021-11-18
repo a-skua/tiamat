@@ -28,6 +28,18 @@ class Resource {
   /// Flag Register
   final FlagRegister flagRegister = FlagRegister();
 
+  @override
+  String toString() {
+    String str = '';
+    for (var i = 0; i < generalRegisters.length; i++) {
+      str += 'GR$i: ${generalRegisters[i].value}, ';
+    }
+    str += 'SP: ${stackPointer.value}, ';
+    str += 'PR: ${programRegister.value}, ';
+    str += 'FR: ${flagRegister.value}';
+    return str;
+  }
+
   /// Deprecated: will be deleted the next mejor version.
   ///
   /// Proposal:

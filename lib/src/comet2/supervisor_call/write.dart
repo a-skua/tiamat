@@ -1,6 +1,6 @@
 import '../resource.dart' show Resource;
 import '../device.dart' show Device;
-import '../../util/charcode.dart' show code2char;
+import 'package:tiamat/src/charcode/charcode.dart';
 import 'util.dart';
 
 void write(final Resource r, final Device d) {
@@ -15,7 +15,12 @@ void write(final Resource r, final Device d) {
     if (char == eof.toUnsigned(ram.bits)) {
       break;
     }
-    s += code2char[char] ?? '□';
+    final rune = codeAsRune(char);
+    if (rune != null) {
+      s += String.fromCharCode(rune);
+    } else {
+      s += '□';
+    }
   }
 
   d.output(s);

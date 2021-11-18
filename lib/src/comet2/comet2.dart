@@ -1,15 +1,22 @@
+import 'dart:async';
 import 'resource.dart' show Resource;
 import 'device.dart' show Device;
-import 'instruction.dart' show instruction;
+import './instruction.dart';
 import 'supervisor_call.dart' show SupervisorCall, supervisorCall;
+import 'package:tiamat/tiamat.dart' show Result;
 
-/// COMET2 instance.
+/// Comet2's [Status]
+enum Status {
+  running, // running Comet2
+  pause, // pause Comet2
+  wait, // wait input, output and etc.
+  exit, // exit program,
+}
+
+typedef Notice = void Function(Resource);
+
 class Comet2 {
-  /// [_entryPoint]: program entry point
-  int _entryPoint = 0;
-
-  /// [_startPoint]: program start point
-  int _startPoint = 0;
+  Status status = Status.pause;
 
   /// I/O Device.
   ///
@@ -17,48 +24,67 @@ class Comet2 {
   Device device = Device();
 
   /// Resource.
-  final Resource resource = Resource();
+  Resource resource = Resource();
 
-  /// COMET2 is active
-  bool _isActive = true;
+  Duration _delay = Duration();
 
-  Comet2() {
-    this.resource.supervisorCall =
-        (final int code) => supervisorCall(this.resource, this.device, code);
+  /// set milliseconds
+  void set delay(int ms) {
+    _delay = Duration(milliseconds: ms);
   }
 
-  /// init environment
-  void init({
-    required final int entry,
-    required final int start,
+  Notice? _onUpdate;
+  Notice? _onExit;
+
+  Comet2({
+    Notice? onUpdate,
+    Notice? onExit,
   }) {
-    _entryPoint = entry;
-    _startPoint = start;
+    resource.supervisorCall =
+        (final code) => supervisorCall(resource, device, code);
+    _onUpdate = onUpdate;
+    _onExit = onExit;
   }
 
-  /// Load code on memory.
-  void load(final List<int> code) {
-    final pr = this.resource.programRegister;
-    this.resource.memory.setAll(_startPoint, code);
+  void load(final Result result) {
+    final start = result.env.startPoint;
+    resource.memory.setAll(start, result.code);
+    resource.programRegister.value =
+        result.start?.position ?? result.env.startPoint;
+    resource.stackPointer.value = 0xffff; // reset.
   }
 
-  /// To stop COMET2.
-  void stop() {
-    this._isActive = false;
+  void run() {
+    status = Status.running;
+    _exec();
   }
 
-  /// Execute.
-  void exec() {
-    final sp = this.resource.stackPointer;
-    final pr = this.resource.programRegister;
-    final ram = this.resource.memory;
+  void loadAndRun(final Result result) {
+    load(result);
+    run();
+  }
 
-    this._isActive = true;
+  Future<void> _exec() {
+    return Future(() {
+      if (status != Status.running) {
+        return;
+      }
+      if (resource.stackPointer.value == 0) {
+        status = Status.exit;
+        _onExit?.call(resource);
+        return;
+      }
 
-    pr.value = _entryPoint;
-    while (this._isActive && sp.value != 0) {
-      final op = (ram[pr.value] >> 8) & 0xff;
-      instruction(this.resource, op);
-    }
+      final pr = resource.programRegister;
+      final ram = resource.memory;
+
+      final ins = instruction(ram[pr.value]);
+      ins(resource);
+
+      // Future(_exec);
+      Future.delayed(_delay, _exec);
+
+      _onUpdate?.call(resource);
+    });
   }
 }
