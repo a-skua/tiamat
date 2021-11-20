@@ -2,7 +2,7 @@ import 'dart:async';
 import 'resource.dart' show Resource;
 import 'device.dart' show Device;
 import './instruction.dart';
-import 'supervisor_call.dart' show SupervisorCall, supervisorCall;
+import 'supervisor_call.dart' show supervisorCall;
 import 'package:tiamat/tiamat.dart' show Result;
 
 /// Comet2's [Status]
@@ -29,7 +29,7 @@ class Comet2 {
   Duration _delay = Duration();
 
   /// set milliseconds
-  void set delay(int ms) {
+  set delay(final int ms) {
     _delay = Duration(milliseconds: ms);
   }
 
@@ -57,6 +57,15 @@ class Comet2 {
   void run() {
     status = Status.running;
     _exec();
+  }
+
+  /// running a opecode.
+  Future<void> runOnce() async {
+    status = Status.running;
+    await _exec();
+    if (status == Status.running) {
+      status = Status.pause;
+    }
   }
 
   void loadAndRun(final Result result) {

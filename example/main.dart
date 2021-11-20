@@ -1,5 +1,6 @@
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/casl2.dart';
+import 'package:tiamat/comet2.dart';
 
 class DeviceCLI extends Device {
   final input = () {

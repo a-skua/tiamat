@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'package:tiamat/tiamat.dart' show Resource;
+import 'package:tiamat/comet2.dart' show Resource;
 
 import 'register.dart';
 import 'content_box.dart';

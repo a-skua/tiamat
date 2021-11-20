@@ -1,6 +1,7 @@
 import 'dart:html';
 
-import 'package:tiamat/tiamat.dart' show Comet2, Casl2, Resource;
+import 'package:tiamat/tiamat.dart' show Comet2, Casl2;
+import 'package:tiamat/comet2.dart' show Resource;
 
 typedef OnPreExecute = void Function();
 typedef OnUpdate = void Function();
