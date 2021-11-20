@@ -1,3 +1,8 @@
+## 0.5.0-1
+0.5.0 preview version.
+Change Comet2's fields.
+See `example/main.dart` for upsage.
+
 ## 0.4.1-1
 ## 0.4.1
 Bugfix
