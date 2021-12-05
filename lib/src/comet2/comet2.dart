@@ -8,44 +8,85 @@ import 'package:tiamat/tiamat.dart' show Result;
 /// Comet2's [Status]
 enum Status {
   running, // running Comet2
+  runningOnce,
   pause, // pause Comet2
   wait, // wait input, output and etc.
   exit, // exit program,
 }
 
-typedef Notice = void Function(Resource);
+typedef NoticeResource = void Function(Resource);
+typedef NoticeStatus = void Function(Status);
 
-class Comet2 {
-  Status status = Status.pause;
+/// make Duration on 0-1000ms.
+Duration getDuration([ms = 0]) {
+  if (ms < 0) ms = 0;
+  if (ms > 1000) ms = 1000;
+
+  return Duration(milliseconds: ms);
+}
+
+/// comet2 interface
+abstract class Comet2Interface {
+  /// delay milliseconds
+  int delay = 0;
+
+  /// computing
+  Future<Resource> run([Status s]);
+
+  /// load code on compute
+  void load(Result r);
+}
+
+/// implements interface
+class Comet2 implements Comet2Interface {
+  Comet2({
+    NoticeResource? onUpdate,
+    NoticeStatus? onChangeStatus,
+  }) {
+    resource.supervisorCall =
+        (final code) => supervisorCall(resource, device, code);
+    _onUpdate = onUpdate;
+    _onChangeStatus = onChangeStatus;
+  }
+
+  /// used [status]
+  ///   // ng
+  ///   _status = Statsu.wait;
+  ///   // ok
+  ///   status = Status.wait;
+  Status _status = Status.pause;
+
+  /// setter [_status]
+  Status get status => _status;
+
+  /// getter [_status]
+  set status(final Status s) {
+    if (_status != s) {
+      _status = s;
+      _onChangeStatus?.call(s);
+    }
+  }
 
   /// I/O Device.
   ///
   /// Need to change when implementing the emulator.
   Device device = Device();
 
+  NoticeResource? _onUpdate;
+  NoticeStatus? _onChangeStatus;
+
   /// Resource.
   Resource resource = Resource();
 
-  Duration _delay = Duration();
+  Duration _delay = getDuration();
 
-  /// set milliseconds
-  set delay(final int ms) {
-    _delay = Duration(milliseconds: ms);
-  }
+  @override
+  int get delay => _delay.inMilliseconds;
 
-  Notice? _onUpdate;
-  Notice? _onExit;
+  @override
+  set delay(final int ms) => _delay = getDuration(ms);
 
-  Comet2({
-    Notice? onUpdate,
-    Notice? onExit,
-  }) {
-    resource.supervisorCall =
-        (final code) => supervisorCall(resource, device, code);
-    _onUpdate = onUpdate;
-    _onExit = onExit;
-  }
-
+  @override
   void load(final Result result) {
     final start = result.env.startPoint;
     resource.memory.setAll(start, result.code);
@@ -54,46 +95,47 @@ class Comet2 {
     resource.stackPointer.value = 0xffff; // reset.
   }
 
-  void run() {
-    status = Status.running;
-    _exec();
-  }
+  @override
+  Future<Resource> run([final s = Status.running]) async {
+    status = s;
 
-  /// running a opecode.
-  Future<void> runOnce() async {
-    status = Status.running;
-    await _exec();
-    if (status == Status.running) {
-      status = Status.pause;
-    }
-  }
-
-  void loadAndRun(final Result result) {
-    load(result);
-    run();
-  }
-
-  Future<void> _exec() {
-    return Future(() {
-      if (status != Status.running) {
-        return;
-      }
-      if (resource.stackPointer.value == 0) {
+    if (status == Status.runningOnce) {
+      _exec();
+      if (_isExit) {
         status = Status.exit;
-        _onExit?.call(resource);
-        return;
+      } else {
+        status = Status.pause;
       }
+      return resource;
+    }
 
-      final pr = resource.programRegister;
-      final ram = resource.memory;
+    while (status == Status.running) {
+      await Future.delayed(_delay, _exec);
+      if (_isExit) {
+        status = Status.exit;
+        break;
+      }
+    }
+    return resource;
+  }
 
-      final ins = instruction(ram[pr.value]);
-      ins(resource);
+  /// Running instruction.
+  void _exec() {
+    final pr = resource.programRegister;
+    final ram = resource.memory;
 
-      // Future(_exec);
-      Future.delayed(_delay, _exec);
+    final ins = instruction(ram[pr.value]);
+    ins(resource);
+    _onUpdate?.call(resource);
+  }
 
-      _onUpdate?.call(resource);
-    });
+  /// is exit
+  bool get _isExit => resource.stackPointer.value == 0;
+
+  /// load nad run
+  Future<Resource> loadAndRun(final Result result) async {
+    load(result);
+    await run();
+    return resource;
   }
 }

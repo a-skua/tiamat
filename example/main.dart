@@ -91,18 +91,17 @@ MAIN    START
     onUpdate: (final r) {
       print(r);
     },
-    onExit: (final r) {
-      print('\nresult:');
-      for (var i = 0; i < 8; i++) {
-        final gr = r.generalRegisters;
-        print('GR$i:${gr[i].value}');
-      }
+    onChangeStatus: (final s) {
+      print('change state: $s');
     },
   )
     ..device = DeviceCLI()
     ..delay = 10;
 
-  comet2.loadAndRun(result);
+  comet2.loadAndRun(result).then((final r) {
+    print('exit');
+    print(r);
+  });
 }
 
 void syntaxHighlight(final String asm) {

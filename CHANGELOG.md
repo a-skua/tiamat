@@ -1,3 +1,11 @@
+## 0.5.0-2
+0.5.0 preview version.
+Change Comet2's methods and fields.
+See `example/main.dart` for upsage.
+
+- add named arg `onChangeStatus` on Comet2 constructor.
+- Comet2's method; `void run()` change to `Future<Resource> run()`
+
 ## 0.5.0-1
 0.5.0 preview version.
 Change Comet2's fields.

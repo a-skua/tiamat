@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:tiamat/src/comet2/instruction/instruction.dart';
 import 'package:tiamat/src/comet2/comet2.dart';
-import 'package:tiamat/src/util/charcode.dart';
+import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
 
 import 'util.dart';
@@ -46,7 +46,6 @@ void main() {
           final pr = r.programRegister;
           final gr = r.generalRegisters;
           final fr = r.flagRegister;
-          final sp = r.stackPointer;
           final ram = r.memory;
 
           final buf = rand.nextInt(0x4000) | 0x8000;
@@ -63,9 +62,9 @@ void main() {
           supervisorCall(r);
           expect(pr.value, equals((data.pr + 2) & 0xffff));
           expect(fr.value, equals(data.fr & 7));
-          final expectedChars = value.split('');
+          final runes = value.runes.toList();
           for (var i = 0; i < len; i++) {
-            expect(ram[buf + i], equals(char2code[expectedChars[i]]));
+            expect(ram[buf + i], equals(runeAsCode(runes[i])));
           }
         });
       }
@@ -107,7 +106,6 @@ void main() {
           final pr = r.programRegister;
           final gr = r.generalRegisters;
           final fr = r.flagRegister;
-          final sp = r.stackPointer;
           final ram = r.memory;
 
           final buf = rand.nextInt(0x4000) | 0x8000;
@@ -121,9 +119,9 @@ void main() {
           ram[data.pr] = op;
           ram[data.pr + 1] = data.adr.value;
           {
-            final chars = expectedStr.split('');
-            for (var i = 0; i < chars.length; i++) {
-              ram[buf + i] = char2code[chars[i]] ?? 0;
+            final runes = expectedStr.runes.toList();
+            for (var i = 0; i < runes.length; i++) {
+              ram[buf + i] = runeAsCode(runes[i]) ?? 0;
             }
           }
 

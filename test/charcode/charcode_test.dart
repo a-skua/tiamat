@@ -2,7 +2,7 @@ import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('charcode latin', testCharcode(0x21, 0x7e, latin));
+  test('charcode latin', testCharcode(0x20, 0x7e, latin));
   test('charcode kana', testCharcode(0xa1, 0xdf, kana));
 }
 

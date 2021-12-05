@@ -6,3 +6,6 @@ tests:
 
 serve:
 	webdev serve
+
+docs:
+	dartdoc
