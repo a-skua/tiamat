@@ -161,6 +161,18 @@ class BlockStatement extends Statement {
     );
   }
 
+  @override
+  String get label => _getLabel();
+
+  String _getLabel() {
+    for (final stmt in _statements) {
+      if (stmt.label.isNotEmpty) {
+        return stmt.label;
+      }
+    }
+    return '';
+  }
+
   List<Node> get statements => List.from(_statements);
 
   @override

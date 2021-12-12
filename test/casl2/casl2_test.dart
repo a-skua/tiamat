@@ -7,7 +7,54 @@ void main() {
   group('compile', () {
     test('base 0', () => testParseNode());
     test('base rand', () => testParseNode(Random().nextInt(1 << 10)));
+    test('parse macro with label', () => testParseMacroWithLabel());
   });
+}
+
+void testParseMacroWithLabel() {
+  final base = 0;
+  final input = '''
+MAIN    START
+        LAD     GR1,5
+        LAD     GR2,0
+LOOP    LAD     GR2,1,GR2
+        CPL     GR2,GR1
+        JZE     BREAK
+        JUMP    LOOP
+BREAK   OUT     OUTBUF,5
+        RET
+OUTBUF  DC      '12345'
+        END
+''';
+
+  final expectCode = <int>[
+    0x1210, // 0
+    5,
+    0x1220, // 2
+    0,
+    0x1222, // 4
+    1,
+    0x4521, // 6
+    0x6300,
+    base + 11, // 8
+    0x6400,
+    base + 4, // 10
+    0x1210,
+    base + 18, // 12
+    0x1220,
+    5, // 14
+    0xf000,
+    2, //16
+    0x8100,
+    ...'12345'.runes.map((rune) => runeAsCode(rune) ?? 0).toList(),
+  ];
+
+  final result = Casl2.fromString(input).compile()..env.startPoint = base;
+  final code = result.code;
+  expect(code.length, equals(expectCode.length));
+  for (var i = 0; i < expectCode.length; i += 1) {
+    expect(code[i], equals(expectCode[i]));
+  }
 }
 
 void testParseNode([final int base = 0]) {
