@@ -1,3 +1,22 @@
+## 0.5.0-3
+bugfix casl2 parser.
+
+enable macro's label.
+e.g.
+```
+MAIN    START
+        LAD     GR1,5
+        LAD     GR2,0
+LOOP    LAD     GR2,1,GR2
+        CPL     GR2,GR1
+        JZE     BREAK
+        JUMP    LOOP
+BREAK   OUT     OUTBUF,5 // this label.
+        RET
+OUTBUF  DC      '12345'
+        END
+```
+
 ## 0.5.0-2
 0.5.0 preview version.
 Change Comet2's methods and fields.
