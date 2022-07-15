@@ -15,7 +15,7 @@ class ResourceState {
 
   ResourceState() {
     // TODO continue...
-    this._generalRegisters.addAll([
+    _generalRegisters.addAll([
       for (var i = 0; i < 8; i++)
         Register(
           'GR$i',
@@ -24,17 +24,17 @@ class ResourceState {
         ),
     ]);
 
-    this._stackPointer = Register(
+    _stackPointer = Register(
       'SP',
       () => resource.SP,
       (v) => resource.SP = v,
     );
-    this._programRegister = Register(
+    _programRegister = Register(
       'PR',
       () => resource.PR,
       (v) => resource.PR = v,
     );
-    this._flagRegister.addAll([
+    _flagRegister.addAll([
       Register(
         'OF',
         () => resource.OF ? 1 : 0,
@@ -77,18 +77,17 @@ class ResourceState {
         'general registers',
         Element.div()
           ..nodes = [
-            for (final r in this._generalRegisters) r.render(),
+            for (final r in _generalRegisters) r.render(),
           ],
       )..id = 'general-registers',
-      contentBox('stack pointer', this._stackPointer.render())
-        ..id = 'stack-pointer',
-      contentBox('program register', this._programRegister.render())
+      contentBox('stack pointer', _stackPointer.render())..id = 'stack-pointer',
+      contentBox('program register', _programRegister.render())
         ..id = 'program-register',
       contentBox(
         'flag register',
         Element.div()
           ..nodes = [
-            for (final r in this._flagRegister) r.render(),
+            for (final r in _flagRegister) r.render(),
           ],
       )..id = 'flag-register',
     ];

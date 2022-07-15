@@ -14,14 +14,14 @@ class Register {
   });
 
   /// Get mask bits.
-  int get maskBits => (-1).toUnsigned(this.bits);
+  int get maskBits => (-1).toUnsigned(bits);
 
   /// Get [value].
-  int get value => this._value;
+  int get value => _value;
 
   /// Get [signed] value.
-  int get signed => this._value.toSigned(this.bits);
+  int get signed => _value.toSigned(bits);
 
   /// Set [value].
-  void set value(int value) => this._value = value & this.maskBits;
+  set value(int value) => _value = value & maskBits;
 }

@@ -3,6 +3,7 @@ import 'package:tiamat/casl2.dart';
 import 'package:tiamat/comet2.dart';
 
 class DeviceCLI extends Device {
+  @override
   final input = () {
     final list = [
       'hello, world',

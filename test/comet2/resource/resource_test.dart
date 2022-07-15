@@ -94,10 +94,10 @@ void main() {
     for (var i = 0; i < 1 << 3; i++) {
       test('set/get flags', () {
         final r = Resource();
-        int val = 0;
-        bool of = false;
-        bool sf = false;
-        bool zf = false;
+        var val = 0;
+        var of = false;
+        var sf = false;
+        var zf = false;
 
         if (i & Flag.overflow > 0) {
           of = true;

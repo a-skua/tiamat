@@ -1,7 +1,5 @@
 import 'dart:html';
 
-import 'package:tiamat/tiamat.dart';
-
 typedef GetR = int Function();
 typedef SetR = void Function(int v);
 
@@ -23,17 +21,19 @@ class Register {
   final values = Element.div()..classes.add('register-values');
 
   Element render() {
-    for (var i = 0; i < this.bits; i++) {
-      this._volumes.add(CheckboxInputElement()..id = '$name.$i');
+    for (var i = 0; i < bits; i++) {
+      _volumes.add(CheckboxInputElement()..id = '$name.$i');
     }
     final element = Element.div()
       ..classes.add('register')
       ..nodes = [
-        Element.div()..classes.add('register-name')..nodes.add(Text(name)),
+        Element.div()
+          ..classes.add('register-name')
+          ..nodes.add(Text(name)),
         Element.div()
           ..classes.add('register-bits')
           ..nodes = [
-            for (final checkbox in this._volumes.reversed)
+            for (final checkbox in _volumes.reversed)
               Element.div()
                 ..classes.add('register-bit')
                 ..nodes = [
@@ -46,40 +46,40 @@ class Register {
                       {
                         final p = checkbox.id.replaceFirst('$name.', '');
                         final maskBit = 1 << int.parse(p);
-                        final v = this.getR();
+                        final v = getR();
                         if (checked) {
-                          this.setR(v | maskBit);
+                          setR(v | maskBit);
                         } else {
-                          this.setR(v & (maskBit ^ -1));
+                          setR(v & (maskBit ^ -1));
                         }
                       }
-                      this.update();
+                      update();
                     }),
                 ]
           ],
-        this.values,
+        values,
       ];
-    this.update();
+    update();
 
     return element;
   }
 
   void update() {
-    final v = this.getR();
+    final v = getR();
 
-    this.values.nodes = [
+    values.nodes = [
       Element.div()
         ..classes.add('register-value')
         ..nodes.add(Text(v.toString())),
       Element.div()
         ..classes.add('register-value-signed')
         ..nodes = [
-          if (hasSigned) Text(v.toSigned(this.bits).toString()),
+          if (hasSigned) Text(v.toSigned(bits).toString()),
         ],
     ];
-    for (var i = 0; i < this.bits; i++) {
+    for (var i = 0; i < bits; i++) {
       final maskBit = 1 << i;
-      this._volumes[i].checked = (v & maskBit) > 0;
+      _volumes[i].checked = (v & maskBit) > 0;
     }
   }
 }

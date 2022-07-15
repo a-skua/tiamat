@@ -14,20 +14,20 @@ class FlagRegister extends Register {
   }) : super(name, bits: 3);
 
   /// Get state of overflow flag.
-  bool get isOverflow => this.value & Flag.overflow > 0;
+  bool get isOverflow => value & Flag.overflow > 0;
 
   /// Get state of sign flag.
-  bool get isSign => this.value & Flag.sign > 0;
+  bool get isSign => value & Flag.sign > 0;
 
   /// Get state of zero flag.
-  bool get isZero => this.value & Flag.zero > 0;
+  bool get isZero => value & Flag.zero > 0;
 
   /// Get state of overflow flag.
-  bool get isNotOverflow => !this.isOverflow;
+  bool get isNotOverflow => !isOverflow;
 
   /// Get state of sign flag.
-  bool get isNotSign => !this.isSign;
+  bool get isNotSign => !isSign;
 
   /// Get state of zero flag.
-  bool get isNotZero => !this.isZero;
+  bool get isNotZero => !isZero;
 }

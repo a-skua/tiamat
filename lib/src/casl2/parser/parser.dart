@@ -35,6 +35,7 @@ class Parser implements ParserInterface {
     return Parser(_SimpleLexer(tokens));
   }
 
+  @override
   Node nextStmt(Node parent, Env env) {
     var token = _lexer.nextToken();
 

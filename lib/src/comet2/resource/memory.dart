@@ -18,14 +18,14 @@ class Memory {
     int length = 0x10000,
     this.bits = 16,
   }) {
-    this._values = List.filled(length, 0);
+    _values = List.filled(length, 0);
   }
 
   /// Get mask bits.
-  int get maskBits => (-1).toUnsigned(this.bits);
+  int get maskBits => (-1).toUnsigned(bits);
 
   /// Get memory [length].
-  int get length => this._values.length;
+  int get length => _values.length;
 
   /// Set [values] on memory.
   void setAll(final int address, final List<int> values) {
@@ -35,12 +35,11 @@ class Memory {
   }
 
   /// Get value from [address].
-  int operator [](final int address) =>
-      this._values[address % this._values.length];
+  int operator [](final int address) => _values[address % _values.length];
 
   /// Set [value] to [address].
   void operator []=(final int address, final int value) =>
-      this._values[address % this._values.length] = value & this.maskBits;
+      _values[address % _values.length] = value & maskBits;
 
   /// deprecated: To use operator.
   ///

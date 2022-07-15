@@ -4,7 +4,7 @@ class Editor {
   var _editor = TextAreaElement();
 
   Editor(final String initCode) {
-    this._editor = TextAreaElement()
+    _editor = TextAreaElement()
       ..classes.add('editor')
       ..nodes.add(Text(initCode))
       ..onKeyDown.listen((e) {
@@ -26,9 +26,9 @@ class Editor {
       });
   }
   Element render() {
-    return this._editor;
+    return _editor;
   }
 
-  String get value => this._editor.value ?? '';
-  void set value(String v) => this._editor.value = v;
+  String get value => _editor.value ?? '';
+  set value(String v) => _editor.value = v;
 }

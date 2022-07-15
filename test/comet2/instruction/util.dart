@@ -32,10 +32,10 @@ class TestData {
     this.fr = 0,
   });
 
-  Entity get r => this._r;
-  Entity get x => this._x;
-  Entity get r1 => this._r;
-  Entity get r2 => this._x;
+  Entity get r => _r;
+  Entity get x => _x;
+  Entity get r1 => _r;
+  Entity get r2 => _x;
 }
 
 int getX(final int r) {

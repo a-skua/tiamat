@@ -30,7 +30,7 @@ class Resource {
 
   @override
   String toString() {
-    String str = '';
+    var str = '';
     for (var i = 0; i < generalRegisters.length; i++) {
       str += 'GR$i: ${generalRegisters[i].value}, ';
     }
@@ -49,8 +49,7 @@ class Resource {
   /// final value = gr[0].value;
   /// ```
   @deprecated
-  int getGR(final int i) =>
-      this.generalRegisters[i % this.generalRegisters.length].value;
+  int getGR(final int i) => generalRegisters[i % generalRegisters.length].value;
 
   /// Deprecated: will be deleted the next mejor version.
   ///
@@ -62,7 +61,7 @@ class Resource {
   /// ```
   @deprecated
   bool setGR(final int i, final int val) {
-    this.generalRegisters[i % this.generalRegisters.length].value = val;
+    generalRegisters[i % generalRegisters.length].value = val;
     return true;
   }
 
@@ -75,7 +74,7 @@ class Resource {
   /// final value = sp.value;
   /// ```
   @deprecated
-  int get SP => this.stackPointer.value;
+  int get SP => stackPointer.value;
 
   /// Deprecated: will be deleted the next mejor version.
   ///
@@ -86,7 +85,7 @@ class Resource {
   /// sp.value = 0xffff;
   /// ```
   @deprecated
-  void set SP(final int val) => this.stackPointer.value = val;
+  set SP(final int val) => stackPointer.value = val;
 
   /// Deprecated: will be deleted the next major version.
   ///
@@ -97,7 +96,7 @@ class Resource {
   /// final value = pr.value;
   /// ```
   @deprecated
-  int get PR => this.programRegister.value;
+  int get PR => programRegister.value;
 
   /// Deprecated: will be deleted the next mejor version.
   ///
@@ -108,7 +107,7 @@ class Resource {
   /// pr.value = 0x6000;
   /// ```
   @deprecated
-  void set PR(final int val) => this.programRegister.value = val;
+  set PR(final int val) => programRegister.value = val;
 
   /// Deprecated: will be deleted the next mejor version.
   ///
@@ -119,7 +118,7 @@ class Resource {
   /// final value = fr.value;
   /// ```
   @deprecated
-  int get FR => this.flagRegister.value;
+  int get FR => flagRegister.value;
 
   /// Deprecated: will be deleted the next mejor version.
   ///
@@ -130,7 +129,7 @@ class Resource {
   /// fr.value = Flag.zero | Flag.sign;
   /// ```
   @deprecated
-  void set FR(final int val) => this.flagRegister.value = val;
+  set FR(final int val) => flagRegister.value = val;
 
   /// Deprecated: will be deleted the next mejor version.
   ///
@@ -143,7 +142,7 @@ class Resource {
   /// }
   /// ```
   @deprecated
-  bool get OF => this.flagRegister.isOverflow;
+  bool get OF => flagRegister.isOverflow;
 
   /// Deprecated: will be deleted the next mejor version.
   ///
@@ -156,7 +155,7 @@ class Resource {
   /// }
   /// ```
   @deprecated
-  bool get SF => this.flagRegister.isSign;
+  bool get SF => flagRegister.isSign;
 
   /// Deprecated: will be deleted the next mejor version.
   ///
@@ -169,7 +168,7 @@ class Resource {
   /// }
   /// ```
   @deprecated
-  bool get ZF => this.flagRegister.isZero;
+  bool get ZF => flagRegister.isZero;
 
   /// Deprecated: will be deleted the next mejor version.
   ///
@@ -183,8 +182,8 @@ class Resource {
   /// fr.value &= Flag.overflow ^ -1;
   /// ```
   @deprecated
-  void set OF(final bool f) {
-    final fr = this.flagRegister;
+  set OF(final bool f) {
+    final fr = flagRegister;
 
     if (f) {
       fr.value |= Flag.overflow;
@@ -205,8 +204,8 @@ class Resource {
   /// fr.value &= Flag.sign ^ -1;
   /// ```
   @deprecated
-  void set SF(final bool f) {
-    final fr = this.flagRegister;
+  set SF(final bool f) {
+    final fr = flagRegister;
 
     if (f) {
       fr.value |= Flag.sign;
@@ -227,8 +226,8 @@ class Resource {
   /// fr.value &= Flag.zero ^ -1;
   /// ```
   @deprecated
-  void set ZF(final bool f) {
-    final fr = this.flagRegister;
+  set ZF(final bool f) {
+    final fr = flagRegister;
 
     if (f) {
       fr.value |= Flag.zero;

@@ -20,7 +20,7 @@ class ControlPanel {
     required ClearAll clearAll,
     required ClearIO clearIO,
   }) {
-    this._element = Element.div()
+    _element = Element.div()
       ..nodes = [
         Element.tag('h1')..nodes.add(Text('COMET2/CASL2 Emulator.')),
         ButtonElement()
@@ -48,6 +48,6 @@ class ControlPanel {
   }
 
   Element render() {
-    return this._element;
+    return _element;
   }
 }

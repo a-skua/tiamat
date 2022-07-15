@@ -72,7 +72,7 @@ class Result {
     this.statements, {
     required this.env,
     required this.errors,
-    Statement? this.start,
+    this.start,
   });
 
   // Error
@@ -87,5 +87,6 @@ class Result {
         return all;
       });
 
+  @override
   String toString() => statements.join(',');
 }

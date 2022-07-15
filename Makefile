@@ -1,11 +1,19 @@
-fmt:
-	dartfmt -w ./
+.PHONY: test
 
-tests:
-	pub run test
+init:
+	dart pub global activate webdev
+
+fmt:
+	dart format .
+
+test:
+	dart test
 
 serve:
 	webdev serve
 
 docs:
-	dartdoc
+	dart doc
+
+fix:
+	dart fix --dry-run

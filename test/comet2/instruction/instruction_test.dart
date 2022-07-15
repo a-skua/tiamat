@@ -1,9 +1,5 @@
 import 'dart:math';
 
-import 'package:tiamat/src/comet2/instruction/instruction.dart';
-import 'package:tiamat/src/comet2/resource.dart';
-import 'package:test/test.dart';
-
 void main() {
   final rand = Random();
 
