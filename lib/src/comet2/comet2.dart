@@ -25,16 +25,18 @@ Duration getDuration([ms = 0]) {
   return Duration(milliseconds: ms);
 }
 
+typedef LoadPoint = int;
+
 /// comet2 interface
 abstract class Comet2Interface {
   /// delay milliseconds
   int delay = 0;
 
   /// computing
-  Future<Resource> run([Status s]);
+  Future<Resource> run([Status]);
 
   /// load code on compute
-  void load(Result r);
+  void load(LoadPoint start, Result result);
 }
 
 /// implements interface
@@ -87,11 +89,9 @@ class Comet2 implements Comet2Interface {
   set delay(final int ms) => _delay = getDuration(ms);
 
   @override
-  void load(final Result result) {
-    final start = result.env.startPoint;
-    resource.memory.setAll(start, result.code);
-    resource.programRegister.value =
-        result.start?.position ?? result.env.startPoint;
+  void load(final int start, final Result result) {
+    resource.memory.setAll(start, result.code(start));
+    resource.programRegister.value = start;
     resource.stackPointer.value = 0xffff; // reset.
   }
 
@@ -133,8 +133,8 @@ class Comet2 implements Comet2Interface {
   bool get _isExit => resource.stackPointer.value == 0;
 
   /// load nad run
-  Future<Resource> loadAndRun(final Result result) async {
-    load(result);
+  Future<Resource> loadAndRun(LoadPoint start, Result result) async {
+    load(start, result);
     await run();
     return resource;
   }

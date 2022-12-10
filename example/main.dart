@@ -77,16 +77,6 @@ MAIN    START
     }
     return;
   }
-  final code = result.code;
-  final stmts = result.statements;
-
-  // Print any...
-  print(stmts);
-  print('\nparse statement:\n');
-  for (final stmt in stmts) {
-    print(stmt.toStringWithIndent(prefix: '> '));
-  }
-  print('\ncode:\n$code\n');
 
   final comet2 = Comet2(
     onUpdate: (final r) {
@@ -99,7 +89,9 @@ MAIN    START
     ..device = DeviceCLI()
     ..delay = 10;
 
-  comet2.loadAndRun(result).then((final r) {
+  const loadPosition = 100;
+
+  comet2.loadAndRun(loadPosition, result).then((final r) {
     print('exit');
     print(r);
   });
@@ -113,7 +105,7 @@ void syntaxHighlight(final String asm) {
   const red = 196;
   const gray = 240;
 
-  final lexer = Lexer(asm.runes);
+  final lexer = ImplLexer(asm.runes);
 
   var str = '';
   while (!lexer.isLast) {

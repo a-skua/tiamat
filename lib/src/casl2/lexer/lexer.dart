@@ -36,12 +36,15 @@ enum ExpectedStatus {
   eol,
 }
 
-abstract class LexerInterface {
+abstract class Lexer {
   Token nextToken();
+  void keepToken(Token token);
 }
 
 /// lexical analysis.
-class Lexer implements LexerInterface {
+class ImplLexer implements Lexer {
+  final _keepToken = <Token>[];
+
   late final List<int> _runes;
   var _currentIndex = 0;
   var _currentLineNumber = 1;
@@ -50,16 +53,20 @@ class Lexer implements LexerInterface {
   /// lexical state.
   var _expectedStatus = ExpectedStatus.label;
 
-  Lexer(Iterable<int> runes) {
+  ImplLexer(Iterable<int> runes) {
     _runes = runes.toList();
   }
 
-  factory Lexer.fromString(String src) {
-    return Lexer(src.runes);
+  factory ImplLexer.fromString(String src) {
+    return ImplLexer(src.runes);
   }
 
   @override
   Token nextToken() {
+    if (_keepToken.isNotEmpty) {
+      return _keepToken.removeLast();
+    }
+
     if (isLast) {
       return tokenEOF;
     }
@@ -202,6 +209,9 @@ class Lexer implements LexerInterface {
         return eol;
     }
   }
+
+  @override
+  void keepToken(Token token) => _keepToken.add(token);
 
   Token _getSpace() {
     final start = _currentIndex;

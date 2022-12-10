@@ -2,124 +2,234 @@ import '../ast/ast.dart';
 import '../lexer/lexer.dart';
 import '../token/token.dart';
 import './util.dart';
-import './macro.dart';
+import './state.dart';
+import '../typedef.dart';
 
-class _SimpleLexer implements LexerInterface {
-  final List<Token> _tokens;
-  var _currentIndex = 0;
+export './state.dart';
 
-  _SimpleLexer(this._tokens);
-
-  @override
-  Token nextToken() {
-    if (_currentIndex >= _tokens.length) {
-      return _tokens.last;
-    }
-
-    final token = _tokens[_currentIndex];
-    _currentIndex += 1;
-    return token;
-  }
+abstract class Parser {
+  Result<Node, ParseError> nextNode(Node? parent, State state);
 }
 
-abstract class ParserInterface {
-  Node nextStmt(Node parent, Env env);
-}
+class ImplParser implements Parser {
+  final Lexer _lexer;
 
-class Parser implements ParserInterface {
-  final LexerInterface _lexer;
+  ImplParser(this._lexer);
 
-  Parser(this._lexer);
-
-  factory Parser.fromTokens(List<Token> tokens) {
-    return Parser(_SimpleLexer(tokens));
-  }
-
-  @override
-  Node nextStmt(Node parent, Env env) {
+  void _skipBlankToken() {
     var token = _lexer.nextToken();
-
-    // FIXME skip empty
     while (token.type == TokenType.space ||
         token.type == TokenType.eol ||
         token.type == TokenType.comment) {
       token = _lexer.nextToken();
     }
+    _lexer.keepToken(token);
+  }
 
-    if (token.type == TokenType.eof) {
-      return End();
+  void _skipSpaceToken() {
+    var token = _lexer.nextToken();
+    while (token.type == TokenType.space) {
+      token = _lexer.nextToken();
     }
+    _lexer.keepToken(token);
+  }
 
-    Token? label;
-    Token? opecode;
-    var operand = <Token>[];
+  void _skipTokenOfLine() {
+    var token = _lexer.nextToken();
+    while (token.type != TokenType.error &&
+        token.type != TokenType.eol &&
+        token.type != TokenType.eof) {
+      token = _lexer.nextToken();
+    }
+    _lexer.keepToken(token);
+  }
+
+  bool _isEnd() {
+    final token = _lexer.nextToken();
+    _lexer.keepToken(token);
+    return token.type == TokenType.eof;
+  }
+
+  Result<Token?, ParseError> _getLabel(Node? parent) {
+    _skipSpaceToken();
+    final token = _lexer.nextToken();
+    switch (token.type) {
+      case TokenType.label:
+        return Result.ok(token);
+      case TokenType.error:
+        final error = token as ErrorToken;
+
+        // skip line
+        _skipTokenOfLine();
+
+        return Result.err(ParseError(
+          '[SYNTAX ERROR] ${error.error}',
+          start: error.start,
+          end: error.end,
+          lineStart: error.lineStart,
+          lineNumber: error.lineNumber,
+        ));
+      default:
+        _lexer.keepToken(token);
+        return Result.ok(null);
+    }
+  }
+
+  Result<Token, ParseError> _getOpecode(Node? parent) {
+    _skipSpaceToken();
+    final token = _lexer.nextToken();
+    switch (token.type) {
+      case TokenType.opecode:
+        return Result.ok(token);
+      case TokenType.error:
+        final error = token as ErrorToken;
+
+        // skip line
+        _skipTokenOfLine();
+
+        return Result.err(ParseError(
+          '[SYNTAX ERROR] ${error.error}',
+          start: error.start,
+          end: error.end,
+          lineStart: error.lineStart,
+          lineNumber: error.lineNumber,
+        ));
+      default:
+        // skip line
+        _skipTokenOfLine();
+
+        return Result.err(ParseError(
+          '[SYNTAX ERROR] Unexpected token: $token',
+          start: token.start,
+          end: token.end,
+          lineStart: token.lineStart,
+          lineNumber: token.lineNumber,
+        ));
+    }
+  }
+
+  Result<List<Token>, ParseError> _getOperand(Node? parent) {
+    final operand = <Token>[];
+
+    loop:
     while (true) {
+      final token = _lexer.nextToken();
       switch (token.type) {
-        case TokenType.label:
-          label = token;
-          break;
-        case TokenType.opecode:
-          opecode = token;
-          break;
         case TokenType.space:
         case TokenType.separation:
         case TokenType.comment:
           break;
+        case TokenType.label:
+        case TokenType.opecode:
+          // skip line
+          _skipTokenOfLine();
+
+          return Result.err(ParseError(
+            '[SYNTAX ERROR] Unexpected token: $token',
+            start: token.start,
+            end: token.end,
+            lineStart: token.lineStart,
+            lineNumber: token.lineNumber,
+          ));
         case TokenType.error:
           final error = token as ErrorToken;
 
           // skip line
-          token = _lexer.nextToken();
-          while (token.type != TokenType.error &&
-              token.type != TokenType.eol &&
-              token.type != TokenType.eof) {
-            token = _lexer.nextToken();
-          }
+          _skipTokenOfLine();
 
-          return ErrorNode(
+          return Result.err(ParseError(
             '[SYNTAX ERROR] ${error.error}',
             start: error.start,
             end: error.end,
             lineStart: error.lineStart,
             lineNumber: error.lineNumber,
-          );
+          ));
         case TokenType.eof:
         case TokenType.eol:
-          return parseNode(
-            parent,
-            label,
-            opecode,
-            operand,
-            env,
-            current: token,
-          );
+          break loop;
         default:
           operand.add(token);
       }
-      token = _lexer.nextToken();
     }
+    return Result.ok(operand);
+  }
+
+  Result<Node, ParseError> _makeNode(Node? parent, State state) {
+    _skipBlankToken();
+    if (_isEnd()) return Result.ok(EndNode(parent));
+
+    final resultLabel = _getLabel(parent);
+    if (resultLabel.isError) return Result.err(resultLabel.error);
+    final label = resultLabel.ok;
+
+    final resultOpecode = _getOpecode(parent);
+    if (resultOpecode.isError) return Result.err(resultOpecode.error);
+    final opecode = resultOpecode.ok;
+
+    final resultOperand = _getOperand(parent);
+    if (resultOperand.isError) return Result.err(resultOperand.error);
+    final operand = resultOperand.ok;
+
+    final stmt = StatementNode(
+      parent,
+      label,
+      opecode,
+      operand,
+      (parent, label, opecode, operand) =>
+          _parse(parent, label, opecode, operand, state),
+    );
+
+    if (label != null) {
+      state.setLabel(stmt);
+    }
+    return Result.ok(stmt);
+  }
+
+  /// make block-node
+  Result<Node, ParseError> _makeBlockNode(Node parent, State state) {
+    if (parent.opecode != 'START') {
+      return Result.ok(parent);
+    }
+
+    final nodeList = [parent];
+    while (true) {
+      final resultNode = _makeNode(parent, state);
+      if (resultNode.isError) return resultNode;
+      final node = resultNode.ok;
+
+      parent = node;
+      if (node is EndNode) {
+        return Result.ok(node);
+      }
+
+      nodeList.add(node);
+
+      if (node.opecode == 'END') {
+        break;
+      }
+    }
+    return Result.ok(BlockNode(nodeList));
+  }
+
+  /// return a parsed result.
+  @override
+  Result<Node, ParseError> nextNode(Node? parent, State state) {
+    final result = _makeNode(parent, state);
+    if (result.isError) {
+      return result;
+    }
+
+    if (result.ok is EndNode) {
+      return result;
+    }
+
+    return _makeBlockNode(result.ok, State.block(state));
   }
 }
 
-/// parse to node
-Node parseNode(
-  Node parent,
-  Token? label,
-  Token? opecode,
-  List<Token> operand,
-  Env env, {
-  required Token current,
-}) {
-  if (opecode == null) {
-    return ErrorNode(
-      '[SYNTAX ERROR] opecode not found.',
-      start: current.end,
-      end: current.end + 1,
-      lineStart: current.lineStart,
-      lineNumber: current.lineNumber,
-    );
-  }
-
+/// parser
+Result<List<Code>, ParseError> _parse(Node? parent, Token? label, Token opecode,
+    List<Token> operand, State state) {
   switch (opecode.runesAsString) {
     case 'LD':
     case 'ADDA':
@@ -131,12 +241,12 @@ Node parseNode(
     case 'XOR':
     case 'CPA':
     case 'CPL':
-      return parseGeneralNode(
+      return parseGeneral(
         parent,
         label,
         opecode,
         operand,
-        env,
+        state,
       );
     case 'ST':
     case 'LAD':
@@ -144,12 +254,12 @@ Node parseNode(
     case 'SRA':
     case 'SLL':
     case 'SRL':
-      return parseRadrxNode(
+      return parseRadrx(
         parent,
         label,
         opecode,
         operand,
-        env,
+        state,
       );
     case 'JMI':
     case 'JNZ':
@@ -160,102 +270,37 @@ Node parseNode(
     case 'PUSH':
     case 'CALL':
     case 'SVC':
-      return parseAdrxNode(
+      return parseAdrx(
         parent,
         label,
         opecode,
         operand,
-        env,
+        state,
       );
     case 'POP':
-      return parseRNode(
+      return parseR(
         parent,
         label,
         opecode,
         operand,
-        env,
+        state,
       );
     case 'RET':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: [LiteralCode(0x8100)],
-      );
+      return Result.ok([Code((_) => 0x8100)]);
     case 'START':
     case 'END':
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-      );
+      return Result.ok([]);
     case 'DC':
-      // TODO error handling!
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseDC(operand, env),
-      );
+      return parseDC(parent, operand, state);
     case 'DS':
-      // TODO error handling!
-      return Statement(
-        parent,
-        opecode,
-        operand,
-        label: label,
-        code: _parseDS(operand, env),
-      );
+      return parseDS(parent, operand, state);
     default:
       return parseMacro(
         parent,
         label,
         opecode,
         operand,
-        env,
+        state,
       );
   }
-}
-
-Node parseMacro(
-  final Node parent,
-  final Token? label,
-  final Token opecode,
-  final List<Token> operand,
-  final Env env,
-) {
-  final macro = macros[opecode.runesAsString];
-  if (macro == null) {
-    return ErrorNode(
-      '[SYNTAX ERROR] ${opecode.runesAsString} not found.',
-      start: opecode.start,
-      end: opecode.end,
-      lineStart: opecode.lineStart,
-      lineNumber: opecode.lineNumber,
-    );
-  }
-
-  return macro(
-    parent,
-    label,
-    opecode,
-    operand,
-    env,
-  );
-}
-
-List<Code> _parseDC(List<Token> operand, Env env) {
-  final result = <Code>[];
-  for (final token in operand) {
-    result.addAll(tokenToCode(token, env));
-  }
-  return result;
-}
-
-List<Code> _parseDS(List<Token> operand, Env env) {
-  return List.generate(
-      int.parse(operand[0].runesAsString), (i) => LiteralCode(0));
 }

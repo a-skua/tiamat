@@ -1,92 +1,61 @@
 import './lexer/lexer.dart';
+import './ast/ast.dart' hide Parser;
 import './parser/parser.dart';
-import './ast/ast.dart';
 
 /// CASL2 instance.
 class Casl2 {
-  final ParserInterface _parser;
+  final _state = State();
+  final Parser _parser;
 
   Casl2(this._parser);
 
   factory Casl2.fromString(final String src) =>
-      Casl2(Parser(Lexer.fromString(src)));
+      Casl2(ImplParser(ImplLexer.fromString(src)));
 
   Result compile() {
-    final starts = <Statement>[];
-    Statement? start;
-    final stmts = <Statement>[];
-    final env = Env();
-    final errors = <ErrorNode>[];
+    final errors = <ParseError>[];
+    final nodes = <Node>[];
+    Node? parent;
 
-    Node parent = Root();
     while (true) {
-      final node = _parser.nextStmt(parent, env);
-      if (node is End) {
-        if (start == null) {
-          if (starts.isNotEmpty) {
-            start = starts.first;
-          } else if (stmts.isNotEmpty) {
-            start = stmts.first;
-          }
-        }
-
-        return Result(
-          stmts,
-          env: env,
-          errors: errors,
-          start: start,
-        );
-      }
-
-      if (node is ErrorNode) {
-        errors.add(node);
+      final result = _parser.nextNode(parent, _state);
+      if (result.isError) {
+        errors.add(result.error);
         continue;
       }
 
-      final stmt = node as Statement;
-      if (stmt.label.isNotEmpty) {
-        env.labels[stmt.label] = stmt;
-      }
-      if (stmt.opecode == 'START') {
-        starts.add(stmt);
-        if (stmt.label == env.entryLabel) {
-          start = stmt;
-        }
-      }
-
-      stmts.add(stmt);
-      parent = stmt;
+      final node = result.ok;
+      if (node is EndNode) break;
+      parent = node;
+      nodes.add(node);
     }
+
+    final code = <Code>[];
+    for (final node in nodes) {
+      final result = node.code;
+      if (result.isError) {
+        errors.add(result.error);
+        continue;
+      }
+      for (final c in result.ok) {
+        code.add(c);
+      }
+    }
+
+    return Result(code, errors);
   }
 }
 
 /// Parser return this Node
 class Result {
-  final Env env;
-  final List<ErrorNode> errors;
-  final List<Statement> statements;
-  // TODO Statement? to Statement
-  final Statement? start;
+  final List<Code> _code;
+  final List<ParseError> _errors;
 
-  Result(
-    this.statements, {
-    required this.env,
-    required this.errors,
-    this.start,
-  });
+  Result(this._code, this._errors);
 
-  // Error
-  bool get hasError => errors.isNotEmpty;
+  bool get hasError => _errors.isNotEmpty;
 
-  // code size
-  int get size =>
-      statements.map((stmt) => stmt.size).reduce((sum, size) => sum + size);
+  List<ParseError> get errors => _errors;
 
-  List<int> get code => statements.map((stmt) => stmt.code).reduce((all, code) {
-        all.addAll(code);
-        return all;
-      });
-
-  @override
-  String toString() => statements.join(',');
+  List<int> code(int base) => _code.map((c) => c.value(base)).toList();
 }

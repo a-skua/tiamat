@@ -1,235 +1,161 @@
 import '../token/token.dart';
+import '../typedef.dart';
 
-// Lang environment
-class Env {
-  int startPoint = 100;
-  String entryLabel = 'MAIN';
-  final labels = <String, Statement>{};
+/// Label of CASL2
+typedef Label = String;
 
-  int get entryPoint => labels[entryLabel]?.position ?? startPoint;
+/// Opecode of CASL2
+typedef Opecode = String;
+
+/// Code of COMET2
+class Code {
+  final int Function(Position) _value;
+
+  Code(this._value);
+
+  int value([Position base = 0]) => _value(base);
 }
 
-abstract class Code {
-  int get value;
+/// Size of Node
+typedef Size = int;
+
+/// Position of Memory on COMET2
+typedef Position = int;
+
+//// Error of Parser
+class ParseError {
+  final String message;
+  final int start;
+  final int end;
+  final int lineStart;
+  final int lineNumber;
+
+  ParseError(
+    this.message, {
+    required this.start,
+    required this.end,
+    required this.lineStart,
+    required this.lineNumber,
+  });
 
   @override
-  String toString() => '$value';
+  String toString() => 'L$lineNumber: $message';
 }
 
-class LiteralCode implements Code {
-  final int _value;
-  const LiteralCode(this._value);
+/// Parser of Code
+typedef Parser = Result<List<Code>, ParseError> Function(
+    Node? parent, Token? label, Token opecode, List<Token> operand);
 
-  @override
-  int get value => _value;
-}
-
-class LabelCode implements Code {
-  final String _label;
-  final int _base;
-  final Env _env;
-
-  const LabelCode(this._label, this._base, this._env);
-
-  @override
-  int get value => _getValue();
-
-  int _getValue() {
-    final stmt = _env.labels[_label];
-    if (stmt == null) {
-      return _base + _env.startPoint;
-    } else {
-      return stmt.position + _base + _env.startPoint;
-    }
-  }
-}
-
+// Node of CASL2
 abstract class Node {
-  List<int> get code;
-
-  int get size;
+  Label? get label;
+  Opecode? get opecode;
+  Result<List<Code>, ParseError> get code;
+  Size get size;
+  Position get position;
 }
 
-/// Empty node.
-class Empty implements Node {
-  @override
-  List<int> get code => [];
+class _Empty implements Node {
+  final Node? _parent;
+
+  _Empty(this._parent);
 
   @override
-  int get size => 0;
+  Label? get label => null;
+
+  @override
+  Opecode? get opecode => null;
+
+  @override
+  Result<List<Code>, ParseError> get code => Result.ok([]);
+
+  @override
+  Size get size => 0;
+
+  @override
+  Position get position => (_parent?.position ?? 0) + (_parent?.size ?? 0);
+
+  @override
+  String toString() => '()';
 }
 
-/// Root merger node.
-class Root extends Empty {}
+/// End of Node
+class EndNode extends _Empty {
+  EndNode(Node? parent) : super(parent);
+}
 
-/// End marker node.
-class End extends Empty {}
-
-class Statement implements Node {
-  final Node _parent;
-  late final Token? _label;
+/// Statement of CASL2.
+class StatementNode implements Node {
+  final Node? _parent;
+  final Token? _label;
   final Token _opecode;
   final List<Token> _operand;
-  late final List<Code> _code; // TODO!
+  final Parser _parser;
 
-  Statement(
+  StatementNode(
     this._parent,
+    this._label,
     this._opecode,
-    this._operand, {
-    Token? label,
-    List<Code>? code,
-  }) {
-    _label = label;
-
-    if (code == null) {
-      _code = [];
-    } else {
-      _code = code;
-    }
-  }
-
-  String get label => _label?.runesAsString ?? '';
-
-  String get opecode => _opecode.runesAsString;
-
-  String get operand => _operand.map((token) => token.runesAsString).join(',');
-
-  int get position => _getPosition();
-
-  int _getPosition() {
-    final parent = _parent;
-    if (parent is Statement) {
-      return parent.position + parent.size;
-    } else {
-      return 0;
-    }
-  }
+    this._operand,
+    this._parser,
+  );
 
   @override
-  List<int> get code => _code.map((code) => code.value).toList();
+  Label? get label => _label?.runesAsString;
 
   @override
-  int get size => _code.length;
+  Opecode? get opecode => _opecode.runesAsString;
+
+  @override
+  Result<List<Code>, ParseError> get code =>
+      _parser(_parent, _label, _opecode, _operand);
+
+  @override
+  Size get size => code.isOk ? code.ok.length : 0;
+
+  @override
+  Position get position => (_parent?.position ?? 0) + (_parent?.size ?? 0);
 
   @override
   String toString() {
-    // final operand =
-    //     List<String>.generate(_operand.length, (i) => _operand[i].toString());
-
     final stmt = <String>[
-      if (_label != null) _label.toString(),
+      if (label != null) 'LABEL($label)',
       _opecode.toString(),
       if (_operand.isNotEmpty) 'OPERAND(${_operand.join(',')})',
     ];
 
     return 'STATEMENT(${stmt.join(',')})';
   }
-
-  String toStringWithIndent({final prefix = ''}) {
-    const indent = '    ';
-    final stmt = <String>[
-      if (_label != null) _label.toString(),
-      _opecode.toString(),
-      if (_operand.isNotEmpty)
-        'OPERAND(\n'
-            '${_operand.map((final str) => '$prefix$indent$indent$str').join(',\n')}\n'
-            '$prefix$indent)',
-    ];
-
-    return '${prefix}STATEMENT(\n'
-        '${stmt.map((final str) => '$prefix$indent$str').join(',\n')}\n'
-        '$prefix)';
-  }
 }
 
-class BlockStatement extends Statement {
-  final List<Statement> _statements;
+/// Block Node
+class BlockNode implements Node {
+  final List<Node> _nodeList;
 
-  BlockStatement(this._statements,
-      {required Node parent,
-      required Token opecode,
-      required List<Token> operand,
-      Token? label})
-      : super(parent, opecode, operand, label: label);
-
-  factory BlockStatement.onlyStatements(final List<Statement> stmts) {
-    return BlockStatement(
-      stmts,
-      parent: Root(),
-      opecode: Token(''.runes, TokenType.opecode),
-      operand: [],
-    );
-  }
+  BlockNode(this._nodeList);
 
   @override
-  String get label => _getLabel();
-
-  String _getLabel() {
-    for (final stmt in _statements) {
-      if (stmt.label.isNotEmpty) {
-        return stmt.label;
-      }
-    }
-    return '';
-  }
-
-  List<Node> get statements => List.from(_statements);
+  Label? get label => _nodeList.first.label;
 
   @override
-  List<int> get code =>
-      _statements.map((stmt) => stmt.code).reduce((all, code) {
-        all.addAll(code);
-        return all;
+  Opecode? get opecode => _nodeList.first.label;
+
+  @override
+  Result<List<Code>, ParseError> get code =>
+      _nodeList.map((node) => node.code).reduce((a, b) {
+        if (a.isError) return a;
+        if (b.isError) return b;
+
+        a.ok.addAll(b.ok);
+        return a;
       });
 
   @override
-  int get size =>
-      _statements.map((stmt) => stmt.size).reduce((sum, size) => sum + size);
+  Size get size => _nodeList.map((node) => node.size).reduce((a, b) => a + b);
 
   @override
-  String toString() => 'BLOCK(${_statements.join(',')})';
+  Position get position => _nodeList.first.position;
 
   @override
-  String toStringWithIndent({final prefix = ''}) {
-    const indent = '    ';
-    return '${prefix}BLOCK(\n'
-        '${_statements.map((stmt) => stmt.toStringWithIndent(prefix: '$prefix$indent')).join(',\n')}\n'
-        '$prefix)';
-  }
-}
-
-/// error
-class ErrorNode extends Node {
-  final String error;
-
-  /// errors [start] position.
-  final int start;
-
-  /// errors [end] position.
-  final int end;
-
-  /// errors [lineStart] position.
-  final int lineStart;
-
-  /// errors [lineNumber].
-  final int lineNumber;
-
-  ErrorNode(
-    this.error, {
-    this.start = 0,
-    this.end = 0,
-    this.lineStart = 0,
-    this.lineNumber = 1,
-  });
-
-  @override
-  List<int> get code => [];
-
-  @override
-  int get size => 0;
-
-  @override
-  String toString() {
-    return '(line $lineNumber) $error';
-  }
+  String toString() => 'BLOCK(${_nodeList.join(',')})';
 }

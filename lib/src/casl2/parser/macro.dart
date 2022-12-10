@@ -1,15 +1,17 @@
 import '../token/token.dart';
 import '../ast/ast.dart';
 import './util.dart';
+import './state.dart';
+import '../typedef.dart';
 
-final macros = <
+final macroList = <
     String,
-    Node Function(
-  Node parent,
+    Result<List<Code>, ParseError> Function(
+  Node? parent,
   Token? label,
   Token opecode,
   List<Token> operand,
-  Env env,
+  State state,
 )>{
   'IN': parseIN,
   'OUT': parseOUT,
@@ -17,297 +19,277 @@ final macros = <
   'RPOP': parseRPOP,
 };
 
-Node parseIN(
-  final Node parent,
+Result<List<Code>, ParseError> parseIN(
+  final Node? parent,
   final Token? label,
   final Token opecode,
   final List<Token> operand,
-  final Env env,
+  final State state,
 ) {
   if (operand.length != 2) {
-    return ErrorNode(
+    return Result.err(ParseError(
       '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 2 operands.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
       lineNumber: opecode.lineNumber,
-    );
+    ));
   }
 
   final buffer = operand[0];
   final length = operand[1];
 
   if (length.type != TokenType.hex && length.type != TokenType.dec) {
-    return ErrorNode(
+    return Result.err(ParseError(
       '[SYNTAX ERROR] ${length.runesAsString} wrong type. wants a number.',
       start: length.start,
       end: length.end,
       lineStart: length.lineStart,
       lineNumber: length.lineNumber,
-    );
+    ));
   }
 
-  final step1 = parseRadrxNode(
-    parent,
-    label,
-    Token('LAD'.runes, TokenType.opecode),
-    [Token('GR1'.runes, TokenType.gr), buffer],
-    env,
-  ) as Statement;
-  final step2 = parseRadrxNode(
-    step1,
-    null,
-    Token('LAD'.runes, TokenType.opecode),
-    [Token('GR2'.runes, TokenType.gr), length],
-    env,
-  ) as Statement;
-  final step3 = parseAdrxNode(
-    step2,
-    null,
-    Token('SVC'.runes, TokenType.opecode),
-    [Token('1'.runes, TokenType.dec)],
-    env,
-  ) as Statement;
+  return [
+    parseRadrx(
+      parent,
+      label,
+      Token('LAD'.runes, TokenType.opecode),
+      [Token('GR1'.runes, TokenType.gr), buffer],
+      state,
+    ),
+    parseRadrx(
+      parent,
+      null,
+      Token('LAD'.runes, TokenType.opecode),
+      [Token('GR2'.runes, TokenType.gr), length],
+      state,
+    ),
+    parseAdrx(
+      parent,
+      null,
+      Token('SVC'.runes, TokenType.opecode),
+      [Token('1'.runes, TokenType.dec)],
+      state,
+    ),
+  ].reduce((a, b) {
+    if (a.isError) return a;
+    if (b.isError) return b;
 
-  return BlockStatement(
-    [
-      step1,
-      step2,
-      step3,
-    ],
-    parent: parent,
-    opecode: opecode,
-    operand: operand,
-  );
+    a.ok.addAll(b.ok);
+    return a;
+  });
 }
 
-Node parseOUT(
-  final Node parent,
+Result<List<Code>, ParseError> parseOUT(
+  final Node? parent,
   final Token? label,
   final Token opecode,
   final List<Token> operand,
-  final Env env,
+  final State state,
 ) {
   if (operand.length != 2) {
-    return ErrorNode(
+    return Result.err(ParseError(
       '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 2 operands.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
       lineNumber: opecode.lineNumber,
-    );
+    ));
   }
 
   final buffer = operand[0];
   final length = operand[1];
 
   if (length.type != TokenType.hex && length.type != TokenType.dec) {
-    return ErrorNode(
+    return Result.err(ParseError(
       '[SYNTAX ERROR] ${length.runesAsString} wrong type. wants a number.',
       start: length.start,
       end: length.end,
       lineStart: length.lineStart,
       lineNumber: length.lineNumber,
-    );
+    ));
   }
 
-  final step1 = parseRadrxNode(
-    parent,
-    label,
-    Token('LAD'.runes, TokenType.opecode),
-    [Token('GR1'.runes, TokenType.gr), buffer],
-    env,
-  ) as Statement;
-  final step2 = parseRadrxNode(
-    step1,
-    null,
-    Token('LAD'.runes, TokenType.opecode),
-    [Token('GR2'.runes, TokenType.gr), length],
-    env,
-  ) as Statement;
-  final step3 = parseAdrxNode(
-    step2,
-    null,
-    Token('SVC'.runes, TokenType.opecode),
-    [Token('2'.runes, TokenType.dec)],
-    env,
-  ) as Statement;
+  return [
+    parseRadrx(
+      parent,
+      label,
+      Token('LAD'.runes, TokenType.opecode),
+      [Token('GR1'.runes, TokenType.gr), buffer],
+      state,
+    ),
+    parseRadrx(
+      parent,
+      null,
+      Token('LAD'.runes, TokenType.opecode),
+      [Token('GR2'.runes, TokenType.gr), length],
+      state,
+    ),
+    parseAdrx(
+      parent,
+      null,
+      Token('SVC'.runes, TokenType.opecode),
+      [Token('2'.runes, TokenType.dec)],
+      state,
+    ),
+  ].reduce((a, b) {
+    if (a.isError) return a;
+    if (b.isError) return b;
 
-  return BlockStatement(
-    [
-      step1,
-      step2,
-      step3,
-    ],
-    parent: parent,
-    opecode: opecode,
-    operand: operand,
-  );
+    a.ok.addAll(b.ok);
+    return a;
+  });
 }
 
-Node parseRPUSH(
-  final Node parent,
+Result<List<Code>, ParseError> parseRPUSH(
+  final Node? parent,
   final Token? label,
   final Token opecode,
   final List<Token> operand,
-  final Env env,
+  final State state,
 ) {
-  final step1 = parseAdrxNode(
-    parent,
-    label,
-    Token('PUSH'.runes, TokenType.opecode),
-    [
-      Token('0'.runes, TokenType.dec),
-      Token('GR1'.runes, TokenType.gr),
-    ],
-    env,
-  ) as Statement;
-  final step2 = parseAdrxNode(
-    step1,
-    null,
-    Token('PUSH'.runes, TokenType.opecode),
-    [
-      Token('0'.runes, TokenType.dec),
-      Token('GR2'.runes, TokenType.gr),
-    ],
-    env,
-  ) as Statement;
-  final step3 = parseAdrxNode(
-    step2,
-    null,
-    Token('PUSH'.runes, TokenType.opecode),
-    [
-      Token('0'.runes, TokenType.dec),
-      Token('GR3'.runes, TokenType.gr),
-    ],
-    env,
-  ) as Statement;
-  final step4 = parseAdrxNode(
-    step3,
-    null,
-    Token('PUSH'.runes, TokenType.opecode),
-    [
-      Token('0'.runes, TokenType.dec),
-      Token('GR4'.runes, TokenType.gr),
-    ],
-    env,
-  ) as Statement;
-  final step5 = parseAdrxNode(
-    step4,
-    null,
-    Token('PUSH'.runes, TokenType.opecode),
-    [
-      Token('0'.runes, TokenType.dec),
-      Token('GR5'.runes, TokenType.gr),
-    ],
-    env,
-  ) as Statement;
-  final step6 = parseAdrxNode(
-    step5,
-    null,
-    Token('PUSH'.runes, TokenType.opecode),
-    [
-      Token('0'.runes, TokenType.dec),
-      Token('GR6'.runes, TokenType.gr),
-    ],
-    env,
-  ) as Statement;
-  final step7 = parseAdrxNode(
-    step6,
-    null,
-    Token('PUSH'.runes, TokenType.opecode),
-    [
-      Token('0'.runes, TokenType.dec),
-      Token('GR7'.runes, TokenType.gr),
-    ],
-    env,
-  ) as Statement;
+  return [
+    parseAdrx(
+      parent,
+      label,
+      Token('PUSH'.runes, TokenType.opecode),
+      [
+        Token('0'.runes, TokenType.dec),
+        Token('GR1'.runes, TokenType.gr),
+      ],
+      state,
+    ),
+    parseAdrx(
+      parent,
+      null,
+      Token('PUSH'.runes, TokenType.opecode),
+      [
+        Token('0'.runes, TokenType.dec),
+        Token('GR2'.runes, TokenType.gr),
+      ],
+      state,
+    ),
+    parseAdrx(
+      parent,
+      null,
+      Token('PUSH'.runes, TokenType.opecode),
+      [
+        Token('0'.runes, TokenType.dec),
+        Token('GR3'.runes, TokenType.gr),
+      ],
+      state,
+    ),
+    parseAdrx(
+      parent,
+      null,
+      Token('PUSH'.runes, TokenType.opecode),
+      [
+        Token('0'.runes, TokenType.dec),
+        Token('GR4'.runes, TokenType.gr),
+      ],
+      state,
+    ),
+    parseAdrx(
+      parent,
+      null,
+      Token('PUSH'.runes, TokenType.opecode),
+      [
+        Token('0'.runes, TokenType.dec),
+        Token('GR5'.runes, TokenType.gr),
+      ],
+      state,
+    ),
+    parseAdrx(
+      parent,
+      null,
+      Token('PUSH'.runes, TokenType.opecode),
+      [
+        Token('0'.runes, TokenType.dec),
+        Token('GR6'.runes, TokenType.gr),
+      ],
+      state,
+    ),
+    parseAdrx(
+      parent,
+      null,
+      Token('PUSH'.runes, TokenType.opecode),
+      [
+        Token('0'.runes, TokenType.dec),
+        Token('GR7'.runes, TokenType.gr),
+      ],
+      state,
+    ),
+  ].reduce((a, b) {
+    if (a.isError) return a;
+    if (b.isError) return b;
 
-  return BlockStatement(
-    [
-      step1,
-      step2,
-      step3,
-      step4,
-      step5,
-      step6,
-      step7,
-    ],
-    parent: parent,
-    opecode: opecode,
-    operand: operand,
-  );
+    a.ok.addAll(b.ok);
+    return a;
+  });
 }
 
-Node parseRPOP(
-  final Node parent,
+Result<List<Code>, ParseError> parseRPOP(
+  final Node? parent,
   final Token? label,
   final Token opecode,
   final List<Token> operand,
-  final Env env,
+  final State state,
 ) {
-  final step1 = parseRNode(
-    parent,
-    label,
-    Token('POP'.runes, TokenType.opecode),
-    [Token('GR7'.runes, TokenType.gr)],
-    env,
-  ) as Statement;
-  final step2 = parseRNode(
-    step1,
-    null,
-    Token('POP'.runes, TokenType.opecode),
-    [Token('GR6'.runes, TokenType.gr)],
-    env,
-  ) as Statement;
-  final step3 = parseRNode(
-    step2,
-    null,
-    Token('POP'.runes, TokenType.opecode),
-    [Token('GR5'.runes, TokenType.gr)],
-    env,
-  ) as Statement;
-  final step4 = parseRNode(
-    step3,
-    null,
-    Token('POP'.runes, TokenType.opecode),
-    [Token('GR4'.runes, TokenType.gr)],
-    env,
-  ) as Statement;
-  final step5 = parseRNode(
-    step4,
-    null,
-    Token('POP'.runes, TokenType.opecode),
-    [Token('GR3'.runes, TokenType.gr)],
-    env,
-  ) as Statement;
-  final step6 = parseRNode(
-    step5,
-    null,
-    Token('POP'.runes, TokenType.opecode),
-    [Token('GR2'.runes, TokenType.gr)],
-    env,
-  ) as Statement;
-  final step7 = parseRNode(
-    step6,
-    null,
-    Token('POP'.runes, TokenType.opecode),
-    [Token('GR1'.runes, TokenType.gr)],
-    env,
-  ) as Statement;
+  return [
+    parseR(
+      parent,
+      label,
+      Token('POP'.runes, TokenType.opecode),
+      [Token('GR7'.runes, TokenType.gr)],
+      state,
+    ),
+    parseR(
+      parent,
+      null,
+      Token('POP'.runes, TokenType.opecode),
+      [Token('GR6'.runes, TokenType.gr)],
+      state,
+    ),
+    parseR(
+      parent,
+      null,
+      Token('POP'.runes, TokenType.opecode),
+      [Token('GR5'.runes, TokenType.gr)],
+      state,
+    ),
+    parseR(
+      parent,
+      null,
+      Token('POP'.runes, TokenType.opecode),
+      [Token('GR4'.runes, TokenType.gr)],
+      state,
+    ),
+    parseR(
+      parent,
+      null,
+      Token('POP'.runes, TokenType.opecode),
+      [Token('GR3'.runes, TokenType.gr)],
+      state,
+    ),
+    parseR(
+      parent,
+      null,
+      Token('POP'.runes, TokenType.opecode),
+      [Token('GR2'.runes, TokenType.gr)],
+      state,
+    ),
+    parseR(
+      parent,
+      null,
+      Token('POP'.runes, TokenType.opecode),
+      [Token('GR1'.runes, TokenType.gr)],
+      state,
+    ),
+  ].reduce((a, b) {
+    if (a.isError) return a;
+    if (b.isError) return b;
 
-  return BlockStatement(
-    [
-      step1,
-      step2,
-      step3,
-      step4,
-      step5,
-      step6,
-      step7,
-    ],
-    parent: parent,
-    opecode: opecode,
-    operand: operand,
-  );
+    a.ok.addAll(b.ok);
+    return a;
+  });
 }

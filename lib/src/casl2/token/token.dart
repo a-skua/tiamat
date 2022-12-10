@@ -8,7 +8,9 @@ enum TokenType {
   dec, // -32768 ~ 32767
   hex, // #0000 ~ FFFF
   string, // 'STRING'
+  // End of Line
   eol,
+  // End of File
   eof,
   error,
   separation, // ','

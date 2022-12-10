@@ -1,3 +1,8 @@
+## 0.5.0-4
+BIG BANG!
+Rewrite CASL2 Compiler.
+- The subroutine's scope is enabled.
+
 ## 0.5.0-3
 bugfix casl2 parser.
 
