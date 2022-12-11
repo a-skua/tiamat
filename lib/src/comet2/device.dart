@@ -1,9 +1,10 @@
-typedef Input = String Function();
+typedef Input = Future<String> Function();
 typedef Output = void Function(String);
 
 /// Interface.
 class Device {
-  Input input = () => 'hello, world';
+  final Input input;
+  final Output output;
 
-  Output output = (final String s) => print(s);
+  Device(this.input, this.output);
 }

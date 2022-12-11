@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// register shift right(arithmetic) effective address.
 /// Syntax: SRA r,adr,x
-void shiftRightArithmetic(final Resource r) {
+Future<void> shiftRightArithmetic(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

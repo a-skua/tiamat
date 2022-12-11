@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// register or effective address.
 /// Syntax: OR r,adr,x
-void or(final Resource r) {
+Future<void> or(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -30,7 +30,7 @@ void or(final Resource r) {
 /// That's one word instruction,
 /// 1st register or 2nd register.
 /// Syntax: OR r1,r2
-void orGR(final Resource r) {
+Future<void> orGR(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

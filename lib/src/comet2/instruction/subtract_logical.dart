@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// subtract(logical) effective address to register.
 /// Syntax: SUBL r,adr,x
-void subtractLogical(final Resource r) {
+Future<void> subtractLogical(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -30,7 +30,7 @@ void subtractLogical(final Resource r) {
 /// That's 1 word instruction,
 /// subtract(logical) from 2nd register to 1st register.
 /// Syntax: SUBL r1,r2
-void subtractLogicalGR(final Resource r) {
+Future<void> subtractLogicalGR(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

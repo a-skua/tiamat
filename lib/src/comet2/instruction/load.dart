@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// load effective address to register.
 /// Syntax: LD r,adr,x
-void load(final Resource r) {
+Future<void> load(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -30,7 +30,7 @@ void load(final Resource r) {
 /// That's one word instruction,
 /// load 2nd register to 1st register.
 /// Syntax: LD r1,r2
-void loadGR(final Resource r) {
+Future<void> loadGR(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// jump to effective address when sign flag and zero flag are off.
 /// Syntax: JPL adr,x
-void jumpOnPlus(final Resource r) {
+Future<void> jumpOnPlus(final Resource r) async {
   final pr = r.programRegister;
   final fr = r.flagRegister;
   final ram = r.memory;

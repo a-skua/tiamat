@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// call supsvcervisor function.
 /// Syntax: SVC adr,x
-void supervisorCall(final Resource r) {
+Future<void> supervisorCall(final Resource r) async {
   final pr = r.programRegister;
   final ram = r.memory;
 
@@ -16,5 +16,5 @@ void supervisorCall(final Resource r) {
   final adr = getEffectiveAddress(r, op.x);
   pr.value += 1;
 
-  r.supervisorCall(adr);
+  await r.supervisorCall(adr);
 }

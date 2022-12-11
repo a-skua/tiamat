@@ -1,6 +1,5 @@
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
 import 'package:tiamat/src/casl2/ast/ast.dart';
-import 'package:tiamat/src/casl2/parser/state.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
 import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';

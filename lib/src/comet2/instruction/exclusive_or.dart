@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// register or(exclusive) effective address.
 /// Syntax: XOR r,adr,x
-void exclusiveOr(final Resource r) {
+Future<void> exclusiveOr(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -30,7 +30,7 @@ void exclusiveOr(final Resource r) {
 /// That's one words instruction,
 /// 1st register or(exclusive) 2nd register.
 /// Syntax: XOR r1,r2
-void exclusiveOrGR(final Resource r) {
+Future<void> exclusiveOrGR(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

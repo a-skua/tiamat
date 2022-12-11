@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'resource.dart' show Resource;
-import 'device.dart' show Device;
+import 'device.dart';
 import './instruction.dart';
 import 'supervisor_call.dart' show supervisorCall;
 import 'package:tiamat/tiamat.dart' show Result;
+
+export 'device.dart';
 
 /// Comet2's [Status]
 enum Status {
@@ -28,7 +30,7 @@ Duration getDuration([ms = 0]) {
 typedef LoadPoint = int;
 
 /// comet2 interface
-abstract class Comet2Interface {
+abstract class Comet2 {
   /// delay milliseconds
   int delay = 0;
 
@@ -40,8 +42,17 @@ abstract class Comet2Interface {
 }
 
 /// implements interface
-class Comet2 implements Comet2Interface {
-  Comet2({
+class ImplComet2 implements Comet2 {
+  /// I/O Device.
+  ///
+  /// Need to change when implementing the emulator.
+  final Device device;
+
+  NoticeResource? _onUpdate;
+  NoticeStatus? _onChangeStatus;
+
+  ImplComet2(
+    this.device, {
     NoticeResource? onUpdate,
     NoticeStatus? onChangeStatus,
   }) {
@@ -69,14 +80,6 @@ class Comet2 implements Comet2Interface {
     }
   }
 
-  /// I/O Device.
-  ///
-  /// Need to change when implementing the emulator.
-  Device device = Device();
-
-  NoticeResource? _onUpdate;
-  NoticeStatus? _onChangeStatus;
-
   /// Resource.
   Resource resource = Resource();
 
@@ -100,7 +103,7 @@ class Comet2 implements Comet2Interface {
     status = s;
 
     if (status == Status.runningOnce) {
-      _exec();
+      await _exec();
       if (_isExit) {
         status = Status.exit;
       } else {
@@ -110,7 +113,8 @@ class Comet2 implements Comet2Interface {
     }
 
     while (status == Status.running) {
-      await Future.delayed(_delay, _exec);
+      await Future.delayed(_delay);
+      await _exec();
       if (_isExit) {
         status = Status.exit;
         break;
@@ -120,12 +124,12 @@ class Comet2 implements Comet2Interface {
   }
 
   /// Running instruction.
-  void _exec() {
+  Future<void> _exec() async {
     final pr = resource.programRegister;
     final ram = resource.memory;
 
     final ins = instruction(ram[pr.value]);
-    ins(resource);
+    await ins(resource);
     _onUpdate?.call(resource);
   }
 

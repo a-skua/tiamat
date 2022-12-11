@@ -6,9 +6,8 @@ import 'util.dart';
 /// That's two words instruction,
 /// jump to effective address.
 /// Syntax: JUMP adr,x
-void unconditionalJump(final Resource r) {
+Future<void> unconditionalJump(final Resource r) async {
   final pr = r.programRegister;
-  final fr = r.flagRegister;
   final ram = r.memory;
 
   final op = Operand(ram[pr.value]);

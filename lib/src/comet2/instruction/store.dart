@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// store register to effective address.
 /// Syntax: ST r,adr,x
-void store(final Resource r) {
+Future<void> store(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final ram = r.memory;

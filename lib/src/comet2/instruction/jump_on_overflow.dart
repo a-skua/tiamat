@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// jump to effective address when overflow flag is on.
 /// Syntax: JOV adr,x
-void jumpOnOverflow(final Resource r) {
+Future<void> jumpOnOverflow(final Resource r) async {
   final pr = r.programRegister;
   final fr = r.flagRegister;
   final ram = r.memory;

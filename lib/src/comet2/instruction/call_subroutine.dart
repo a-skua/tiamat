@@ -7,7 +7,7 @@ import 'util.dart';
 /// set return address on stack pointer and
 /// set effective address to program register.
 /// Syntax: CALL adr,x
-void callSubroutine(final Resource r) {
+Future<void> callSubroutine(final Resource r) async {
   final pr = r.programRegister;
   final sp = r.stackPointer;
   final ram = r.memory;

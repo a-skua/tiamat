@@ -17,3 +17,6 @@ docs:
 
 fix:
 	dart fix --dry-run
+
+pub:
+	dart pub publish --dry-run

@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// add(logical) effective address to register.
 /// Syntax: ADDL r,addr,x
-void addLogical(final Resource r) {
+Future<void> addLogical(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -30,7 +30,7 @@ void addLogical(final Resource r) {
 /// That's one word instruction,
 /// add(logical) from 2nd register to 1st register.
 /// Syntax: ADDL r1,r2
-void addLogicalGR(final Resource r) {
+Future<void> addLogicalGR(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

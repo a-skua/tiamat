@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// register and effective address.
 /// Syntax: AND r,adr,x
-void and(final Resource r) {
+Future<void> and(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -30,7 +30,7 @@ void and(final Resource r) {
 /// That's one word instruction,
 /// 1st register and 2nd register.
 /// Syntax: AND r1,r2
-void andGR(final Resource r) {
+Future<void> andGR(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

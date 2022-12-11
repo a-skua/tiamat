@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// add(arithmetic) effective address to register.
 /// Syntax: ADDA r,adr,x
-void addArithmetic(final Resource r) {
+Future<void> addArithmetic(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -30,7 +30,7 @@ void addArithmetic(final Resource r) {
 /// That's one word instruction,
 /// add(arithmetic) 2nd register to 1st register.
 /// Syntax: ADDA r1,r2
-void addArithmeticGR(final Resource r) {
+Future<void> addArithmeticGR(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

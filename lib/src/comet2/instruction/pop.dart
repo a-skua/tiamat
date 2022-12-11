@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's one word instruction,
 /// pop value on stack pointer to register.
 /// Syntax: POP r
-void pop(final Resource r) {
+Future<void> pop(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final sp = r.stackPointer;

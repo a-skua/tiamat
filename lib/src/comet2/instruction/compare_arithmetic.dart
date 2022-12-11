@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// compare(arithmetic) register and effective address.
 /// Syntax: CPA r,adr,x
-void compareArithmetic(final Resource r) {
+Future<void> compareArithmetic(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -28,7 +28,7 @@ void compareArithmetic(final Resource r) {
 /// That's one word instruction,
 /// compare(arithmetic) 1st register and 2nd register.
 /// Syntax: CPA r1,r2
-void compareArithmeticGR(final Resource r) {
+Future<void> compareArithmeticGR(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

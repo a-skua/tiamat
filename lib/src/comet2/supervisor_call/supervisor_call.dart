@@ -3,15 +3,16 @@ import '../resource.dart';
 import 'read.dart';
 import 'write.dart';
 
-typedef SupervisorCall = void Function(int code);
+typedef SupervisorCall = Future<void> Function(int code);
 
-void supervisorCall(final Resource r, final Device d, final int code) {
+Future<void> supervisorCall(
+    final Resource r, final Device d, final int code) async {
   switch (code) {
     case 1:
-      read(r, d);
-      break;
+      await read(r, d);
+      return;
     case 2:
-      write(r, d);
-      break;
+      await write(r, d);
+      return;
   }
 }

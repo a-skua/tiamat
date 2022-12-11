@@ -5,7 +5,7 @@ import '../resource.dart';
 /// That's one word instruction,
 /// pop on stack pointer to program register.
 /// Syntax: RET
-void returnFromSubroutine(final Resource r) {
+Future<void> returnFromSubroutine(final Resource r) async {
   final pr = r.programRegister;
   final sp = r.stackPointer;
   final ram = r.memory;

@@ -3,7 +3,7 @@ import '../device.dart' show Device;
 import 'package:tiamat/src/charcode/charcode.dart';
 import 'util.dart';
 
-void write(final Resource r, final Device d) {
+Future<void> write(final Resource r, final Device d) async {
   final gr = r.generalRegisters;
   final ram = r.memory;
 

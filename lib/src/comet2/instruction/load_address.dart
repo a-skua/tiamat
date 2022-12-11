@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// load effective address(not value) to register.
 /// Syntax: LAD r,adr,x
-void loadAddress(final Resource r) {
+Future<void> loadAddress(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final ram = r.memory;

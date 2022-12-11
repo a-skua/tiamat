@@ -10,7 +10,7 @@ export 'resource/register.dart';
 /// COMET2's resource.
 class Resource {
   /// Supervisor call
-  SupervisorCall supervisorCall = (final int code) {};
+  SupervisorCall supervisorCall = (final int code) async {};
 
   /// Memory
   final Memory memory = Memory();

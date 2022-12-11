@@ -1,7 +1,17 @@
+## 0.5.0-5
+Fix Comet2 Interface.
+See `example/main.dart` for usage.
+
 ## 0.5.0-4
 BIG BANG!
 Rewrite CASL2 Compiler.
 - The subroutine's scope is enabled.
+  ```
+  MAIN    START
+          CALL    FOO   ; Error! (Unknown Scope)
+          RET
+          END
+  ```
 
 ## 0.5.0-3
 bugfix casl2 parser.
@@ -33,7 +43,7 @@ See `example/main.dart` for upsage.
 ## 0.5.0-1
 0.5.0 preview version.
 Change Comet2's fields.
-See `example/main.dart` for upsage.
+See `example/main.dart` for usage.
 
 ## 0.4.1-1
 ## 0.4.1

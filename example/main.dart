@@ -1,27 +1,6 @@
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/casl2.dart';
-import 'package:tiamat/comet2.dart';
-
-class DeviceCLI extends Device {
-  @override
-  final input = () {
-    final list = [
-      'hello, world',
-      'こんにちは，世界',
-      'hello, 世界',
-      'foo bar',
-      'tofu on fire 📛',
-      'exit',
-    ];
-    var i = 0;
-
-    return () {
-      final str = list[i % list.length];
-      i += 1;
-      return str;
-    };
-  }();
-}
+import 'dart:io';
 
 void main() {
   const asm = '''
@@ -78,16 +57,19 @@ MAIN    START
     return;
   }
 
-  final comet2 = Comet2(
+  final comet2 = ImplComet2(
+    Device(() {
+      stdout.write('YOUR INPUT> ');
+      final input = stdin.readLineSync();
+      return Future(() => input ?? '');
+    }, (str) => print(str)),
     onUpdate: (final r) {
       print(r);
     },
     onChangeStatus: (final s) {
       print('change state: $s');
     },
-  )
-    ..device = DeviceCLI()
-    ..delay = 10;
+  )..delay = 10;
 
   const loadPosition = 100;
 

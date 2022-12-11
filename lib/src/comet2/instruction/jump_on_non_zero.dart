@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// jump to effective address when zero flag is off.
 /// Syntax: JNZ adr,x
-void jumpOnNonZero(final Resource r) {
+Future<void> jumpOnNonZero(final Resource r) async {
   final pr = r.programRegister;
   final fr = r.flagRegister;
   final ram = r.memory;

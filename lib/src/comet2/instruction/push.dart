@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// push effective address to stack.
 /// Syntax: PUSH adr,x
-void push(final Resource r) {
+Future<void> push(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final sp = r.stackPointer;

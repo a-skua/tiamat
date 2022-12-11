@@ -3,14 +3,15 @@ import '../device.dart' show Device;
 import 'package:tiamat/src/charcode/charcode.dart';
 import 'util.dart';
 
-void read(final Resource r, final Device d) {
+Future<void> read(final Resource r, final Device d) async {
   final gr = r.generalRegisters;
   final ram = r.memory;
 
   final pointer = gr[1];
   final length = gr[2];
 
-  for (var rune in d.input().runes) {
+  final input = await d.input();
+  for (var rune in input.runes) {
     if (length.value == 0) {
       break;
     }

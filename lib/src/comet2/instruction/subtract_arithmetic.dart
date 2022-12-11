@@ -6,7 +6,7 @@ import 'util.dart';
 /// That's two words instruction,
 /// subtract(arithmetic) effective address to register.
 /// Syntax: SUBA r,adr,x
-void subtractArithmetic(final Resource r) {
+Future<void> subtractArithmetic(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;
@@ -30,7 +30,7 @@ void subtractArithmetic(final Resource r) {
 /// That's one word instruction,
 /// subtract(arithmetic) 2nd register to 1st register.
 /// Syntax: SUBA r1,r2
-void subtractArithmeticGR(final Resource r) {
+Future<void> subtractArithmeticGR(final Resource r) async {
   final pr = r.programRegister;
   final gr = r.generalRegisters;
   final fr = r.flagRegister;

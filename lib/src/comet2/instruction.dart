@@ -1,7 +1,7 @@
 import 'resource.dart' show Resource;
 import './instruction/instruction.dart';
 
-typedef Instruction = void Function(Resource r);
+typedef Instruction = Future<void> Function(Resource r);
 
 Instruction instruction(final int op) {
   switch (op & 0xff00) {
