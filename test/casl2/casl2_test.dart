@@ -63,6 +63,7 @@ BREAK   OUT     OUTBUF,5
         IN      INBUF,32
         RPUSH
         RPOP
+        NOP
         RET
 OUTBUF  DC      '12345'
 INBUF   DS      32
@@ -88,14 +89,14 @@ INBUF   DS      32
     // OUT OUTBUF,5
     base + 4, // 10
     0x1210,
-    base + 45, // 12
+    base + 46, // 12
     0x1220,
     5, // 14
     0xf000,
     2, // 16
     // IN INBUF,32
     0x1210,
-    base + 50, // 18
+    base + 51, // 18
     0x1220,
     32, // 20
     0xf000,
@@ -123,12 +124,14 @@ INBUF   DS      32
     0x7130,
     0x7120, // 42
     0x7110,
+    // NOP
+    0, // 44
     // RET
-    0x8100, // 44
+    0x8100,
     // DC '12345'
-    ...'12345'.runes.map((rune) => runeAsCode(rune) ?? 0).toList(), // 45
-    // DS 32
-    ...List.generate(32, (_) => 0), // 50
+    ...'12345'.runes.map((rune) => runeAsCode(rune) ?? 0).toList(), // 46
+    // DS 37
+    ...List.generate(32, (_) => 0), // 51
   ];
 
   final result = Casl2.fromString(input).compile();

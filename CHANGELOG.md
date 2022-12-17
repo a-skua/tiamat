@@ -1,3 +1,6 @@
+## 0.5.0-6
+Saported OECODE `NOP`
+
 ## 0.5.0-5
 Fix Comet2 Interface.
 See `example/main.dart` for usage.

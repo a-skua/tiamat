@@ -287,6 +287,9 @@ Result<List<Code>, ParseError> _parse(Node? parent, Token? label, Token opecode,
       );
     case 'RET':
       return Result.ok([Code((_) => 0x8100)]);
+    case 'NOP':
+      return Result.ok([Code((_) => 0)]);
+    case '':
     case 'START':
     case 'END':
       return Result.ok([]);

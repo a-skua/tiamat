@@ -19,7 +19,7 @@ Future<void> write(final Resource r, final Device d) async {
     if (rune != null) {
       s += String.fromCharCode(rune);
     } else {
-      s += '□';
+      s += '*';
     }
   }
 
