@@ -12,7 +12,7 @@ class Casl2 {
   factory Casl2.fromString(final String src) =>
       Casl2(ImplParser(ImplLexer.fromString(src)));
 
-  Result compile() {
+  (List<Node>, List<ParseError>) parseNode() {
     final errors = <ParseError>[];
     final nodes = <Node>[];
     Node? parent;
@@ -29,6 +29,11 @@ class Casl2 {
       parent = node;
       nodes.add(node);
     }
+    return (nodes, errors);
+  }
+
+  Result compile() {
+    final (nodes, errors) = parseNode();
 
     final code = <Code>[];
     for (final node in nodes) {

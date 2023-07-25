@@ -4,8 +4,7 @@ import './util.dart';
 import './state.dart';
 import '../typedef.dart';
 
-final macroList = <
-    String,
+final macroList = <String,
     Result<List<Code>, ParseError> Function(
   Node? parent,
   Token? label,
