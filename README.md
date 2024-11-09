@@ -30,7 +30,7 @@ virtual computer COMET2 emulator and virtual language CASL2 compiler.
 
 ## Specification
 
-[IPA Shiken Yougo ver 4.2](https://www.jitec.ipa.go.jp/1_13download/shiken_yougo_ver4_2.pdf)
+[SPEC.md](SPEC.md)
 
 ### CASL2 Format
 ```
