@@ -184,7 +184,7 @@ class ImplLexer implements Lexer {
         if (_isGRToken(start, end)) {
           return _getToken(start, end, TokenType.gr);
         }
-        return _getToken(start, end, TokenType.ident);
+        return _getToken(start, end, TokenType.ref);
       case ExpectedStatus.expectComment:
         if (_isSpace) {
           return _getSpace();

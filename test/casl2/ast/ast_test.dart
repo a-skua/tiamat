@@ -8,11 +8,24 @@ void main() {
     test('value', testCodeValue);
   });
 
-  group('Statement', () {
-    test('label', testStatementLabel);
-    test('code', testStatementCode);
-    test('size', testStatementSize);
-    test('position', testStatementPosition);
+  group('StatementNode', () {
+    test('label', testStatementNodeLabel);
+    test('code', testStatementNodeCode);
+    test('size', testStatementNodeSize);
+    test('position', testStatementNodePosition);
+    test('toString', testStatementNodeToString);
+  });
+
+  group('MacroNode', () {
+    test('toString', testMacroNodeToString);
+  });
+
+  group('SubroutineNode', () {
+    test('toString', testSubroutineNodeToString);
+  });
+
+  group('ModuleNode', () {
+    test('toString', testModuleNodeToString);
   });
 }
 
@@ -30,7 +43,7 @@ void testCodeValue() {
   expect(Code((base) => base + 50).value(100), equals(150));
 }
 
-void testStatementLabel() {
+void testStatementNodeLabel() {
   expect(
       StatementNode(null, Token('FOO'.runes, TokenType.label),
               Token('START'.runes, TokenType.opecode), [], parser)
@@ -43,7 +56,7 @@ void testStatementLabel() {
       equals(null));
 }
 
-void testStatementCode() {
+void testStatementNodeCode() {
   final parent = StatementNode(
     null,
     null,
@@ -75,7 +88,7 @@ void testStatementCode() {
       equals(code));
 }
 
-void testStatementSize() {
+void testStatementNodeSize() {
   final parent = StatementNode(
     null,
     null,
@@ -123,7 +136,7 @@ void testStatementSize() {
       equals(3));
 }
 
-void testStatementPosition() {
+void testStatementNodePosition() {
   final label = Token('FOO'.runes, TokenType.label);
   final opecode = Token('START'.runes, TokenType.opecode);
   final operand = [
@@ -175,4 +188,132 @@ void testStatementPosition() {
                 Code((_) => 3),
               ])).position,
       equals(6));
+}
+
+void testStatementNodeToString() {
+  final tests = [
+    [
+      StatementNode(
+          null, null, Token('RET'.runes, TokenType.opecode), [], parser),
+      'STATEMENT(OPECODE(RET))'
+    ],
+    [
+      StatementNode(null, Token('FOO'.runes, TokenType.label),
+          Token('RET'.runes, TokenType.opecode), [], parser),
+      'STATEMENT(LABEL(FOO),OPECODE(RET))'
+    ],
+    [
+      StatementNode(
+          null,
+          null,
+          Token('ADDA'.runes, TokenType.opecode),
+          [Token('GR0'.runes, TokenType.gr), Token('0'.runes, TokenType.dec)],
+          parser),
+      'STATEMENT(OPECODE(ADDA),OPERAND(GR(GR0),DEC(0)))'
+    ],
+  ];
+
+  for (final test in tests) {
+    final node = test[0] as Node;
+    final expected = test[1] as String;
+    expect('$node', equals(expected));
+  }
+}
+
+void testMacroNodeToString() {
+  final tests = [
+    [
+      MacroNode(null, null, Token('IN'.runes, TokenType.opecode), [], parser),
+      'MACRO(OPECODE(IN))'
+    ],
+    [
+      MacroNode(null, Token('FOO'.runes, TokenType.label),
+          Token('IN'.runes, TokenType.opecode), [], parser),
+      'MACRO(LABEL(FOO),OPECODE(IN))'
+    ],
+    [
+      MacroNode(
+          null,
+          null,
+          Token('IN'.runes, TokenType.opecode),
+          [
+            Token('IBUF'.runes, TokenType.ref),
+            Token('LEN'.runes, TokenType.ref),
+          ],
+          parser),
+      'MACRO(OPECODE(IN),OPERAND(REF(IBUF),REF(LEN)))'
+    ],
+  ];
+
+  for (final test in tests) {
+    final node = test[0] as Node;
+    final expected = test[1] as String;
+    expect('$node', equals(expected));
+  }
+}
+
+void testSubroutineNodeToString() {
+  final tests = [
+    [
+      SubroutineNode(null, null, [
+        StatementNode(
+            null,
+            null,
+            Token('ADDA'.runes, TokenType.opecode),
+            [Token('GR0'.runes, TokenType.gr), Token('0'.runes, TokenType.dec)],
+            parser),
+        StatementNode(
+            null, null, Token('RET'.runes, TokenType.opecode), [], parser),
+      ]),
+      'SUBROUTINE(PROCESS(STATEMENT(OPECODE(ADDA),OPERAND(GR(GR0),DEC(0))),STATEMENT(OPECODE(RET))))'
+    ],
+    [
+      SubroutineNode(Token('FOO'.runes, TokenType.label), null, [
+        StatementNode(
+            null, null, Token('RET'.runes, TokenType.opecode), [], parser),
+      ]),
+      'SUBROUTINE(LABEL(FOO),PROCESS(STATEMENT(OPECODE(RET))))'
+    ],
+    [
+      SubroutineNode(null, Token('FOO'.runes, TokenType.ref), [
+        StatementNode(
+            null,
+            null,
+            Token('ADDA'.runes, TokenType.opecode),
+            [Token('GR0'.runes, TokenType.gr), Token('0'.runes, TokenType.dec)],
+            parser),
+        StatementNode(null, Token('FOO'.runes, TokenType.label),
+            Token('RET'.runes, TokenType.opecode), [], parser),
+      ]),
+      'SUBROUTINE(START(REF(FOO)),PROCESS(STATEMENT(OPECODE(ADDA),OPERAND(GR(GR0),DEC(0))),STATEMENT(LABEL(FOO),OPECODE(RET))))'
+    ],
+  ];
+
+  for (final test in tests) {
+    final node = test[0] as Node;
+    final expected = test[1] as String;
+    expect('$node', equals(expected));
+  }
+}
+
+void testModuleNodeToString() {
+  final tests = [
+    [
+      ModuleNode([
+        SubroutineNode(Token('FOO'.runes, TokenType.label), null, [
+          StatementNode(
+              null, null, Token('RET'.runes, TokenType.opecode), [], parser),
+        ]),
+        StatementNode(null, null, Token('DC'.runes, TokenType.opecode),
+            [Token("'FOO'".runes, TokenType.string)], parser),
+      ]),
+      "MODULE(SUBROUTINE(LABEL(FOO),PROCESS(STATEMENT(OPECODE(RET)))),STATEMENT(OPECODE(DC),OPERAND(STRING('FOO'))))"
+    ],
+  ];
+
+  for (final test in tests) {
+    final node = test[0] as Node;
+    final expected = test[1] as String;
+    expect('$node', equals(expected));
+  }
 }

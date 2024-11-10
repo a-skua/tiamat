@@ -1,20 +1,43 @@
 /// Type of Token
 enum TokenType {
+  /// '; COMMENT'
   comment,
+
+  /// 'LABEL'
   label,
+
+  /// 'OPECODE'
   opecode,
-  ident, // LABEL
-  gr, //  GR0 ~ GR7
-  dec, // -32768 ~ 32767
-  hex, // #0000 ~ FFFF
-  string, // 'STRING'
-  // End of Line
+
+  /// 'REF'
+  ref,
+
+  ///  GR0 ~ GR7
+  gr,
+
+  /// -32768 ~ 32767
+  dec,
+
+  /// #0000 ~ FFFF
+  hex,
+
+  /// 'STRING'
+  string,
+
+  /// End of Line
   eol,
-  // End of File
+
+  /// End of File
   eof,
+
+  /// Error
   error,
-  separation, // ','
-  space, // '\t' or ' '
+
+  /// ','
+  separation,
+
+  /// '\t' or ' '
+  space,
 }
 
 String tokenTypeAsString(TokenType type) {
@@ -25,8 +48,8 @@ String tokenTypeAsString(TokenType type) {
       return 'LABEL';
     case TokenType.opecode:
       return 'OPECODE';
-    case TokenType.ident:
-      return 'IDENT';
+    case TokenType.ref:
+      return 'REF';
     case TokenType.gr:
       return 'GR';
     case TokenType.dec:

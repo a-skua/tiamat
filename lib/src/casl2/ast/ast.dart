@@ -44,60 +44,47 @@ class ParseError {
 
 /// Parser of Code
 typedef Parser = Result<List<Code>, ParseError> Function(
-    Node? parent, Token? label, Token opecode, List<Token> operand);
+    Node? prev, Token? label, Token opecode, List<Token> operand);
 
 // Node of CASL2
 abstract class Node {
-  Label? get label;
-  Opecode? get opecode;
   Result<List<Code>, ParseError> get code;
   Size get size;
   Position get position;
+  @override
+  String toString();
 }
 
-class _Empty implements Node {
-  final Node? _parent;
+/// Statement Node
+abstract class StatementNode implements Node {
+  Label? get label;
+  Opecode? get opecode;
 
-  _Empty(this._parent);
-
-  @override
-  Label? get label => null;
-
-  @override
-  Opecode? get opecode => null;
-
-  @override
-  Result<List<Code>, ParseError> get code => Result.ok([]);
-
-  @override
-  Size get size => 0;
-
-  @override
-  Position get position => (_parent?.position ?? 0) + (_parent?.size ?? 0);
-
-  @override
-  String toString() => '()';
+  factory StatementNode(StatementNode? prev, Token? label, Token opecode,
+          List<Token> operand, Parser parser) =>
+      _StatementNode(
+        prev,
+        label,
+        opecode,
+        operand,
+        parser,
+      );
 }
 
-/// End of Node
-class EndNode extends _Empty {
-  EndNode(Node? parent) : super(parent);
-}
-
-/// Statement of CASL2.
-class StatementNode implements Node {
-  final Node? _parent;
+/// Impl Statement Node
+final class _StatementNode implements StatementNode {
+  final StatementNode? _prev;
   final Token? _label;
   final Token _opecode;
   final List<Token> _operand;
-  final Parser _parser;
+  final Parser _parse;
 
-  StatementNode(
-    this._parent,
+  _StatementNode(
+    this._prev,
     this._label,
     this._opecode,
     this._operand,
-    this._parser,
+    this._parse,
   );
 
   @override
@@ -108,18 +95,18 @@ class StatementNode implements Node {
 
   @override
   Result<List<Code>, ParseError> get code =>
-      _parser(_parent, _label, _opecode, _operand);
+      _parse(_prev, _label, _opecode, _operand);
 
   @override
   Size get size => code.isOk ? code.ok.length : 0;
 
   @override
-  Position get position => (_parent?.position ?? 0) + (_parent?.size ?? 0);
+  Position get position => (_prev?.position ?? 0) + (_prev?.size ?? 0);
 
   @override
   String toString() {
     final stmt = <String>[
-      if (label != null) 'LABEL($label)',
+      if (_label != null) _label.toString(),
       _opecode.toString(),
       if (_operand.isNotEmpty) 'OPERAND(${_operand.join(',')})',
     ];
@@ -128,17 +115,40 @@ class StatementNode implements Node {
   }
 }
 
+/// Macro Node
+final class MacroNode extends _StatementNode {
+  MacroNode(StatementNode? prev, Token? label, Token opecode,
+      List<Token> operand, Parser parser)
+      : super(
+          prev,
+          label,
+          opecode,
+          operand,
+          parser,
+        );
+
+  @override
+  Label? get label => _label?.runesAsString;
+
+  @override
+  Opecode? get opecode => _opecode.runesAsString;
+
+  @override
+  String toString() {
+    final strs = <String>[
+      if (_label != null) _label.toString(),
+      _opecode.toString(),
+      if (_operand.isNotEmpty) 'OPERAND(${_operand.join(',')})',
+    ];
+    return 'MACRO(${strs.join(',')})';
+  }
+}
+
 /// Block Node
-class BlockNode implements Node {
-  final List<Node> _nodeList;
+abstract class _BlockNode implements Node {
+  final List<StatementNode> _nodeList;
 
-  BlockNode(this._nodeList);
-
-  @override
-  Label? get label => _nodeList.first.label;
-
-  @override
-  Opecode? get opecode => _nodeList.first.label;
+  _BlockNode(this._nodeList);
 
   @override
   Result<List<Code>, ParseError> get code =>
@@ -155,7 +165,49 @@ class BlockNode implements Node {
 
   @override
   Position get position => _nodeList.first.position;
+}
+
+/// Subroutine Node
+final class SubroutineNode extends _BlockNode implements StatementNode {
+  final Token? _label;
+
+  final Token? _start;
+  SubroutineNode(this._label, this._start, List<StatementNode> nodeList)
+      : super(nodeList);
 
   @override
-  String toString() => 'BLOCK(${_nodeList.join(',')})';
+  Label? get label => _label?.runesAsString;
+
+  @override
+  Opecode? get opecode => null;
+
+  @override
+  Position get position => _start != null
+      ? _nodeList.firstWhere((node) {
+          final label = node.label;
+          final start = _start;
+          return label != null && start != null && label == start.runesAsString;
+        }).position
+      : super.position;
+
+  @override
+  String toString() {
+    final strs = [
+      if (_label != null) _label.toString(),
+      if (_start != null) 'START(${_start.toString()})',
+      if (_nodeList.isNotEmpty) 'PROCESS(${_nodeList.join(',')})',
+    ];
+    return 'SUBROUTINE(${strs.join(',')})';
+  }
+}
+
+/// Module Node
+final class ModuleNode extends _BlockNode {
+  ModuleNode(nodeList) : super(nodeList);
+
+  List<Label> get labels =>
+      _nodeList.map((node) => node.label).whereType<Label>().toList();
+
+  @override
+  String toString() => 'MODULE(${_nodeList.join(',')})';
 }

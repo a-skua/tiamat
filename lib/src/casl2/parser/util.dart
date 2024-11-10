@@ -216,7 +216,7 @@ Result<List<Code>, ParseError> parseR(
 
 /// Operand's token to code
 ///
-/// TokenType: string, dec, hex, ident
+/// TokenType: string, dec, hex, ref
 Result<List<Code>, ParseError> _tokenToCode(
     Node? parent, Token token, State state) {
   switch (token.type) {
@@ -242,10 +242,10 @@ Result<List<Code>, ParseError> _tokenToCode(
               token.runesAsString.replaceFirst('#', '0x'),
             )),
       ]);
-    case TokenType.ident:
+    case TokenType.ref:
       final label = token.runesAsString;
-      final ident = state.getLabel(label);
-      if (ident == null) {
+      final ref = state.getLabel(label);
+      if (ref == null) {
         return Result.err(ParseError(
           '[EXCEPTION] UNKNOWN LABEL $label',
           start: token.start,
@@ -256,7 +256,7 @@ Result<List<Code>, ParseError> _tokenToCode(
       }
 
       return Result.ok([
-        Code((base) => base + ident.position),
+        Code((base) => base + ref.position),
       ]);
     default:
       return Result.err(ParseError(
