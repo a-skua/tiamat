@@ -1,5 +1,5 @@
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
-import 'package:tiamat/src/casl2/ast/ast.dart' hide Parser;
+import 'package:tiamat/src/casl2/ast/ast.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
 import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
@@ -196,9 +196,11 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 
   expect(
     nodes.map((n) {
-      final result = n.code;
-      expect(result.isOk, equals(true));
-      return result.ok.map((c) => c.value(base)).toList();
+      return n;
+      // TODO
+      // final result = n.code;
+      // expect(result.isOk, equals(true));
+      // return result.ok.map((c) => c.value(base)).toList();
     }).toList(),
     equals(expected),
   );

@@ -45,25 +45,15 @@ void testCodeValue() {
 
 void testStatementNodeLabel() {
   expect(
-      StatementNode(null, Token('FOO'.runes, TokenType.label),
-              Token('START'.runes, TokenType.opecode), [], parser)
+      StatementNode(Token('START'.runes, TokenType.opecode),
+              label: Token('FOO'.runes, TokenType.label))
           .label,
       equals('FOO'));
-  expect(
-      StatementNode(
-              null, null, Token('START'.runes, TokenType.opecode), [], parser)
-          .label,
+  expect(StatementNode(Token('START'.runes, TokenType.opecode)).label,
       equals(null));
 }
 
 void testStatementNodeCode() {
-  final parent = StatementNode(
-    null,
-    null,
-    Token('START'.runes, TokenType.opecode),
-    [],
-    parser,
-  );
   final label = Token('FOO'.runes, TokenType.label);
   final opecode = Token('START'.runes, TokenType.opecode);
   final operand = [
@@ -77,25 +67,12 @@ void testStatementNodeCode() {
   ]);
 
   expect(
-      StatementNode(parent, label, opecode, operand,
-          (actualParent, actualLabel, actualOpecode, actualOperand) {
-        expect(actualParent, equals(parent));
-        expect(actualLabel, equals(label));
-        expect(actualOpecode, equals(opecode));
-        expect(actualOperand, equals(operand));
-        return code;
-      }).code,
+      // TODO
+      StatementNode(opecode, label: label, operand: operand),
       equals(code));
 }
 
 void testStatementNodeSize() {
-  final parent = StatementNode(
-    null,
-    null,
-    Token('START'.runes, TokenType.opecode),
-    [],
-    parser,
-  );
   final label = Token('FOO'.runes, TokenType.label);
   final opecode = Token('START'.runes, TokenType.opecode);
   final operand = [
@@ -103,36 +80,18 @@ void testStatementNodeSize() {
   ];
 
   expect(
-      StatementNode(parent, label, opecode, operand,
-          (parent, label, opecode, operand) => Result.ok([])).size,
+      // TODO
+      StatementNode(opecode, label: label, operand: operand),
       equals(0));
 
   expect(
-      StatementNode(
-          parent,
-          label,
-          opecode,
-          operand,
-          (parent, label, opecode, operand) => Result.err(ParseError(
-                'TEST',
-                start: 0,
-                end: 0,
-                lineStart: 0,
-                lineNumber: 1,
-              ))).size,
+      // TODO
+      StatementNode(opecode, label: label, operand: operand),
       equals(0));
 
   expect(
-      StatementNode(
-          parent,
-          label,
-          opecode,
-          operand,
-          (parent, label, opecode, operand) => Result.ok([
-                Code((_) => 1),
-                Code((_) => 2),
-                Code((_) => 3),
-              ])).size,
+      // TODO
+      StatementNode(opecode, label: label, operand: operand),
       equals(3));
 }
 
@@ -144,71 +103,37 @@ void testStatementNodePosition() {
   ];
 
   expect(
-      StatementNode(
-          null,
-          label,
-          opecode,
-          operand,
-          (parent, label, opecode, operand) => Result.ok([
-                Code((_) => 1),
-                Code((_) => 2),
-                Code((_) => 3),
-              ])).position,
+      // TODO
+      StatementNode(opecode, label: label, operand: operand),
       equals(0));
 
-  final parent = StatementNode(
-      StatementNode(
-          null,
-          null,
-          Token('START'.runes, TokenType.opecode),
-          [],
-          (parent, label, opecode, operand) => Result.ok([
-                Code((_) => 1),
-                Code((_) => 2),
-                Code((_) => 3),
-              ])),
-      null,
-      Token('START'.runes, TokenType.opecode),
-      [],
-      (parent, label, opecode, operand) => Result.ok([
-            Code((_) => 1),
-            Code((_) => 2),
-            Code((_) => 3),
-          ]));
-
   expect(
-      StatementNode(
-          parent,
-          label,
-          opecode,
-          operand,
-          (parent, label, opecode, operand) => Result.ok([
-                Code((_) => 1),
-                Code((_) => 2),
-                Code((_) => 3),
-              ])).position,
+      // TODO
+      StatementNode(opecode, label: label, operand: operand),
       equals(6));
 }
 
 void testStatementNodeToString() {
   final tests = [
     [
-      StatementNode(
-          null, null, Token('RET'.runes, TokenType.opecode), [], parser),
+      StatementNode(Token('RET'.runes, TokenType.opecode)),
       'STATEMENT(OPECODE(RET))'
     ],
     [
-      StatementNode(null, Token('FOO'.runes, TokenType.label),
-          Token('RET'.runes, TokenType.opecode), [], parser),
+      StatementNode(
+        Token('RET'.runes, TokenType.opecode),
+        label: Token('FOO'.runes, TokenType.label),
+      ),
       'STATEMENT(LABEL(FOO),OPECODE(RET))'
     ],
     [
       StatementNode(
-          null,
-          null,
-          Token('ADDA'.runes, TokenType.opecode),
-          [Token('GR0'.runes, TokenType.gr), Token('0'.runes, TokenType.dec)],
-          parser),
+        Token('ADDA'.runes, TokenType.opecode),
+        operand: [
+          Token('GR0'.runes, TokenType.gr),
+          Token('0'.runes, TokenType.dec)
+        ],
+      ),
       'STATEMENT(OPECODE(ADDA),OPERAND(GR(GR0),DEC(0)))'
     ],
   ];
@@ -222,25 +147,20 @@ void testStatementNodeToString() {
 
 void testMacroNodeToString() {
   final tests = [
+    [MacroNode(Token('IN'.runes, TokenType.opecode)), 'MACRO(OPECODE(IN))'],
     [
-      MacroNode(null, null, Token('IN'.runes, TokenType.opecode), [], parser),
-      'MACRO(OPECODE(IN))'
-    ],
-    [
-      MacroNode(null, Token('FOO'.runes, TokenType.label),
-          Token('IN'.runes, TokenType.opecode), [], parser),
+      MacroNode(Token('IN'.runes, TokenType.opecode),
+          label: Token('FOO'.runes, TokenType.label)),
       'MACRO(LABEL(FOO),OPECODE(IN))'
     ],
     [
       MacroNode(
-          null,
-          null,
-          Token('IN'.runes, TokenType.opecode),
-          [
-            Token('IBUF'.runes, TokenType.ref),
-            Token('LEN'.runes, TokenType.ref),
-          ],
-          parser),
+        Token('IN'.runes, TokenType.opecode),
+        operand: [
+          Token('IBUF'.runes, TokenType.ref),
+          Token('LEN'.runes, TokenType.ref),
+        ],
+      ),
       'MACRO(OPECODE(IN),OPERAND(REF(IBUF),REF(LEN)))'
     ],
   ];
@@ -255,36 +175,39 @@ void testMacroNodeToString() {
 void testSubroutineNodeToString() {
   final tests = [
     [
-      SubroutineNode(null, null, [
+      SubroutineNode(StatementNode(Token('START'.runes, TokenType.opecode)), [
         StatementNode(
-            null,
-            null,
-            Token('ADDA'.runes, TokenType.opecode),
-            [Token('GR0'.runes, TokenType.gr), Token('0'.runes, TokenType.dec)],
-            parser),
-        StatementNode(
-            null, null, Token('RET'.runes, TokenType.opecode), [], parser),
+          Token('ADDA'.runes, TokenType.opecode),
+          operand: [
+            Token('GR0'.runes, TokenType.gr),
+            Token('0'.runes, TokenType.dec)
+          ],
+        ),
+        StatementNode(Token('RET'.runes, TokenType.opecode)),
       ]),
       'SUBROUTINE(PROCESS(STATEMENT(OPECODE(ADDA),OPERAND(GR(GR0),DEC(0))),STATEMENT(OPECODE(RET))))'
     ],
     [
-      SubroutineNode(Token('FOO'.runes, TokenType.label), null, [
-        StatementNode(
-            null, null, Token('RET'.runes, TokenType.opecode), [], parser),
-      ]),
+      SubroutineNode(
+          StatementNode(Token('START'.runes, TokenType.opecode),
+              label: Token('FOO'.runes, TokenType.label)),
+          [
+            StatementNode(Token('RET'.runes, TokenType.opecode)),
+          ]),
       'SUBROUTINE(LABEL(FOO),PROCESS(STATEMENT(OPECODE(RET))))'
     ],
     [
-      SubroutineNode(null, Token('FOO'.runes, TokenType.ref), [
-        StatementNode(
-            null,
-            null,
-            Token('ADDA'.runes, TokenType.opecode),
-            [Token('GR0'.runes, TokenType.gr), Token('0'.runes, TokenType.dec)],
-            parser),
-        StatementNode(null, Token('FOO'.runes, TokenType.label),
-            Token('RET'.runes, TokenType.opecode), [], parser),
-      ]),
+      SubroutineNode(
+          StatementNode(Token('START'.runes, TokenType.opecode),
+              operand: [Token('FOO'.runes, TokenType.ref)]),
+          [
+            StatementNode(Token('ADDA'.runes, TokenType.opecode), operand: [
+              Token('GR0'.runes, TokenType.gr),
+              Token('0'.runes, TokenType.dec)
+            ]),
+            StatementNode(Token('RET'.runes, TokenType.opecode),
+                label: Token('FOO'.runes, TokenType.label)),
+          ]),
       'SUBROUTINE(START(REF(FOO)),PROCESS(STATEMENT(OPECODE(ADDA),OPERAND(GR(GR0),DEC(0))),STATEMENT(LABEL(FOO),OPECODE(RET))))'
     ],
   ];
@@ -300,12 +223,14 @@ void testModuleNodeToString() {
   final tests = [
     [
       ModuleNode([
-        SubroutineNode(Token('FOO'.runes, TokenType.label), null, [
-          StatementNode(
-              null, null, Token('RET'.runes, TokenType.opecode), [], parser),
-        ]),
-        StatementNode(null, null, Token('DC'.runes, TokenType.opecode),
-            [Token("'FOO'".runes, TokenType.string)], parser),
+        SubroutineNode(
+            StatementNode(Token('START'.runes, TokenType.opecode),
+                label: Token('FOO'.runes, TokenType.label)),
+            [
+              StatementNode(Token('RET'.runes, TokenType.opecode)),
+            ]),
+        StatementNode(Token('DC'.runes, TokenType.opecode),
+            operand: [Token("'FOO'".runes, TokenType.string)]),
       ]),
       "MODULE(SUBROUTINE(LABEL(FOO),PROCESS(STATEMENT(OPECODE(RET)))),STATEMENT(OPECODE(DC),OPERAND(STRING('FOO'))))"
     ],

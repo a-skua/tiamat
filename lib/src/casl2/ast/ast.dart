@@ -1,5 +1,4 @@
 import '../token/token.dart';
-import '../typedef.dart';
 
 /// Label of CASL2
 typedef Label = String;
@@ -38,89 +37,86 @@ class ParseError {
     required this.lineNumber,
   });
 
+  factory ParseError.todo(String msg) => ParseError(
+        msg,
+        start: 0,
+        end: 0,
+        lineStart: 0,
+        lineNumber: 0,
+      );
+
   @override
   String toString() => 'L$lineNumber: $message';
 }
 
-/// Parser of Code
-typedef Parser = Result<List<Code>, ParseError> Function(
-    Node? prev, Token? label, Token opecode, List<Token> operand);
-
 // Node of CASL2
 abstract class Node {
-  Result<List<Code>, ParseError> get code;
-  Size get size;
-  Position get position;
   @override
   String toString();
+
+  factory Node.statement(
+    Token opecode, {
+    Token? label,
+    List<Token> operand = const [],
+  }) =>
+      _StatementNode(label, opecode, operand);
+
+  factory Node.macro(
+    Token opecode, {
+    Token? label,
+    List<Token> operand = const [],
+  }) =>
+      MacroNode(opecode, label: label, operand: operand);
+
+  factory Node.module(List<StatementNode> stmtList) => ModuleNode(stmtList);
 }
 
 /// Statement Node
 abstract class StatementNode implements Node {
-  Label? get label;
-  Token? get labelToken;
-  Opecode? get opecode;
-  Token? get opecodeToken;
+  Token? get label;
+  Token get opecode;
   List<Token> get operand;
 
-  factory StatementNode(StatementNode? prev, Token? label, Token opecode,
-          List<Token> operand, Parser parser) =>
-      _StatementNode(
-        prev,
-        label,
-        opecode,
-        operand,
-        parser,
-      );
+  factory StatementNode(
+    Token opecode, {
+    Token? label,
+    List<Token> operand = const [],
+  }) =>
+      _StatementNode(label, opecode, operand);
+
+  factory StatementNode.macro(
+    Token opecode, {
+    Token? label,
+    List<Token> operand = const [],
+  }) =>
+      MacroNode(opecode, label: label, operand: operand);
+
+  factory StatementNode.subroutine(
+    StatementNode startOp, {
+    List<StatementNode> process = const [],
+  }) =>
+      SubroutineNode(startOp, process);
 }
 
 /// Impl Statement Node
 final class _StatementNode implements StatementNode {
-  final StatementNode? _prev;
-  final Token? _label;
-  final Token _opecode;
-  final List<Token> _operand;
-  final Parser _parse;
-
-  _StatementNode(
-    this._prev,
-    this._label,
-    this._opecode,
-    this._operand,
-    this._parse,
-  );
+  @override
+  final Token? label;
 
   @override
-  Label? get label => _label?.runesAsString;
+  final Token opecode;
 
   @override
-  Token? get labelToken => _label;
+  final List<Token> operand;
 
-  @override
-  Opecode? get opecode => _opecode.runesAsString;
-
-  @override
-  Token? get opecodeToken => _opecode;
-
-  @override
-  Result<List<Code>, ParseError> get code =>
-      _parse(_prev, _label, _opecode, _operand);
-
-  @override
-  List<Token> get operand => _operand;
-
-  @override
-  Size get size => code.isOk ? code.ok.length : 0;
-
-  @override
-  Position get position => (_prev?.position ?? 0) + (_prev?.size ?? 0);
+  _StatementNode(this.label, this.opecode, this.operand);
 
   @override
   String toString() {
     final stmt = <String>[
-      if (_label != null) _label.toString(),
-      _opecode.toString(),
-      if (_operand.isNotEmpty) 'OPERAND(${_operand.join(',')})',
+      if (label != null) label.toString(),
+      opecode.toString(),
+      if (operand.isNotEmpty) 'OPERAND(${operand.join(',')})',
     ];
 
     return 'STATEMENT(${stmt.join(',')})';
@@ -129,28 +125,15 @@ final class _StatementNode implements StatementNode {
 
 /// Macro Node
 final class MacroNode extends _StatementNode {
-  MacroNode(StatementNode? prev, Token? label, Token opecode,
-      List<Token> operand, Parser parser)
-      : super(
-          prev,
-          label,
-          opecode,
-          operand,
-          parser,
-        );
-
-  @override
-  Label? get label => _label?.runesAsString;
-
-  @override
-  Opecode? get opecode => _opecode.runesAsString;
+  MacroNode(Token opecode, {Token? label, List<Token> operand = const []})
+      : super(label, opecode, operand);
 
   @override
   String toString() {
     final strs = <String>[
-      if (_label != null) _label.toString(),
-      _opecode.toString(),
-      if (_operand.isNotEmpty) 'OPERAND(${_operand.join(',')})',
+      if (label != null) label.toString(),
+      opecode.toString(),
+      if (operand.isNotEmpty) 'OPERAND(${operand.join(',')})',
     ];
     return 'MACRO(${strs.join(',')})';
   }
@@ -158,77 +141,51 @@ final class MacroNode extends _StatementNode {
 
 /// Block Node
 abstract class _BlockNode implements Node {
-  final List<StatementNode> _nodeList;
+  final List<StatementNode> _stmtList;
 
-  _BlockNode(this._nodeList);
-
-  @override
-  Result<List<Code>, ParseError> get code =>
-      _nodeList.map((node) => node.code).reduce((a, b) {
-        if (a.isError) return a;
-        if (b.isError) return b;
-
-        a.ok.addAll(b.ok);
-        return a;
-      });
-
-  @override
-  Size get size => _nodeList.map((node) => node.size).reduce((a, b) => a + b);
-
-  @override
-  Position get position => _nodeList.first.position;
+  _BlockNode(this._stmtList);
 }
 
 /// Subroutine Node
 final class SubroutineNode extends _BlockNode implements StatementNode {
-  final Token? _label;
-
-  final Token? _start;
-  SubroutineNode(this._label, this._start, List<StatementNode> nodeList)
-      : super(nodeList);
+  @override
+  Token? get label => _startOp.label;
 
   @override
-  Label? get label => _label?.runesAsString;
+  Token get opecode => _startOp.opecode;
 
   @override
-  Token? get labelToken => _label;
+  List<Token> get operand => _startOp.operand;
 
-  @override
-  Opecode? get opecode => null;
+  /// Start Opecode
+  ///
+  /// ### example
+  /// ```asm
+  /// MAIN    START   FOO    ; StatementNode(START, label=MAIN operand=FOO)
+  /// FOO     RET
+  ///         END
+  /// ```
+  final StatementNode _startOp;
 
-  @override
-  Token? get opecodeToken => null;
-
-  @override
-  List<Token> get operand => [];
-
-  @override
-  Position get position => _start != null
-      ? _nodeList.firstWhere((node) {
-          final label = node.label;
-          final start = _start;
-          return label != null && start != null && label == start.runesAsString;
-        }).position
-      : super.position;
+  SubroutineNode(this._startOp, List<StatementNode> proc) : super(proc);
 
   @override
   String toString() {
     final strs = [
-      if (_label != null) _label.toString(),
-      if (_start != null) 'START(${_start.toString()})',
-      if (_nodeList.isNotEmpty) 'PROCESS(${_nodeList.join(',')})',
+      if (label != null) label.toString(),
+      if (operand.isNotEmpty) 'START(${operand.join(',')})',
+      if (_stmtList.isNotEmpty) 'PROCESS(${_stmtList.join(',')})',
     ];
     return 'SUBROUTINE(${strs.join(',')})';
   }
 }
 
 /// Module Node
-final class ModuleNode extends _BlockNode {
-  ModuleNode(List<StatementNode> nodeList) : super(nodeList);
-
-  List<Label> get labels =>
-      _nodeList.map((node) => node.label).whereType<Label>().toList();
+final class ModuleNode extends _BlockNode implements Node {
+  ModuleNode(List<StatementNode> stmtList) : super(stmtList);
 
   @override
-  String toString() => 'MODULE(${_nodeList.join(',')})';
+  String toString() {
+    return 'MODULE(${_stmtList.join(',')})';
+  }
 }

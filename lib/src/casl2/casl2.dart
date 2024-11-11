@@ -1,9 +1,9 @@
 import './lexer/lexer.dart';
-import './ast/ast.dart' hide Parser;
+import './ast/ast.dart';
 import './parser/parser.dart';
 import './typedef.dart';
 
-export './ast/ast.dart' hide Parser;
+export './ast/ast.dart';
 
 /// CASL2 instance.
 class Casl2 {
@@ -43,11 +43,6 @@ class Casl2 {
       return Result.err(result.error);
     }
 
-    final code = result.ok.code;
-    if (code.isError) {
-      return Result.err([code.error]);
-    }
-
-    return Result.ok(code.ok);
+    return Result.err([ParseError.todo('Not implemented')]);
   }
 }

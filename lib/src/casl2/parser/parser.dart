@@ -166,17 +166,13 @@ class _Parser implements Parser {
   /// make block-node
   Result<StatementNode, ParseError> _nextSubroutine(
       StatementNode start, State state) {
-    final nodeList = <StatementNode>[];
-    for (final resultNode in nextStatement(state)) {
-      if (resultNode.isError) return resultNode;
-      final node = resultNode.ok;
-
-      nodeList.add(node);
+    final stmtList = <StatementNode>[];
+    for (final result in nextStatement(state)) {
+      if (result.isError) return result;
+      stmtList.add(result.ok);
     }
 
-    final operand = start.operand;
-    return Result.ok(SubroutineNode(
-        start.labelToken, operand.isNotEmpty ? operand.first : null, nodeList));
+    return Result.ok(StatementNode.subroutine(start, process: stmtList));
   }
 
   /// return a parsed result.
@@ -189,33 +185,27 @@ class _Parser implements Parser {
       _skipBlankToken();
       if (_isEnd()) return;
 
-      final resultLabel = _getLabel(parent);
-      if (resultLabel.isError) yield Result.err(resultLabel.error);
-      final label = resultLabel.ok;
+      final label = _getLabel(parent);
+      if (label.isError) yield Result.err(label.error);
 
-      final resultOpecode = _getOpecode(parent);
-      if (resultOpecode.isError) yield Result.err(resultOpecode.error);
-      final opecode = resultOpecode.ok;
+      final opecode = _getOpecode(parent);
+      if (opecode.isError) yield Result.err(opecode.error);
 
-      final resultOperand = _getOperand(parent);
-      if (resultOperand.isError) yield Result.err(resultOperand.error);
-      final operand = resultOperand.ok;
+      final operand = _getOperand(parent);
+      if (operand.isError) yield Result.err(operand.error);
 
       final stmt = StatementNode(
-        parent,
-        label,
-        opecode,
-        operand,
-        (parent, label, opecode, operand) =>
-            _parse(parent, label, opecode, operand, state),
+        opecode.ok,
+        label: label.ok,
+        operand: operand.ok,
       );
 
-      if (label != null) {
+      if (label.ok != null) {
         state.setLabel(stmt);
       }
 
       parent = stmt;
-      if (stmt.opecode == 'START') {
+      if (stmt.opecode.runesAsString == 'START') {
         yield _nextSubroutine(stmt, state);
       } else {
         yield Result.ok(stmt);
@@ -224,7 +214,7 @@ class _Parser implements Parser {
   }
 }
 
-/// parser
+/// TODO parser
 Result<List<Code>, ParseError> _parse(Node? parent, Token? label, Token opecode,
     List<Token> operand, State state) {
   switch (opecode.runesAsString) {

@@ -256,7 +256,8 @@ Result<List<Code>, ParseError> _tokenToCode(
       }
 
       return Result.ok([
-        Code((base) => base + ref.position),
+        // TODO
+        Code((base) => base + 0),
       ]);
     default:
       return Result.err(ParseError(
