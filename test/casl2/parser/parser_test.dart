@@ -50,9 +50,10 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         DC 'hello,world
 ''';
 
-  final expected = [
-    'Ok(BLOCK('
-        'STATEMENT(LABEL(MAIN),OPECODE(START)),'
+  final test = [
+    'Ok(SUBROUTINE('
+        'LABEL(MAIN),'
+        'PROCESS('
         'STATEMENT(OPECODE(CALL),OPERAND(REF(COUNT1))),'
         'STATEMENT(OPECODE(IN),OPERAND(REF(GR1234),DEC(2))),'
         'STATEMENT(OPECODE(RET)),'
@@ -60,11 +61,11 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         'STATEMENT(OPECODE(DC),OPERAND(STRING(\'It\'\'s a small world\'))),'
         'STATEMENT(OPECODE(DC),OPERAND(DEC(12),DEC(-34),DEC(56),DEC(-78))),'
         'STATEMENT(OPECODE(DC),OPERAND(HEX(#1234),HEX(#CDEF))),'
-        'STATEMENT(LABEL(GR1234),OPECODE(DC),OPERAND(REF(GR1234),REF(MAIN))),'
-        'STATEMENT(OPECODE(END))'
-        '))',
-    'Ok(BLOCK('
-        'STATEMENT(LABEL(COUNT1),OPECODE(START)),'
+        'STATEMENT(LABEL(GR1234),OPECODE(DC),OPERAND(REF(GR1234),REF(MAIN)))'
+        ')))',
+    'Ok(SUBROUTINE('
+        'LABEL(COUNT1),'
+        'PROCESS('
         'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR1))),'
         'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR2))),'
         'STATEMENT(OPECODE(SUBA),OPERAND(GR(GR2),GR(GR2))),'
@@ -79,20 +80,18 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         'STATEMENT(OPECODE(RPOP)),'
         'STATEMENT(OPECODE(POP),OPERAND(GR(GR2))),'
         'STATEMENT(OPECODE(POP),OPERAND(GR(GR1))),'
-        'STATEMENT(OPECODE(RET)),'
-        'STATEMENT(OPECODE(END))'
-        '))',
+        'STATEMENT(OPECODE(RET))'
+        ')))',
     'Err(L35: [SYNTAX ERROR] Invalid String: \'hello,world)',
     'Ok(())',
   ];
 
   final parser = ImplParser(ImplLexer.fromString(input));
   final state = State();
-  Node? parent;
 
-  for (final expected in expected) {
-    final actual = parser.nextNode(parent, state);
-    if (actual.isOk) parent = actual.ok;
+  var i = 0;
+  for (final actual in parser.nextNode(state)) {
+    final expected = test[i++];
     expect('$actual', equals(expected));
   }
 }
@@ -188,15 +187,10 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 
   final parser = ImplParser(ImplLexer.fromString(input));
   final state = State();
-  Node? parent;
   final nodes = <Node>[];
 
-  while (true) {
-    final result = parser.nextNode(parent, state);
+  for (final result in parser.nextNode(state)) {
     expect(result.isOk, equals(true));
-    parent = result.ok;
-    if (result.ok is EndNode) break;
-
     nodes.add(result.ok);
   }
 

@@ -39,6 +39,7 @@ enum ExpectedStatus {
 abstract class Lexer {
   Token nextToken();
   void keepToken(Token token);
+  Token peekToken();
 }
 
 /// lexical analysis.
@@ -59,6 +60,13 @@ class ImplLexer implements Lexer {
 
   factory ImplLexer.fromString(String src) {
     return ImplLexer(src.runes);
+  }
+
+  @override
+  Token peekToken() {
+    final token = nextToken();
+    keepToken(token);
+    return token;
   }
 
   @override

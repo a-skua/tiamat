@@ -58,7 +58,10 @@ abstract class Node {
 /// Statement Node
 abstract class StatementNode implements Node {
   Label? get label;
+  Token? get labelToken;
   Opecode? get opecode;
+  Token? get opecodeToken;
+  List<Token> get operand;
 
   factory StatementNode(StatementNode? prev, Token? label, Token opecode,
           List<Token> operand, Parser parser) =>
@@ -91,11 +94,20 @@ final class _StatementNode implements StatementNode {
   Label? get label => _label?.runesAsString;
 
   @override
+  Token? get labelToken => _label;
+
+  @override
   Opecode? get opecode => _opecode.runesAsString;
+
+  @override
+  Token? get opecodeToken => _opecode;
 
   @override
   Result<List<Code>, ParseError> get code =>
       _parse(_prev, _label, _opecode, _operand);
+
+  @override
+  List<Token> get operand => _operand;
 
   @override
   Size get size => code.isOk ? code.ok.length : 0;
@@ -179,7 +191,16 @@ final class SubroutineNode extends _BlockNode implements StatementNode {
   Label? get label => _label?.runesAsString;
 
   @override
+  Token? get labelToken => _label;
+
+  @override
   Opecode? get opecode => null;
+
+  @override
+  Token? get opecodeToken => null;
+
+  @override
+  List<Token> get operand => [];
 
   @override
   Position get position => _start != null
@@ -203,7 +224,7 @@ final class SubroutineNode extends _BlockNode implements StatementNode {
 
 /// Module Node
 final class ModuleNode extends _BlockNode {
-  ModuleNode(nodeList) : super(nodeList);
+  ModuleNode(List<StatementNode> nodeList) : super(nodeList);
 
   List<Label> get labels =>
       _nodeList.map((node) => node.label).whereType<Label>().toList();

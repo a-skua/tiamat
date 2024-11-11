@@ -8,7 +8,7 @@ import '../typedef.dart';
 export './state.dart';
 
 abstract class Parser {
-  Result<Node, ParseError> nextNode(Node? parent, State state);
+  Iterable<Result<StatementNode, ParseError>> nextNode(State state);
 }
 
 class ImplParser implements Parser {
@@ -44,10 +44,16 @@ class ImplParser implements Parser {
     _lexer.keepToken(token);
   }
 
+  /// is EOF or OPECODE(END)
   bool _isEnd() {
-    final token = _lexer.nextToken();
-    _lexer.keepToken(token);
-    return token.type == TokenType.eof;
+    final token = _lexer.peekToken();
+    if (token.type != TokenType.eof &&
+        (token.runesAsString != 'END' || token.type != TokenType.opecode)) {
+      return false;
+    }
+
+    _lexer.nextToken();
+    return true;
   }
 
   Result<Token?, ParseError> _getLabel(Node? parent) {
@@ -154,76 +160,66 @@ class ImplParser implements Parser {
     return Result.ok(operand);
   }
 
-  Result<Node, ParseError> _makeNode(Node? parent, State state) {
-    _skipBlankToken();
-    if (_isEnd()) return Result.ok(EndNode(parent));
+  Iterable<Result<StatementNode, ParseError>> _makeNode(State state) sync* {
+    StatementNode? parent;
+    while (true) {
+      _skipBlankToken();
+      if (_isEnd()) return;
 
-    final resultLabel = _getLabel(parent);
-    if (resultLabel.isError) return Result.err(resultLabel.error);
-    final label = resultLabel.ok;
+      final resultLabel = _getLabel(parent);
+      if (resultLabel.isError) yield Result.err(resultLabel.error);
+      final label = resultLabel.ok;
 
-    final resultOpecode = _getOpecode(parent);
-    if (resultOpecode.isError) return Result.err(resultOpecode.error);
-    final opecode = resultOpecode.ok;
+      final resultOpecode = _getOpecode(parent);
+      if (resultOpecode.isError) yield Result.err(resultOpecode.error);
+      final opecode = resultOpecode.ok;
 
-    final resultOperand = _getOperand(parent);
-    if (resultOperand.isError) return Result.err(resultOperand.error);
-    final operand = resultOperand.ok;
+      final resultOperand = _getOperand(parent);
+      if (resultOperand.isError) yield Result.err(resultOperand.error);
+      final operand = resultOperand.ok;
 
-    final stmt = StatementNode(
-      parent,
-      label,
-      opecode,
-      operand,
-      (parent, label, opecode, operand) =>
-          _parse(parent, label, opecode, operand, state),
-    );
+      final stmt = StatementNode(
+        parent,
+        label,
+        opecode,
+        operand,
+        (parent, label, opecode, operand) =>
+            _parse(parent, label, opecode, operand, state),
+      );
 
-    if (label != null) {
-      state.setLabel(stmt);
+      if (label != null) {
+        state.setLabel(stmt);
+      }
+
+      parent = stmt;
+      if (stmt.opecode == 'START') {
+        yield _makeSubroutineNode(stmt, state);
+      } else {
+        yield Result.ok(stmt);
+      }
     }
-    return Result.ok(stmt);
   }
 
   /// make block-node
-  Result<Node, ParseError> _makeBlockNode(Node parent, State state) {
-    if (parent.opecode != 'START') {
-      return Result.ok(parent);
-    }
-
-    final nodeList = [parent];
-    while (true) {
-      final resultNode = _makeNode(parent, state);
+  Result<StatementNode, ParseError> _makeSubroutineNode(
+      StatementNode start, State state) {
+    final nodeList = <StatementNode>[];
+    for (final resultNode in _makeNode(state)) {
       if (resultNode.isError) return resultNode;
       final node = resultNode.ok;
 
-      parent = node;
-      if (node is EndNode) {
-        return Result.ok(node);
-      }
-
       nodeList.add(node);
-
-      if (node.opecode == 'END') {
-        break;
-      }
     }
-    return Result.ok(BlockNode(nodeList));
+
+    final operand = start.operand;
+    return Result.ok(SubroutineNode(
+        start.labelToken, operand.isNotEmpty ? operand.first : null, nodeList));
   }
 
   /// return a parsed result.
   @override
-  Result<Node, ParseError> nextNode(Node? parent, State state) {
-    final result = _makeNode(parent, state);
-    if (result.isError) {
-      return result;
-    }
-
-    if (result.ok is EndNode) {
-      return result;
-    }
-
-    return _makeBlockNode(result.ok, State.block(state));
+  Iterable<Result<StatementNode, ParseError>> nextNode(State state) {
+    return _makeNode(state);
   }
 }
 
