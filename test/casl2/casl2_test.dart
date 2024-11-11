@@ -46,7 +46,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 ''';
 
   final result = Casl2.fromString(input).compile();
-  expect(result.hasError, equals(true));
+  expect(result.isError, equals(true));
 }
 
 void testParseMacroWithLabel() {
@@ -135,8 +135,8 @@ INBUF   DS      32
   ];
 
   final result = Casl2.fromString(input).compile();
-  expect(result.hasError, equals(false));
-  expect(result.code(base), equals(expected));
+  expect(result.isOk, equals(true));
+  expect(result.ok.map((c) => c.value(base)).toList(), equals(expected));
 }
 
 void testParseNode([final int base = 0]) {
@@ -221,6 +221,6 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   ];
 
   final result = Casl2.fromString(input).compile();
-  expect(result.hasError, equals(false));
-  expect(result.code(base), equals(expected));
+  expect(result.isOk, equals(true));
+  expect(result.ok.map((c) => c.value(base)).toList(), equals(expected));
 }

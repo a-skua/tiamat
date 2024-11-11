@@ -4,17 +4,20 @@ import '../token/token.dart';
 import './util.dart';
 import './state.dart';
 import '../typedef.dart';
-
 export './state.dart';
 
+/// Parser of CASL2
 abstract class Parser {
-  Iterable<Result<StatementNode, ParseError>> nextNode(State state);
+  Iterable<Result<StatementNode, ParseError>> nextStatement(State state);
+
+  /// Create a parser instance.
+  factory Parser(Lexer lexer) => _Parser(lexer);
 }
 
-class ImplParser implements Parser {
+class _Parser implements Parser {
   final Lexer _lexer;
 
-  ImplParser(this._lexer);
+  _Parser(this._lexer);
 
   void _skipBlankToken() {
     var token = _lexer.nextToken();
@@ -160,7 +163,27 @@ class ImplParser implements Parser {
     return Result.ok(operand);
   }
 
-  Iterable<Result<StatementNode, ParseError>> _makeNode(State state) sync* {
+  /// make block-node
+  Result<StatementNode, ParseError> _nextSubroutine(
+      StatementNode start, State state) {
+    final nodeList = <StatementNode>[];
+    for (final resultNode in nextStatement(state)) {
+      if (resultNode.isError) return resultNode;
+      final node = resultNode.ok;
+
+      nodeList.add(node);
+    }
+
+    final operand = start.operand;
+    return Result.ok(SubroutineNode(
+        start.labelToken, operand.isNotEmpty ? operand.first : null, nodeList));
+  }
+
+  /// return a parsed result.
+  ///
+  /// EOF or OPECODE(END) is true, finish parsing.
+  @override
+  Iterable<Result<StatementNode, ParseError>> nextStatement(State state) sync* {
     StatementNode? parent;
     while (true) {
       _skipBlankToken();
@@ -193,33 +216,11 @@ class ImplParser implements Parser {
 
       parent = stmt;
       if (stmt.opecode == 'START') {
-        yield _makeSubroutineNode(stmt, state);
+        yield _nextSubroutine(stmt, state);
       } else {
         yield Result.ok(stmt);
       }
     }
-  }
-
-  /// make block-node
-  Result<StatementNode, ParseError> _makeSubroutineNode(
-      StatementNode start, State state) {
-    final nodeList = <StatementNode>[];
-    for (final resultNode in _makeNode(state)) {
-      if (resultNode.isError) return resultNode;
-      final node = resultNode.ok;
-
-      nodeList.add(node);
-    }
-
-    final operand = start.operand;
-    return Result.ok(SubroutineNode(
-        start.labelToken, operand.isNotEmpty ? operand.first : null, nodeList));
-  }
-
-  /// return a parsed result.
-  @override
-  Iterable<Result<StatementNode, ParseError>> nextNode(State state) {
-    return _makeNode(state);
   }
 }
 

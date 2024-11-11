@@ -3,7 +3,7 @@ import 'resource.dart' show Resource;
 import 'device.dart';
 import './instruction.dart';
 import 'supervisor_call.dart' show supervisorCall;
-import 'package:tiamat/tiamat.dart' show Result;
+import 'package:tiamat/tiamat.dart' show Code;
 
 export 'device.dart';
 
@@ -38,11 +38,18 @@ abstract class Comet2 {
   Future<Resource> run([Status]);
 
   /// load code on compute
-  void load(LoadPoint start, Result result);
+  void load(LoadPoint start, List<Code> code);
+
+  factory Comet2(
+    Device device, {
+    NoticeResource? onUpdate,
+    NoticeStatus? onChangeStatus,
+  }) =>
+      _Comet2(device, onUpdate: onUpdate, onChangeStatus: onChangeStatus);
 }
 
 /// implements interface
-class ImplComet2 implements Comet2 {
+class _Comet2 implements Comet2 {
   /// I/O Device.
   ///
   /// Need to change when implementing the emulator.
@@ -51,7 +58,7 @@ class ImplComet2 implements Comet2 {
   NoticeResource? _onUpdate;
   NoticeStatus? _onChangeStatus;
 
-  ImplComet2(
+  _Comet2(
     this.device, {
     NoticeResource? onUpdate,
     NoticeStatus? onChangeStatus,
@@ -92,8 +99,8 @@ class ImplComet2 implements Comet2 {
   set delay(final int ms) => _delay = getDuration(ms);
 
   @override
-  void load(final int start, final Result result) {
-    resource.memory.setAll(start, result.code(start));
+  void load(final int start, final List<Code> code) {
+    resource.memory.setAll(start, code.map((c) => c.value(start)).toList());
     resource.programRegister.value = start;
     resource.stackPointer.value = 0xffff; // reset.
   }
@@ -137,8 +144,8 @@ class ImplComet2 implements Comet2 {
   bool get _isExit => resource.stackPointer.value == 0;
 
   /// load nad run
-  Future<Resource> loadAndRun(LoadPoint start, Result result) async {
-    load(start, result);
+  Future<Resource> loadAndRun(LoadPoint start, List<Code> code) async {
+    load(start, code);
     await run();
     return resource;
   }

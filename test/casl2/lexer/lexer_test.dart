@@ -258,7 +258,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   final runes = input.runes.toList();
   var currentLineStart = 0;
   var currentLineNumber = 1;
-  final l = ImplLexer(runes);
+  final l = Lexer(runes);
   for (final tt in tests) {
     final token = l.nextToken();
 
@@ -330,7 +330,7 @@ GR1     SUBA    GR2,GR2         ; ラベルエラー
   final runes = input.runes.toList();
   var currentLineStart = 0;
   var currentLineNumber = 1;
-  final l = ImplLexer(runes);
+  final l = Lexer(runes);
   for (final tt in tests) {
     final token = l.nextToken();
 

@@ -1,5 +1,5 @@
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
-import 'package:tiamat/src/casl2/ast/ast.dart';
+import 'package:tiamat/src/casl2/ast/ast.dart' hide Parser;
 import 'package:tiamat/src/casl2/parser/parser.dart';
 import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
@@ -86,11 +86,11 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
     'Ok(())',
   ];
 
-  final parser = ImplParser(ImplLexer.fromString(input));
+  final parser = Parser(Lexer.fromString(input));
   final state = State();
 
   var i = 0;
-  for (final actual in parser.nextNode(state)) {
+  for (final actual in parser.nextStatement(state)) {
     final expected = test[i++];
     expect('$actual', equals(expected));
   }
@@ -185,11 +185,11 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
     ],
   ];
 
-  final parser = ImplParser(ImplLexer.fromString(input));
+  final parser = Parser(Lexer.fromString(input));
   final state = State();
   final nodes = <Node>[];
 
-  for (final result in parser.nextNode(state)) {
+  for (final result in parser.nextStatement(state)) {
     expect(result.isOk, equals(true));
     nodes.add(result.ok);
   }

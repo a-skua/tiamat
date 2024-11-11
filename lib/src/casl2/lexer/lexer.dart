@@ -24,6 +24,8 @@ bool isSeparation(final int? rune) => rune == comma;
 
 const tokenEOF = Token([], TokenType.eof);
 
+typedef Byte = int;
+
 /// expected current status.
 enum ExpectedStatus {
   label,
@@ -40,10 +42,13 @@ abstract class Lexer {
   Token nextToken();
   void keepToken(Token token);
   Token peekToken();
+
+  factory Lexer(Iterable<Byte> runes) => _Lexer(runes);
+  factory Lexer.fromString(String src) => _Lexer(src.runes);
 }
 
 /// lexical analysis.
-class ImplLexer implements Lexer {
+class _Lexer implements Lexer {
   final _keepToken = <Token>[];
 
   late final List<int> _runes;
@@ -54,12 +59,8 @@ class ImplLexer implements Lexer {
   /// lexical state.
   var _expectedStatus = ExpectedStatus.label;
 
-  ImplLexer(Iterable<int> runes) {
+  _Lexer(Iterable<Byte> runes) {
     _runes = runes.toList();
-  }
-
-  factory ImplLexer.fromString(String src) {
-    return ImplLexer(src.runes);
   }
 
   @override

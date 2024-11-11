@@ -1,6 +1,9 @@
 import './lexer/lexer.dart';
 import './ast/ast.dart' hide Parser;
 import './parser/parser.dart';
+import './typedef.dart';
+
+export './ast/ast.dart' hide Parser;
 
 /// CASL2 instance.
 class Casl2 {
@@ -10,49 +13,41 @@ class Casl2 {
   Casl2(this._parser);
 
   factory Casl2.fromString(final String src) =>
-      Casl2(ImplParser(ImplLexer.fromString(src)));
+      Casl2(Parser(Lexer.fromString(src)));
 
-  (ModuleNode, List<ParseError>) parseNode() {
-    final errors = <ParseError>[];
-    final nodes = <StatementNode>[];
+  Result<ModuleNode, List<ParseError>> parse() {
+    final errs = <ParseError>[];
+    final stmts = <StatementNode>[];
 
-    for (final result in _parser.nextNode(_state)) {
+    for (final result in _parser.nextStatement(_state)) {
       if (result.isError) {
-        errors.add(result.error);
+        errs.add(result.error);
         continue;
       }
 
       final node = result.ok;
-      nodes.add(node);
+      stmts.add(node);
     }
-    return (ModuleNode(nodes), errors);
+
+    if (errs.isNotEmpty) {
+      return Result.err(errs);
+    }
+
+    return Result.ok(ModuleNode(stmts));
   }
 
-  Result compile() {
-    final (mod, errors) = parseNode();
-    final code = <Code>[];
+  Result<List<Code>, List<ParseError>> compile() {
+    final result = parse();
 
-    final result = mod.code;
     if (result.isError) {
-      errors.add(result.error);
-    } else {
-      code.addAll(result.ok);
+      return Result.err(result.error);
     }
 
-    return Result(code, errors);
+    final code = result.ok.code;
+    if (code.isError) {
+      return Result.err([code.error]);
+    }
+
+    return Result.ok(code.ok);
   }
-}
-
-/// Parser return this Node
-class Result {
-  final List<Code> _code;
-  final List<ParseError> _errors;
-
-  Result(this._code, this._errors);
-
-  bool get hasError => _errors.isNotEmpty;
-
-  List<ParseError> get errors => _errors;
-
-  List<int> code(int base) => _code.map((c) => c.value(base)).toList();
 }
