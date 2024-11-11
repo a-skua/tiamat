@@ -27,7 +27,7 @@ Result<List<Code>, ParseError> parseIN(
 ) {
   if (operand.length != 2) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 2 operands.',
+      '[SYNTAX ERROR] ${opecode.runes.toString()} wrong number of operands. wants 2 operands.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
@@ -40,7 +40,7 @@ Result<List<Code>, ParseError> parseIN(
 
   if (length.type != TokenType.hex && length.type != TokenType.dec) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${length.runesAsString} wrong type. wants a number.',
+      '[SYNTAX ERROR] ${length.runes.toString()} wrong type. wants a number.',
       start: length.start,
       end: length.end,
       lineStart: length.lineStart,
@@ -52,22 +52,22 @@ Result<List<Code>, ParseError> parseIN(
     parseRadrx(
       parent,
       label,
-      Token('LAD'.runes, TokenType.opecode),
-      [Token('GR1'.runes, TokenType.gr), buffer],
+      Token.op('LAD'.runes),
+      [Token.gr('GR1'.runes), buffer],
       state,
     ),
     parseRadrx(
       parent,
       null,
-      Token('LAD'.runes, TokenType.opecode),
-      [Token('GR2'.runes, TokenType.gr), length],
+      Token.op('LAD'.runes),
+      [Token.gr('GR2'.runes), length],
       state,
     ),
     parseAdrx(
       parent,
       null,
-      Token('SVC'.runes, TokenType.opecode),
-      [Token('1'.runes, TokenType.dec)],
+      Token.op('SVC'.runes),
+      [Token.dec('1'.runes)],
       state,
     ),
   ].reduce((a, b) {
@@ -88,7 +88,7 @@ Result<List<Code>, ParseError> parseOUT(
 ) {
   if (operand.length != 2) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 2 operands.',
+      '[SYNTAX ERROR] ${opecode.runes.toString()} wrong number of operands. wants 2 operands.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
@@ -101,7 +101,7 @@ Result<List<Code>, ParseError> parseOUT(
 
   if (length.type != TokenType.hex && length.type != TokenType.dec) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${length.runesAsString} wrong type. wants a number.',
+      '[SYNTAX ERROR] ${length.runes.toString()} wrong type. wants a number.',
       start: length.start,
       end: length.end,
       lineStart: length.lineStart,
@@ -113,22 +113,22 @@ Result<List<Code>, ParseError> parseOUT(
     parseRadrx(
       parent,
       label,
-      Token('LAD'.runes, TokenType.opecode),
-      [Token('GR1'.runes, TokenType.gr), buffer],
+      Token.op('LAD'.runes),
+      [Token.gr('GR1'.runes), buffer],
       state,
     ),
     parseRadrx(
       parent,
       null,
-      Token('LAD'.runes, TokenType.opecode),
-      [Token('GR2'.runes, TokenType.gr), length],
+      Token.op('LAD'.runes),
+      [Token.gr('GR2'.runes), length],
       state,
     ),
     parseAdrx(
       parent,
       null,
-      Token('SVC'.runes, TokenType.opecode),
-      [Token('2'.runes, TokenType.dec)],
+      Token.op('SVC'.runes),
+      [Token.dec('2'.runes)],
       state,
     ),
   ].reduce((a, b) {
@@ -151,70 +151,70 @@ Result<List<Code>, ParseError> parseRPUSH(
     parseAdrx(
       parent,
       label,
-      Token('PUSH'.runes, TokenType.opecode),
+      Token.op('PUSH'.runes),
       [
-        Token('0'.runes, TokenType.dec),
-        Token('GR1'.runes, TokenType.gr),
+        Token.dec('0'.runes),
+        Token.gr('GR1'.runes),
       ],
       state,
     ),
     parseAdrx(
       parent,
       null,
-      Token('PUSH'.runes, TokenType.opecode),
+      Token.op('PUSH'.runes),
       [
-        Token('0'.runes, TokenType.dec),
-        Token('GR2'.runes, TokenType.gr),
+        Token.dec('0'.runes),
+        Token.gr('GR2'.runes),
       ],
       state,
     ),
     parseAdrx(
       parent,
       null,
-      Token('PUSH'.runes, TokenType.opecode),
+      Token.op('PUSH'.runes),
       [
-        Token('0'.runes, TokenType.dec),
-        Token('GR3'.runes, TokenType.gr),
+        Token.dec('0'.runes),
+        Token.gr('GR3'.runes),
       ],
       state,
     ),
     parseAdrx(
       parent,
       null,
-      Token('PUSH'.runes, TokenType.opecode),
+      Token.op('PUSH'.runes),
       [
-        Token('0'.runes, TokenType.dec),
-        Token('GR4'.runes, TokenType.gr),
+        Token.dec('0'.runes),
+        Token.gr('GR4'.runes),
       ],
       state,
     ),
     parseAdrx(
       parent,
       null,
-      Token('PUSH'.runes, TokenType.opecode),
+      Token.op('PUSH'.runes),
       [
-        Token('0'.runes, TokenType.dec),
-        Token('GR5'.runes, TokenType.gr),
+        Token.dec('0'.runes),
+        Token.gr('GR5'.runes),
       ],
       state,
     ),
     parseAdrx(
       parent,
       null,
-      Token('PUSH'.runes, TokenType.opecode),
+      Token.op('PUSH'.runes),
       [
-        Token('0'.runes, TokenType.dec),
-        Token('GR6'.runes, TokenType.gr),
+        Token.dec('0'.runes),
+        Token.gr('GR6'.runes),
       ],
       state,
     ),
     parseAdrx(
       parent,
       null,
-      Token('PUSH'.runes, TokenType.opecode),
+      Token.op('PUSH'.runes),
       [
-        Token('0'.runes, TokenType.dec),
-        Token('GR7'.runes, TokenType.gr),
+        Token.dec('0'.runes),
+        Token.gr('GR7'.runes),
       ],
       state,
     ),
@@ -238,50 +238,50 @@ Result<List<Code>, ParseError> parseRPOP(
     parseR(
       parent,
       label,
-      Token('POP'.runes, TokenType.opecode),
-      [Token('GR7'.runes, TokenType.gr)],
+      Token.op('POP'.runes),
+      [Token.gr('GR7'.runes)],
       state,
     ),
     parseR(
       parent,
       null,
-      Token('POP'.runes, TokenType.opecode),
-      [Token('GR6'.runes, TokenType.gr)],
+      Token.op('POP'.runes),
+      [Token.gr('GR6'.runes)],
       state,
     ),
     parseR(
       parent,
       null,
-      Token('POP'.runes, TokenType.opecode),
-      [Token('GR5'.runes, TokenType.gr)],
+      Token.op('POP'.runes),
+      [Token.gr('GR5'.runes)],
       state,
     ),
     parseR(
       parent,
       null,
-      Token('POP'.runes, TokenType.opecode),
-      [Token('GR4'.runes, TokenType.gr)],
+      Token.op('POP'.runes),
+      [Token.gr('GR4'.runes)],
       state,
     ),
     parseR(
       parent,
       null,
-      Token('POP'.runes, TokenType.opecode),
-      [Token('GR3'.runes, TokenType.gr)],
+      Token.op('POP'.runes),
+      [Token.gr('GR3'.runes)],
       state,
     ),
     parseR(
       parent,
       null,
-      Token('POP'.runes, TokenType.opecode),
-      [Token('GR2'.runes, TokenType.gr)],
+      Token.op('POP'.runes),
+      [Token.gr('GR2'.runes)],
       state,
     ),
     parseR(
       parent,
       null,
-      Token('POP'.runes, TokenType.opecode),
-      [Token('GR1'.runes, TokenType.gr)],
+      Token.op('POP'.runes),
+      [Token.gr('GR1'.runes)],
       state,
     ),
   ].reduce((a, b) {

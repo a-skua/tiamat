@@ -19,100 +19,138 @@ class _Parser implements Parser {
 
   _Parser(this._lexer);
 
-  void _skipBlankToken() {
+  Result<void, TokenizeError> _skipBlankToken() {
     var token = _lexer.nextToken();
-    while (token.type == TokenType.space ||
-        token.type == TokenType.eol ||
-        token.type == TokenType.comment) {
+    if (token.isError) return Result.err(token.error);
+    while (token.isOk &&
+        (token.ok.type == TokenType.space ||
+            token.ok.type == TokenType.eol ||
+            token.ok.type == TokenType.comment)) {
       token = _lexer.nextToken();
     }
-    _lexer.keepToken(token);
+
+    if (token.isError) return Result.err(token.error);
+    _lexer.keepToken(token.ok);
+    return Result.ok(null);
   }
 
-  void _skipSpaceToken() {
+  Result<void, TokenizeError> _skipSpaceToken() {
     var token = _lexer.nextToken();
-    while (token.type == TokenType.space) {
+    if (token.isError) return Result.err(token.error);
+    while (token.isOk && token.ok.type == TokenType.space) {
       token = _lexer.nextToken();
     }
-    _lexer.keepToken(token);
+
+    if (token.isError) return Result.err(token.error);
+    _lexer.keepToken(token.ok);
+    return Result.ok(null);
   }
 
-  void _skipTokenOfLine() {
+  Result<void, TokenizeError> _skipTokenOfLine() {
     var token = _lexer.nextToken();
-    while (token.type != TokenType.error &&
-        token.type != TokenType.eol &&
-        token.type != TokenType.eof) {
+    if (token.isError) return Result.err(token.error);
+    while (token.isOk &&
+        token.ok.type != TokenType.eol &&
+        token.ok.type != TokenType.eof) {
       token = _lexer.nextToken();
     }
-    _lexer.keepToken(token);
+    if (token.isError) return Result.err(token.error);
+    _lexer.keepToken(token.ok);
+    return Result.ok(null);
   }
 
   /// is EOF or OPECODE(END)
-  bool _isEnd() {
+  Result<bool, TokenizeError> _isEnd() {
     final token = _lexer.peekToken();
-    if (token.type != TokenType.eof &&
-        (token.runesAsString != 'END' || token.type != TokenType.opecode)) {
-      return false;
+    if (token.isError) return Result.err(token.error);
+    if (token.ok.type != TokenType.eof &&
+        (String.fromCharCodes(token.ok.runes) != 'END' ||
+            token.ok.type != TokenType.op)) {
+      return Result.ok(false);
     }
 
-    _lexer.nextToken();
-    return true;
+    return Result.ok(true);
   }
 
   Result<Token?, ParseError> _getLabel(Node? parent) {
     _skipSpaceToken();
     final token = _lexer.nextToken();
-    switch (token.type) {
+    if (token.isError) {
+      // skip line
+      _skipTokenOfLine();
+
+      final err = token.error;
+      return Result.err(ParseError(
+        '[SYNTAX ERROR] ${err.message}',
+        start: err.token.start,
+        end: err.token.end,
+        lineStart: err.token.lineStart,
+        lineNumber: err.token.lineNumber,
+      ));
+    }
+    switch (token.ok.type) {
       case TokenType.label:
-        return Result.ok(token);
-      case TokenType.error:
-        final error = token as ErrorToken;
-
-        // skip line
-        _skipTokenOfLine();
-
-        return Result.err(ParseError(
-          '[SYNTAX ERROR] ${error.error}',
-          start: error.start,
-          end: error.end,
-          lineStart: error.lineStart,
-          lineNumber: error.lineNumber,
-        ));
+        return Result.ok(token.ok);
       default:
-        _lexer.keepToken(token);
+        _lexer.keepToken(token.ok);
         return Result.ok(null);
     }
   }
 
   Result<Token, ParseError> _getOpecode(Node? parent) {
-    _skipSpaceToken();
-    final token = _lexer.nextToken();
-    switch (token.type) {
-      case TokenType.opecode:
-        return Result.ok(token);
-      case TokenType.error:
-        final error = token as ErrorToken;
-
-        // skip line
-        _skipTokenOfLine();
-
+    {
+      final result = _skipSpaceToken();
+      if (result.isError) {
+        final err = result.error;
         return Result.err(ParseError(
-          '[SYNTAX ERROR] ${error.error}',
-          start: error.start,
-          end: error.end,
-          lineStart: error.lineStart,
-          lineNumber: error.lineNumber,
+          '[SYNTAX ERROR] ${err.message}',
+          start: err.token.start,
+          end: err.token.end,
+          lineStart: err.token.lineStart,
+          lineNumber: err.token.lineNumber,
         ));
+      }
+    }
+
+    final token = _lexer.nextToken();
+    if (token.isError) {
+      // skip line
+      _skipTokenOfLine();
+
+      final err = token.error;
+      return Result.err(ParseError(
+        '[SYNTAX ERROR] ${err.message}',
+        start: err.token.start,
+        end: err.token.end,
+        lineStart: err.token.lineStart,
+        lineNumber: err.token.lineNumber,
+      ));
+    }
+    switch (token.ok.type) {
+      case TokenType.op:
+        return Result.ok(token.ok);
       default:
         // skip line
-        _skipTokenOfLine();
+        {
+          final result = _skipTokenOfLine();
+          if (result.isError) {
+            final err = result.error;
+            return Result.err(ParseError(
+              '[SYNTAX ERROR] ${err.message}',
+              start: err.token.start,
+              end: err.token.end,
+              lineStart: err.token.lineStart,
+              lineNumber: err.token.lineNumber,
+            ));
+          }
+        }
 
         return Result.err(ParseError(
-          '[SYNTAX ERROR] Unexpected token: $token',
-          start: token.start,
-          end: token.end,
-          lineStart: token.lineStart,
-          lineNumber: token.lineNumber,
+          '[SYNTAX ERROR] Unexpected token: ${token.ok}',
+          start: token.ok.start,
+          end: token.ok.end,
+          lineStart: token.ok.lineStart,
+          lineNumber: token.ok.lineNumber,
         ));
     }
   }
@@ -123,41 +161,42 @@ class _Parser implements Parser {
     loop:
     while (true) {
       final token = _lexer.nextToken();
-      switch (token.type) {
+      if (token.isError) {
+        // skip line
+        _skipTokenOfLine();
+
+        final err = token.error;
+        return Result.err(ParseError(
+          '[SYNTAX ERROR] ${err.message}',
+          start: err.token.start,
+          end: err.token.end,
+          lineStart: err.token.lineStart,
+          lineNumber: err.token.lineNumber,
+        ));
+      }
+
+      switch (token.ok.type) {
         case TokenType.space:
         case TokenType.separation:
         case TokenType.comment:
           break;
         case TokenType.label:
-        case TokenType.opecode:
+        case TokenType.op:
           // skip line
           _skipTokenOfLine();
 
           return Result.err(ParseError(
-            '[SYNTAX ERROR] Unexpected token: $token',
-            start: token.start,
-            end: token.end,
-            lineStart: token.lineStart,
-            lineNumber: token.lineNumber,
-          ));
-        case TokenType.error:
-          final error = token as ErrorToken;
-
-          // skip line
-          _skipTokenOfLine();
-
-          return Result.err(ParseError(
-            '[SYNTAX ERROR] ${error.error}',
-            start: error.start,
-            end: error.end,
-            lineStart: error.lineStart,
-            lineNumber: error.lineNumber,
+            '[SYNTAX ERROR] Unexpected token: ${token.ok}',
+            start: token.ok.start,
+            end: token.ok.end,
+            lineStart: token.ok.lineStart,
+            lineNumber: token.ok.lineNumber,
           ));
         case TokenType.eof:
         case TokenType.eol:
           break loop;
         default:
-          operand.add(token);
+          operand.add(token.ok);
       }
     }
     return Result.ok(operand);
@@ -183,7 +222,23 @@ class _Parser implements Parser {
     StatementNode? parent;
     while (true) {
       _skipBlankToken();
-      if (_isEnd()) return;
+      {
+        final end = _isEnd();
+        if (end.isOk && end.ok) {
+          return;
+        }
+        if (end.isError) {
+          final err = end.error;
+
+          yield Result.err(ParseError(
+            '[SYNTAX ERROR] ${err.message}',
+            start: err.token.start,
+            end: err.token.end,
+            lineStart: err.token.lineStart,
+            lineNumber: err.token.lineNumber,
+          ));
+        }
+      }
 
       final label = _getLabel(parent);
       if (label.isError) yield Result.err(label.error);
@@ -205,7 +260,7 @@ class _Parser implements Parser {
       }
 
       parent = stmt;
-      if (stmt.opecode.runesAsString == 'START') {
+      if (String.fromCharCodes(stmt.opecode.runes) == 'START') {
         yield _nextSubroutine(stmt, state);
       } else {
         yield Result.ok(stmt);
@@ -217,7 +272,7 @@ class _Parser implements Parser {
 /// TODO parser
 Result<List<Code>, ParseError> _parse(Node? parent, Token? label, Token opecode,
     List<Token> operand, State state) {
-  switch (opecode.runesAsString) {
+  switch (String.fromCharCodes(opecode.runes)) {
     case 'LD':
     case 'ADDA':
     case 'SUBA':

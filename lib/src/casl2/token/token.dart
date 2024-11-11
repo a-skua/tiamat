@@ -1,3 +1,5 @@
+typedef Char = int;
+
 /// Type of Token
 enum TokenType {
   /// '; COMMENT'
@@ -7,7 +9,7 @@ enum TokenType {
   label,
 
   /// 'OPECODE'
-  opecode,
+  op,
 
   /// 'REF'
   ref,
@@ -21,8 +23,8 @@ enum TokenType {
   /// #0000 ~ FFFF
   hex,
 
-  /// 'STRING'
-  string,
+  /// 'TEXT'
+  text,
 
   /// End of Line
   eol,
@@ -30,50 +32,35 @@ enum TokenType {
   /// End of File
   eof,
 
-  /// Error
-  error,
-
   /// ','
   separation,
 
   /// '\t' or ' '
   space,
+
+  /// Unexpected Token
+  unexpected,
 }
 
-String tokenTypeAsString(TokenType type) {
-  switch (type) {
-    case TokenType.comment:
-      return 'COMMENT';
-    case TokenType.label:
-      return 'LABEL';
-    case TokenType.opecode:
-      return 'OPECODE';
-    case TokenType.ref:
-      return 'REF';
-    case TokenType.gr:
-      return 'GR';
-    case TokenType.dec:
-      return 'DEC';
-    case TokenType.hex:
-      return 'HEX';
-    case TokenType.string:
-      return 'STRING';
-    case TokenType.eol:
-      return 'EOL';
-    case TokenType.eof:
-      return 'EOF';
-    case TokenType.error:
-      return 'ERROR';
-    case TokenType.separation:
-      return 'SEPARATION';
-    case TokenType.space:
-      return 'SPACE';
-  }
-}
+String _typeToString(TokenType type) => switch (type) {
+      TokenType.comment => 'COMMENT',
+      TokenType.label => 'LABEL',
+      TokenType.op => 'OPECODE',
+      TokenType.ref => 'REF',
+      TokenType.gr => 'GR',
+      TokenType.dec => 'DEC',
+      TokenType.hex => 'HEX',
+      TokenType.text => 'TEXT',
+      TokenType.eol => 'EOL',
+      TokenType.eof => 'EOF',
+      TokenType.separation => 'SEPARATION',
+      TokenType.space => 'SPACE',
+      TokenType.unexpected => 'UNEXPECTED',
+    };
 
 /// Token
-class Token {
-  final Iterable<int> _runes;
+final class Token {
+  final Iterable<Char> runes;
   final TokenType type;
 
   /// tokens [start] position.
@@ -89,7 +76,7 @@ class Token {
   final int lineNumber;
 
   const Token(
-    this._runes,
+    this.runes,
     this.type, {
     this.start = 0,
     this.end = 0,
@@ -97,34 +84,128 @@ class Token {
     this.lineNumber = 1,
   });
 
-  List<int> get runes => List.from(_runes);
-
-  String get runesAsString => String.fromCharCodes(_runes);
-
-  String get typeAsString => tokenTypeAsString(type);
-
-  @override
-  String toString() {
-    return '$typeAsString($runesAsString)';
-  }
-}
-
-/// error
-class ErrorToken extends Token {
-  final String error;
-  ErrorToken(
-    Iterable<int> runes,
-    this.error, {
+  factory Token.comment(
+    Iterable<Char> runes, {
     int start = 0,
     int end = 0,
     int lineStart = 0,
     int lineNumber = 1,
-  }) : super(
-          runes,
-          TokenType.error,
-          start: start,
-          end: end,
-          lineStart: lineStart,
-          lineNumber: lineNumber,
-        );
+  }) =>
+      Token(runes, TokenType.comment,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.label(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.label,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.op(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.op,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.ref(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.ref,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.gr(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.gr,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.dec(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.dec,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.hex(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.hex,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.text(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.text,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.eol(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.eol,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.eof(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.eof,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.separation(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.separation,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  factory Token.space(
+    Iterable<Char> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token(runes, TokenType.space,
+          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  @override
+  String toString() {
+    return '${_typeToString(type)}(${String.fromCharCodes(runes)})';
+  }
 }

@@ -41,7 +41,7 @@ Result<List<Code>, ParseError> parseRadrx(
 ) {
   if (operand.length < 2 || operand.length > 3) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 2 or 3 operands.',
+      '[SYNTAX ERROR] ${String.fromCharCodes(opecode.runes)} wrong number of operands. wants 2 or 3 operands.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
@@ -55,7 +55,7 @@ Result<List<Code>, ParseError> parseRadrx(
 
   if (r.type != TokenType.gr) {
     Result.err(ParseError(
-      '[SYNTAX ERROR] ${r.runesAsString} is not an expected value. value expects between GR0 and GR7.',
+      '[SYNTAX ERROR] ${String.fromCharCodes(r.runes)} is not an expected value. value expects between GR0 and GR7.',
       start: r.start,
       end: r.end,
       lineStart: r.lineStart,
@@ -66,7 +66,7 @@ Result<List<Code>, ParseError> parseRadrx(
   if (x != null) {
     if (x.type != TokenType.gr) {
       return Result.err(ParseError(
-        '[SYNTAX ERROR] ${x.runesAsString} is not an expected value. value expects between GR1 and GR7.',
+        '[SYNTAX ERROR] ${String.fromCharCodes(x.runes)} is not an expected value. value expects between GR1 and GR7.',
         start: x.start,
         end: x.end,
         lineStart: x.lineStart,
@@ -74,9 +74,9 @@ Result<List<Code>, ParseError> parseRadrx(
       ));
     }
 
-    if (x.runesAsString == 'GR0') {
+    if (String.fromCharCodes(x.runes) == 'GR0') {
       return Result.err(ParseError(
-        '[SYNTAX ERROR] ${x.runesAsString} is not an expected value. value expects between GR1 and GR7.',
+        '[SYNTAX ERROR] ${String.fromCharCodes(x.runes)} is not an expected value. value expects between GR1 and GR7.',
         start: x.start,
         end: x.end,
         lineStart: x.lineStart,
@@ -85,7 +85,7 @@ Result<List<Code>, ParseError> parseRadrx(
     }
   }
 
-  final baseOpecode = _parseOpecodeRadrx(opecode.runesAsString);
+  final baseOpecode = _parseOpecodeRadrx(String.fromCharCodes(opecode.runes));
   final indexR = _registerToNumber(r);
   final indexX = x != null ? _registerToNumber(x) : 0;
 
@@ -108,7 +108,7 @@ Result<List<Code>, ParseError> parseAdrx(
 ) {
   if (operand.length != 1 && operand.length != 2) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 1 or 2 operands.',
+      '[SYNTAX ERROR] ${String.fromCharCodes(opecode.runes)} wrong number of operands. wants 1 or 2 operands.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
@@ -119,7 +119,7 @@ Result<List<Code>, ParseError> parseAdrx(
   final adr = operand[0];
   final x = operand.length == 2 ? operand[1] : null;
 
-  final baseOpecode = _parseOpecodeAdrx(opecode.runesAsString);
+  final baseOpecode = _parseOpecodeAdrx(String.fromCharCodes(opecode.runes));
   final indexX = x != null ? _registerToNumber(x) : 0;
 
   final result = _tokenToCode(parent, adr, state);
@@ -141,7 +141,7 @@ Result<List<Code>, ParseError> parseR1r2(
 ) {
   if (operand.length != 2) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 2 operands.',
+      '[SYNTAX ERROR] ${String.fromCharCodes(opecode.runes)} wrong number of operands. wants 2 operands.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
@@ -154,7 +154,7 @@ Result<List<Code>, ParseError> parseR1r2(
 
   if (r1.type != TokenType.gr) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${r1.runesAsString} is not an expected value. value expects between GR0 and GR7.',
+      '[SYNTAX ERROR] ${String.fromCharCodes(r1.runes)} is not an expected value. value expects between GR0 and GR7.',
       start: r1.start,
       end: r1.end,
       lineStart: r1.lineStart,
@@ -164,7 +164,7 @@ Result<List<Code>, ParseError> parseR1r2(
 
   if (r2.type != TokenType.gr) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${r2.runesAsString} is not an expected value. value expects between GR0 and GR7.',
+      '[SYNTAX ERROR] ${String.fromCharCodes(r2.runes)} is not an expected value. value expects between GR0 and GR7.',
       start: r2.start,
       end: r2.end,
       lineStart: r2.lineStart,
@@ -172,7 +172,7 @@ Result<List<Code>, ParseError> parseR1r2(
     ));
   }
 
-  final baseOpecode = _parseOpecodeR1r2(opecode.runesAsString);
+  final baseOpecode = _parseOpecodeR1r2(String.fromCharCodes(opecode.runes));
   final indexR1 = _registerToNumber(r1);
   final indexR2 = _registerToNumber(r2);
   return Result.ok([
@@ -190,7 +190,7 @@ Result<List<Code>, ParseError> parseR(
 ) {
   if (operand.length != 1) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${opecode.runesAsString} wrong number of operands. wants 1 operands.',
+      '[SYNTAX ERROR] ${String.fromCharCodes(opecode.runes)} wrong number of operands. wants 1 operands.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
@@ -198,12 +198,12 @@ Result<List<Code>, ParseError> parseR(
     ));
   }
 
-  final baseOpecode = _parseOpecodeR(opecode.runesAsString);
+  final baseOpecode = _parseOpecodeR(String.fromCharCodes(opecode.runes));
   final r = operand[0];
 
   if (r.type != TokenType.gr) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${r.runesAsString} is not an expected value. value expects between GR0 and GR7.',
+      '[SYNTAX ERROR] ${String.fromCharCodes(r.runes)} is not an expected value. value expects between GR0 and GR7.',
       start: r.start,
       end: r.end,
       lineStart: r.lineStart,
@@ -220,11 +220,11 @@ Result<List<Code>, ParseError> parseR(
 Result<List<Code>, ParseError> _tokenToCode(
     Node? parent, Token token, State state) {
   switch (token.type) {
-    case TokenType.string:
+    case TokenType.text:
       // `'is''s a small world'` to `is's a small world`
       final runes = token.runes;
       final str = String.fromCharCodes(
-        runes.getRange(1, runes.length - 1),
+        runes.toList().getRange(1, runes.length - 1),
       ).replaceAll("''", "'");
 
       final code = <Code>[];
@@ -234,16 +234,16 @@ Result<List<Code>, ParseError> _tokenToCode(
       return Result.ok(code);
     case TokenType.dec:
       return Result.ok([
-        Code((_) => int.parse(token.runesAsString)),
+        Code((_) => int.parse(String.fromCharCodes(token.runes))),
       ]);
     case TokenType.hex:
       return Result.ok([
         Code((_) => int.parse(
-              token.runesAsString.replaceFirst('#', '0x'),
+              String.fromCharCodes(token.runes).replaceFirst('#', '0x'),
             )),
       ]);
     case TokenType.ref:
-      final label = token.runesAsString;
+      final label = String.fromCharCodes(token.runes);
       final ref = state.getLabel(label);
       if (ref == null) {
         return Result.err(ParseError(
@@ -285,7 +285,8 @@ Result<List<Code>, ParseError> parseDC(
 Result<List<Code>, ParseError> parseDS(
     Node? parent, List<Token> operand, State state) {
   return Result.ok(List.generate(
-      int.parse(operand[0].runesAsString), (i) => Code((_) => 0)));
+      int.parse(String.fromCharCodes(operand[0].runes)),
+      (i) => Code((_) => 0)));
 }
 
 Result<List<Code>, ParseError> parseMacro(
@@ -295,10 +296,10 @@ Result<List<Code>, ParseError> parseMacro(
   final List<Token> operand,
   final State state,
 ) {
-  final macro = macroList[opecode.runesAsString];
+  final macro = macroList[String.fromCharCodes(opecode.runes)];
   if (macro == null) {
     return Result.err(ParseError(
-      '[SYNTAX ERROR] ${opecode.runesAsString} not found.',
+      '[SYNTAX ERROR] ${String.fromCharCodes(opecode.runes)} not found.',
       start: opecode.start,
       end: opecode.end,
       lineStart: opecode.lineStart,
@@ -316,7 +317,7 @@ Result<List<Code>, ParseError> parseMacro(
 }
 
 int _registerToNumber(Token token) {
-  return int.parse(token.runesAsString.replaceFirst('GR', ''));
+  return int.parse(String.fromCharCodes(token.runes).replaceFirst('GR', ''));
 }
 
 int _parseOpecodeR1r2(String opecode) {

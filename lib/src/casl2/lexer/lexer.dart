@@ -1,4 +1,5 @@
 import 'dart:collection';
+import '../typedef.dart';
 import '../token/token.dart';
 
 /// space
@@ -24,8 +25,6 @@ bool isSeparation(final int? rune) => rune == comma;
 
 const tokenEOF = Token([], TokenType.eof);
 
-typedef Byte = int;
-
 /// expected current status.
 enum ExpectedStatus {
   label,
@@ -39,12 +38,22 @@ enum ExpectedStatus {
 }
 
 abstract class Lexer {
-  Token nextToken();
+  Result<Token, TokenizeError> nextToken();
+  Result<Token, TokenizeError> peekToken();
   void keepToken(Token token);
-  Token peekToken();
 
-  factory Lexer(Iterable<Byte> runes) => _Lexer(runes);
+  factory Lexer(Iterable<Char> runes) => _Lexer(runes);
   factory Lexer.fromString(String src) => _Lexer(src.runes);
+}
+
+class TokenizeError extends Error {
+  String message;
+  Token token;
+
+  TokenizeError(this.message, this.token) : super();
+
+  @override
+  String toString() => message;
 }
 
 /// lexical analysis.
@@ -59,25 +68,34 @@ class _Lexer implements Lexer {
   /// lexical state.
   var _expectedStatus = ExpectedStatus.label;
 
-  _Lexer(Iterable<Byte> runes) {
+  _Lexer(Iterable<Char> runes) {
     _runes = runes.toList();
   }
 
   @override
-  Token peekToken() {
+  Result<Token, TokenizeError> peekToken() {
     final token = nextToken();
-    keepToken(token);
+    if (token.isError) {
+      return token;
+    }
+
+    keepToken(token.ok);
     return token;
   }
 
   @override
-  Token nextToken() {
+  void keepToken(Token token) {
+    _keepToken.add(token);
+  }
+
+  @override
+  Result<Token, TokenizeError> nextToken() {
     if (_keepToken.isNotEmpty) {
-      return _keepToken.removeLast();
+      return Result.ok(_keepToken.removeLast());
     }
 
     if (isLast) {
-      return tokenEOF;
+      return Result.ok(tokenEOF);
     }
 
     switch (_expectedStatus) {
@@ -104,12 +122,15 @@ class _Lexer implements Lexer {
 
         if (_isGRToken(start, end)) {
           final gr = String.fromCharCodes(_runes.getRange(start, end));
-          return _getError(start, end, '$gr cannot be used as label');
+          return Result.err(TokenizeError(
+            '$gr cannot be used as label',
+            _getToken(start, end, TokenType.unexpected),
+          ));
         }
-        return _getToken(start, end, TokenType.label);
+        return Result.ok(_getToken(start, end, TokenType.label));
       case ExpectedStatus.expectOpecode:
         if (_isSpace) {
-          return _getSpace();
+          return Result.ok(_getSpace());
         }
 
         if (_isComment) {
@@ -130,10 +151,10 @@ class _Lexer implements Lexer {
         final end = _currentIndex;
 
         _expectedStatus = ExpectedStatus.expectOperand;
-        return _getToken(start, end, TokenType.opecode);
+        return Result.ok(_getToken(start, end, TokenType.op));
       case ExpectedStatus.expectOperand:
         if (_isSpace) {
-          return _getSpace();
+          return Result.ok(_getSpace());
         }
 
         if (_isComment) {
@@ -153,7 +174,7 @@ class _Lexer implements Lexer {
           final start = _currentIndex;
           _readChar();
           final end = _currentIndex;
-          return _getToken(start, end, TokenType.separation);
+          return Result.ok(_getToken(start, end, TokenType.separation));
         }
 
         if (_isSpace) {
@@ -165,25 +186,28 @@ class _Lexer implements Lexer {
           final start = _currentIndex;
           _readDec();
           final end = _currentIndex;
-          return _getToken(start, end, TokenType.dec);
+          return Result.ok(_getToken(start, end, TokenType.dec));
         }
 
         if (_isHex) {
           final start = _currentIndex;
           _readHex();
           final end = _currentIndex;
-          return _getToken(start, end, TokenType.hex);
+          return Result.ok(_getToken(start, end, TokenType.hex));
         }
 
-        if (_isString) {
+        if (_isText) {
           final start = _currentIndex;
           _readString();
           final end = _currentIndex;
           if (!_isStringToken(start, end)) {
             final str = String.fromCharCodes(_runes.getRange(start, end));
-            return _getError(start, end, 'Invalid String: $str');
+            return Result.err(TokenizeError(
+              'Invalid String: $str',
+              _getToken(start, end, TokenType.unexpected),
+            ));
           }
-          return _getToken(start, end, TokenType.string);
+          return Result.ok(_getToken(start, end, TokenType.text));
         }
 
         final start = _currentIndex;
@@ -191,12 +215,12 @@ class _Lexer implements Lexer {
         final end = _currentIndex;
 
         if (_isGRToken(start, end)) {
-          return _getToken(start, end, TokenType.gr);
+          return Result.ok(_getToken(start, end, TokenType.gr));
         }
-        return _getToken(start, end, TokenType.ref);
+        return Result.ok(_getToken(start, end, TokenType.ref));
       case ExpectedStatus.expectComment:
         if (_isSpace) {
-          return _getSpace();
+          return Result.ok(_getSpace());
         }
 
         _expectedStatus = ExpectedStatus.comment;
@@ -207,7 +231,7 @@ class _Lexer implements Lexer {
         final end = _currentIndex;
 
         _expectedStatus = ExpectedStatus.eol;
-        return _getToken(start, end, TokenType.comment);
+        return Result.ok(_getToken(start, end, TokenType.comment));
       case ExpectedStatus.eol:
         _expectedStatus = ExpectedStatus.label;
         final start = _currentIndex;
@@ -215,12 +239,9 @@ class _Lexer implements Lexer {
         _readChar();
         _currentLineStart = _currentIndex;
         _currentLineNumber += 1;
-        return eol;
+        return Result.ok(eol);
     }
   }
-
-  @override
-  void keepToken(Token token) => _keepToken.add(token);
 
   Token _getSpace() {
     final start = _currentIndex;
@@ -247,17 +268,6 @@ class _Lexer implements Lexer {
       end: end,
       lineStart: _currentLineStart,
       lineNumber: _currentLineNumber,
-    );
-  }
-
-  Token _getError(int start, int end, String error) {
-    return ErrorToken(
-      _runes.getRange(start, end),
-      error,
-      start: start,
-      end: end,
-      lineNumber: _currentLineNumber,
-      lineStart: _currentLineStart,
     );
   }
 
@@ -324,7 +334,7 @@ class _Lexer implements Lexer {
   bool get _isDec => current == minus || _isDecNumber;
   bool get _isDecNumber => decNumbers.contains(current);
   bool get _isHex => current == sharp;
-  bool get _isString => current == quote;
+  bool get _isText => current == quote;
   bool get _isSeparation => isSeparation(current);
   bool get _isNewline => isNewline(current);
   bool _isLast(final int index) => index >= _runes.length;

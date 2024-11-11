@@ -11,6 +11,9 @@ abstract class Result<T, E> {
 
   Result();
 
+  @override
+  String toString();
+
   /// make ok
   factory Result.ok(T ok) {
     return _Ok<T, E>(ok);

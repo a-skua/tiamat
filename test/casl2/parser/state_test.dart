@@ -24,24 +24,24 @@ void testStateGetLabel() {
 
   {
     final stmt = StatementNode(
-      Token('START'.runes, TokenType.opecode),
-      label: Token('FOO'.runes, TokenType.label),
-      operand: [Token('1'.runes, TokenType.dec)],
+      Token.op('START'.runes),
+      label: Token.label('FOO'.runes),
+      operand: [Token.dec('1'.runes)],
     );
     expect((State()..setLabel(stmt)).getLabel('FOO'), equals(stmt));
   }
 
   {
     final stmt1 = StatementNode(
-      Token('FOO'.runes, TokenType.label),
-      label: Token('START'.runes, TokenType.opecode),
-      operand: [Token('1'.runes, TokenType.dec)],
+      Token.op('START'.runes),
+      label: Token.label('FOO'.runes),
+      operand: [Token.dec('1'.runes)],
     );
 
     final stmt2 = StatementNode(
-      Token('BAR'.runes, TokenType.label),
-      label: Token('START'.runes, TokenType.opecode),
-      operand: [Token('1'.runes, TokenType.dec)],
+      Token.op('START'.runes),
+      label: Token.label('BAR'.runes),
+      operand: [Token.dec('1'.runes)],
     );
 
     final parent = State()..setLabel(stmt1);

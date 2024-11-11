@@ -45,20 +45,16 @@ void testCodeValue() {
 
 void testStatementNodeLabel() {
   expect(
-      StatementNode(Token('START'.runes, TokenType.opecode),
-              label: Token('FOO'.runes, TokenType.label))
+      StatementNode(Token.op('START'.runes), label: Token.label('FOO'.runes))
           .label,
       equals('FOO'));
-  expect(StatementNode(Token('START'.runes, TokenType.opecode)).label,
-      equals(null));
+  expect(StatementNode(Token.op('START'.runes)).label, equals(null));
 }
 
 void testStatementNodeCode() {
-  final label = Token('FOO'.runes, TokenType.label);
-  final opecode = Token('START'.runes, TokenType.opecode);
-  final operand = [
-    Token('1'.runes, TokenType.dec),
-  ];
+  final label = Token.label('FOO'.runes);
+  final opecode = Token.op('START'.runes);
+  final operand = [Token.dec('1'.runes)];
 
   final code = Result<List<Code>, ParseError>.ok([
     Code((_) => 1),
@@ -73,11 +69,9 @@ void testStatementNodeCode() {
 }
 
 void testStatementNodeSize() {
-  final label = Token('FOO'.runes, TokenType.label);
-  final opecode = Token('START'.runes, TokenType.opecode);
-  final operand = [
-    Token('1'.runes, TokenType.dec),
-  ];
+  final label = Token.label('FOO'.runes);
+  final opecode = Token.op('START'.runes);
+  final operand = [Token.dec('1'.runes)];
 
   expect(
       // TODO
@@ -96,11 +90,9 @@ void testStatementNodeSize() {
 }
 
 void testStatementNodePosition() {
-  final label = Token('FOO'.runes, TokenType.label);
-  final opecode = Token('START'.runes, TokenType.opecode);
-  final operand = [
-    Token('1'.runes, TokenType.dec),
-  ];
+  final label = Token.label('FOO'.runes);
+  final opecode = Token.op('START'.runes);
+  final operand = [Token.dec('1'.runes)];
 
   expect(
       // TODO
@@ -115,24 +107,18 @@ void testStatementNodePosition() {
 
 void testStatementNodeToString() {
   final tests = [
-    [
-      StatementNode(Token('RET'.runes, TokenType.opecode)),
-      'STATEMENT(OPECODE(RET))'
-    ],
+    [StatementNode(Token.op('RET'.runes)), 'STATEMENT(OPECODE(RET))'],
     [
       StatementNode(
-        Token('RET'.runes, TokenType.opecode),
-        label: Token('FOO'.runes, TokenType.label),
+        Token.op('RET'.runes),
+        label: Token.label('FOO'.runes),
       ),
       'STATEMENT(LABEL(FOO),OPECODE(RET))'
     ],
     [
       StatementNode(
-        Token('ADDA'.runes, TokenType.opecode),
-        operand: [
-          Token('GR0'.runes, TokenType.gr),
-          Token('0'.runes, TokenType.dec)
-        ],
+        Token.op('ADDA'.runes),
+        operand: [Token.gr('GR0'.runes), Token.dec('0'.runes)],
       ),
       'STATEMENT(OPECODE(ADDA),OPERAND(GR(GR0),DEC(0)))'
     ],
@@ -147,19 +133,15 @@ void testStatementNodeToString() {
 
 void testMacroNodeToString() {
   final tests = [
-    [MacroNode(Token('IN'.runes, TokenType.opecode)), 'MACRO(OPECODE(IN))'],
+    [MacroNode(Token.op('IN'.runes)), 'MACRO(OPECODE(IN))'],
     [
-      MacroNode(Token('IN'.runes, TokenType.opecode),
-          label: Token('FOO'.runes, TokenType.label)),
+      MacroNode(Token.op('IN'.runes), label: Token.label('FOO'.runes)),
       'MACRO(LABEL(FOO),OPECODE(IN))'
     ],
     [
       MacroNode(
-        Token('IN'.runes, TokenType.opecode),
-        operand: [
-          Token('IBUF'.runes, TokenType.ref),
-          Token('LEN'.runes, TokenType.ref),
-        ],
+        Token.op('IN'.runes),
+        operand: [Token.ref('IBUF'.runes), Token.ref('LEN'.runes)],
       ),
       'MACRO(OPECODE(IN),OPERAND(REF(IBUF),REF(LEN)))'
     ],
@@ -175,38 +157,33 @@ void testMacroNodeToString() {
 void testSubroutineNodeToString() {
   final tests = [
     [
-      SubroutineNode(StatementNode(Token('START'.runes, TokenType.opecode)), [
+      SubroutineNode(StatementNode(Token.op('START'.runes)), [
         StatementNode(
-          Token('ADDA'.runes, TokenType.opecode),
-          operand: [
-            Token('GR0'.runes, TokenType.gr),
-            Token('0'.runes, TokenType.dec)
-          ],
+          Token.op('ADDA'.runes),
+          operand: [Token.gr('GR0'.runes), Token.dec('0'.runes)],
         ),
-        StatementNode(Token('RET'.runes, TokenType.opecode)),
+        StatementNode(Token.op('RET'.runes)),
       ]),
       'SUBROUTINE(PROCESS(STATEMENT(OPECODE(ADDA),OPERAND(GR(GR0),DEC(0))),STATEMENT(OPECODE(RET))))'
     ],
     [
       SubroutineNode(
-          StatementNode(Token('START'.runes, TokenType.opecode),
-              label: Token('FOO'.runes, TokenType.label)),
+          StatementNode(Token.op('START'.runes),
+              label: Token.label('FOO'.runes)),
           [
-            StatementNode(Token('RET'.runes, TokenType.opecode)),
+            StatementNode(Token.op('RET'.runes)),
           ]),
       'SUBROUTINE(LABEL(FOO),PROCESS(STATEMENT(OPECODE(RET))))'
     ],
     [
       SubroutineNode(
-          StatementNode(Token('START'.runes, TokenType.opecode),
-              operand: [Token('FOO'.runes, TokenType.ref)]),
+          StatementNode(Token.op('START'.runes),
+              operand: [Token.ref('FOO'.runes)]),
           [
-            StatementNode(Token('ADDA'.runes, TokenType.opecode), operand: [
-              Token('GR0'.runes, TokenType.gr),
-              Token('0'.runes, TokenType.dec)
-            ]),
-            StatementNode(Token('RET'.runes, TokenType.opecode),
-                label: Token('FOO'.runes, TokenType.label)),
+            StatementNode(Token.op('ADDA'.runes),
+                operand: [Token.gr('GR0'.runes), Token.dec('0'.runes)]),
+            StatementNode(Token.op('RET'.runes),
+                label: Token.label('FOO'.runes)),
           ]),
       'SUBROUTINE(START(REF(FOO)),PROCESS(STATEMENT(OPECODE(ADDA),OPERAND(GR(GR0),DEC(0))),STATEMENT(LABEL(FOO),OPECODE(RET))))'
     ],
@@ -224,15 +201,13 @@ void testModuleNodeToString() {
     [
       ModuleNode([
         SubroutineNode(
-            StatementNode(Token('START'.runes, TokenType.opecode),
-                label: Token('FOO'.runes, TokenType.label)),
-            [
-              StatementNode(Token('RET'.runes, TokenType.opecode)),
-            ]),
-        StatementNode(Token('DC'.runes, TokenType.opecode),
-            operand: [Token("'FOO'".runes, TokenType.string)]),
+            StatementNode(Token.op('START'.runes),
+                label: Token.label('FOO'.runes)),
+            [StatementNode(Token.op('RET'.runes))]),
+        StatementNode(Token.op('DC'.runes),
+            operand: [Token.text("'FOO'".runes)]),
       ]),
-      "MODULE(SUBROUTINE(LABEL(FOO),PROCESS(STATEMENT(OPECODE(RET)))),STATEMENT(OPECODE(DC),OPERAND(STRING('FOO'))))"
+      "MODULE(SUBROUTINE(LABEL(FOO),PROCESS(STATEMENT(OPECODE(RET)))),STATEMENT(OPECODE(DC),OPERAND(TEXT('FOO'))))"
     ],
   ];
 
