@@ -276,8 +276,8 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   expect(eofToken.isError, equals(false), reason: 'unexpected error $eofToken');
 
   expect(eofToken.ok.type, equals(TokenType.eof));
-  expect(eofToken.ok.runes, equals(''));
-  expect(eofToken.toString(), equals('EOF()'));
+  expect(String.fromCharCodes(eofToken.ok.runes), equals(''));
+  expect(eofToken.ok.toString(), equals('EOF()'));
 }
 
 void testLabelError() {
@@ -357,7 +357,7 @@ GR1     SUBA    GR2,GR2         ; ラベルエラー
   expect(eofToken.isError, equals(false), reason: 'unexpected error $eofToken');
 
   expect(eofToken.ok.type, equals(TokenType.eof));
-  expect(eofToken.ok.runes, equals(''));
+  expect(String.fromCharCodes(eofToken.ok.runes), equals(''));
   expect(eofToken.ok.toString(), equals('EOF()'));
 }
 
@@ -365,10 +365,10 @@ GR1     SUBA    GR2,GR2         ; ラベルエラー
 void testToken(Token token, List<int> runes, int lineStart, int lineNumber,
     ExpectedToken expected) {
   expect(token.type, equals(expected.type));
-  expect(token.runes, equals(expected.value));
+  expect(String.fromCharCodes(token.runes), equals(expected.value));
   expect(
     String.fromCharCodes(runes.getRange(token.start, token.end)),
-    token.runes,
+    equals(String.fromCharCodes(token.runes)),
   );
   expect(token.lineStart, equals(lineStart));
   expect(token.lineNumber, equals(lineNumber));

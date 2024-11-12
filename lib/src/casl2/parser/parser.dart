@@ -22,6 +22,15 @@ final class ParseError {
     required this.lineNumber,
   });
 
+  factory ParseError.fromToken(String message, Token token) => ParseError(
+        message,
+        start: token.start,
+        end: token.end,
+        lineStart: token.lineStart,
+        lineNumber: token.lineNumber,
+      );
+
+  @deprecated
   factory ParseError.todo(String msg) => ParseError(
         msg,
         start: 0,
@@ -36,7 +45,7 @@ final class ParseError {
 
 /// Parser of CASL2
 abstract class Parser {
-  Iterable<Result<StatementNode, ParseError>> nextStatement(State state);
+  Iterable<Result<Statement, ParseError>> nextStatement(State state);
 
   /// Create a parser instance.
   factory Parser(Lexer lexer) => _Parser(lexer);
@@ -100,7 +109,7 @@ class _Parser implements Parser {
     return Result.ok(true);
   }
 
-  Result<Token?, ParseError> _getLabel(Node? parent) {
+  Result<Token?, ParseError> _getLabel() {
     _skipSpaceToken();
     final token = _lexer.nextToken();
     if (token.isError) {
@@ -108,12 +117,9 @@ class _Parser implements Parser {
       _skipTokenOfLine();
 
       final err = token.error;
-      return Result.err(ParseError(
+      return Result.err(ParseError.fromToken(
         '[SYNTAX ERROR] ${err.message}',
-        start: err.token.start,
-        end: err.token.end,
-        lineStart: err.token.lineStart,
-        lineNumber: err.token.lineNumber,
+        err.token,
       ));
     }
     switch (token.ok.type) {
@@ -125,17 +131,14 @@ class _Parser implements Parser {
     }
   }
 
-  Result<Token, ParseError> _getOpecode(Node? parent) {
+  Result<Token, ParseError> _getOpecode() {
     {
       final result = _skipSpaceToken();
       if (result.isError) {
         final err = result.error;
-        return Result.err(ParseError(
+        return Result.err(ParseError.fromToken(
           '[SYNTAX ERROR] ${err.message}',
-          start: err.token.start,
-          end: err.token.end,
-          lineStart: err.token.lineStart,
-          lineNumber: err.token.lineNumber,
+          err.token,
         ));
       }
     }
@@ -146,12 +149,9 @@ class _Parser implements Parser {
       _skipTokenOfLine();
 
       final err = token.error;
-      return Result.err(ParseError(
+      return Result.err(ParseError.fromToken(
         '[SYNTAX ERROR] ${err.message}',
-        start: err.token.start,
-        end: err.token.end,
-        lineStart: err.token.lineStart,
-        lineNumber: err.token.lineNumber,
+        err.token,
       ));
     }
     switch (token.ok.type) {
@@ -163,12 +163,9 @@ class _Parser implements Parser {
           final result = _skipTokenOfLine();
           if (result.isError) {
             final err = result.error;
-            return Result.err(ParseError(
+            return Result.err(ParseError.fromToken(
               '[SYNTAX ERROR] ${err.message}',
-              start: err.token.start,
-              end: err.token.end,
-              lineStart: err.token.lineStart,
-              lineNumber: err.token.lineNumber,
+              err.token,
             ));
           }
         }
@@ -183,7 +180,7 @@ class _Parser implements Parser {
     }
   }
 
-  Result<List<Token>, ParseError> _getOperand(Node? parent) {
+  Result<List<Token>, ParseError> _getOperand() {
     final operand = <Token>[];
 
     loop:
@@ -194,12 +191,9 @@ class _Parser implements Parser {
         _skipTokenOfLine();
 
         final err = token.error;
-        return Result.err(ParseError(
+        return Result.err(ParseError.fromToken(
           '[SYNTAX ERROR] ${err.message}',
-          start: err.token.start,
-          end: err.token.end,
-          lineStart: err.token.lineStart,
-          lineNumber: err.token.lineNumber,
+          err.token,
         ));
       }
 
@@ -213,12 +207,9 @@ class _Parser implements Parser {
           // skip line
           _skipTokenOfLine();
 
-          return Result.err(ParseError(
+          return Result.err(ParseError.fromToken(
             '[SYNTAX ERROR] Unexpected token: ${token.ok}',
-            start: token.ok.start,
-            end: token.ok.end,
-            lineStart: token.ok.lineStart,
-            lineNumber: token.ok.lineNumber,
+            token.ok,
           ));
         case TokenType.eof:
         case TokenType.eol:
@@ -231,23 +222,21 @@ class _Parser implements Parser {
   }
 
   /// make block-node
-  Result<StatementNode, ParseError> _nextSubroutine(
-      StatementNode start, State state) {
-    final stmtList = <StatementNode>[];
+  Result<Statement, ParseError> _nextSubroutine(Statement start, State state) {
+    final stmtList = <Statement>[];
     for (final result in nextStatement(state)) {
       if (result.isError) return result;
       stmtList.add(result.ok);
     }
 
-    return Result.ok(StatementNode.subroutine(start, process: stmtList));
+    return Result.ok(Statement.subroutine(start, process: stmtList));
   }
 
   /// return a parsed result.
   ///
   /// EOF or OPECODE(END) is true, finish parsing.
   @override
-  Iterable<Result<StatementNode, ParseError>> nextStatement(State state) sync* {
-    StatementNode? parent;
+  Iterable<Result<Statement, ParseError>> nextStatement(State state) sync* {
     while (true) {
       _skipBlankToken();
       {
@@ -268,16 +257,16 @@ class _Parser implements Parser {
         }
       }
 
-      final label = _getLabel(parent);
+      final label = _getLabel();
       if (label.isError) yield Result.err(label.error);
 
-      final opecode = _getOpecode(parent);
+      final opecode = _getOpecode();
       if (opecode.isError) yield Result.err(opecode.error);
 
-      final operand = _getOperand(parent);
+      final operand = _getOperand();
       if (operand.isError) yield Result.err(operand.error);
 
-      final stmt = StatementNode(
+      final stmt = Statement(
         opecode.ok,
         label: label.ok,
         operand: operand.ok,
@@ -287,7 +276,6 @@ class _Parser implements Parser {
         state.setLabel(stmt);
       }
 
-      parent = stmt;
       if (String.fromCharCodes(stmt.opecode.runes) == 'START') {
         yield _nextSubroutine(stmt, state);
       } else {
@@ -298,9 +286,8 @@ class _Parser implements Parser {
 }
 
 /// TODO parser
-Result<List<Code>, ParseError> _parse(Node? parent, Token? label, Token opecode,
-    List<Token> operand, State state) {
-  switch (String.fromCharCodes(opecode.runes)) {
+Result<List<Code>, ParseError> _parse(Statement stmt, State state) {
+  switch (String.fromCharCodes(stmt.opecode.runes)) {
     case 'LD':
     case 'ADDA':
     case 'SUBA':
@@ -311,26 +298,14 @@ Result<List<Code>, ParseError> _parse(Node? parent, Token? label, Token opecode,
     case 'XOR':
     case 'CPA':
     case 'CPL':
-      return parseGeneral(
-        parent,
-        label,
-        opecode,
-        operand,
-        state,
-      );
+      return parseGeneral(stmt, state);
     case 'ST':
     case 'LAD':
     case 'SLA':
     case 'SRA':
     case 'SLL':
     case 'SRL':
-      return parseRadrx(
-        parent,
-        label,
-        opecode,
-        operand,
-        state,
-      );
+      return parseRadrx(stmt, state);
     case 'JMI':
     case 'JNZ':
     case 'JZE':
@@ -340,21 +315,9 @@ Result<List<Code>, ParseError> _parse(Node? parent, Token? label, Token opecode,
     case 'PUSH':
     case 'CALL':
     case 'SVC':
-      return parseAdrx(
-        parent,
-        label,
-        opecode,
-        operand,
-        state,
-      );
+      return parseAdrx(stmt, state);
     case 'POP':
-      return parseR(
-        parent,
-        label,
-        opecode,
-        operand,
-        state,
-      );
+      return parseR(stmt, state);
     case 'RET':
       return Result.ok([Code((_) => 0x8100)]);
     case 'NOP':
@@ -364,16 +327,10 @@ Result<List<Code>, ParseError> _parse(Node? parent, Token? label, Token opecode,
     case 'END':
       return Result.ok([]);
     case 'DC':
-      return parseDC(parent, operand, state);
+      return parseDC(stmt, state);
     case 'DS':
-      return parseDS(parent, operand, state);
+      return parseDS(stmt, state);
     default:
-      return parseMacro(
-        parent,
-        label,
-        opecode,
-        operand,
-        state,
-      );
+      return parseMacro(stmt as Macro, state);
   }
 }

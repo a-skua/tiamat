@@ -125,11 +125,11 @@ final class Token {
           start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
 
   factory Token.gr(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
+    final Iterable<Char> runes, {
+    final int start = 0,
+    final int end = 0,
+    final int lineStart = 0,
+    final int lineNumber = 1,
   }) =>
       Token(runes, TokenType.gr,
           start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
@@ -203,6 +203,18 @@ final class Token {
   }) =>
       Token(runes, TokenType.space,
           start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Token &&
+        '${other.runes}' == '$runes' &&
+        other.type == type &&
+        other.start == start &&
+        other.end == end &&
+        other.lineStart == lineStart &&
+        other.lineNumber == lineNumber;
+  }
 
   @override
   String toString() {

@@ -37,16 +37,7 @@ enum ExpectedStatus {
   eol,
 }
 
-abstract class Lexer {
-  Result<Token, TokenizeError> nextToken();
-  Result<Token, TokenizeError> peekToken();
-  void keepToken(Token token);
-
-  factory Lexer(Iterable<Char> runes) => _Lexer(runes);
-  factory Lexer.fromString(String src) => _Lexer(src.runes);
-}
-
-class TokenizeError extends Error {
+final class TokenizeError extends Error {
   String message;
   Token token;
 
@@ -54,6 +45,15 @@ class TokenizeError extends Error {
 
   @override
   String toString() => message;
+}
+
+abstract class Lexer {
+  Result<Token, TokenizeError> nextToken();
+  Result<Token, TokenizeError> peekToken();
+  void keepToken(Token token);
+
+  factory Lexer(Iterable<Char> runes) => _Lexer(runes);
+  factory Lexer.fromString(String src) => _Lexer(src.runes);
 }
 
 /// lexical analysis.

@@ -1,6 +1,6 @@
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
-import 'package:tiamat/src/casl2/ast/ast.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
+import 'package:tiamat/src/casl2/ast/ast.dart';
 import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
 
@@ -187,15 +187,15 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 
   final parser = Parser(Lexer.fromString(input));
   final state = State();
-  final nodes = <Node>[];
+  final stmts = <Statement>[];
 
   for (final result in parser.nextStatement(state)) {
     expect(result.isOk, equals(true));
-    nodes.add(result.ok);
+    stmts.add(result.ok);
   }
 
   expect(
-    nodes.map((n) {
+    stmts.map((n) {
       return n;
       // TODO
       // final result = n.code;

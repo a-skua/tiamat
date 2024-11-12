@@ -6,12 +6,11 @@ class State {
   State? _parent;
 
   /// labels
-  final _labels = <Label, StatementNode>{};
+  final _labels = <Label, Statement>{};
 
-  StatementNode? getLabel(Label name) =>
-      _labels[name] ?? _parent?.getLabel(name);
+  Statement? getLabel(Label name) => _labels[name] ?? _parent?.getLabel(name);
 
-  void setLabel(StatementNode stmt) {
+  void setLabel(Statement stmt) {
     if (stmt.label != null) _labels[stmt.label as Label] = stmt;
   }
 

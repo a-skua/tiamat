@@ -21,57 +21,35 @@ typedef Size = int;
 /// Position of Memory on COMET2
 typedef Position = int;
 
-// Node of CASL2
-abstract class Node {
-  @override
-  String toString();
-
-  factory Node.statement(
-    Token opecode, {
-    Token? label,
-    List<Token> operand = const [],
-  }) =>
-      _StatementNode(label, opecode, operand);
-
-  factory Node.macro(
-    Token opecode, {
-    Token? label,
-    List<Token> operand = const [],
-  }) =>
-      MacroNode(opecode, label: label, operand: operand);
-
-  factory Node.module(List<StatementNode> stmtList) => ModuleNode(stmtList);
-}
-
 /// Statement Node
-abstract class StatementNode implements Node {
+abstract class Statement {
   Token? get label;
   Token get opecode;
   List<Token> get operand;
 
-  factory StatementNode(
+  factory Statement(
     Token opecode, {
     Token? label,
     List<Token> operand = const [],
   }) =>
-      _StatementNode(label, opecode, operand);
+      _Statement(label, opecode, operand);
 
-  factory StatementNode.macro(
+  factory Statement.macro(
     Token opecode, {
     Token? label,
     List<Token> operand = const [],
   }) =>
-      MacroNode(opecode, label: label, operand: operand);
+      Macro(opecode, label: label, operand: operand);
 
-  factory StatementNode.subroutine(
-    StatementNode startOp, {
-    List<StatementNode> process = const [],
+  factory Statement.subroutine(
+    Statement startOp, {
+    List<Statement> process = const [],
   }) =>
-      SubroutineNode(startOp, process);
+      Subroutine(startOp, process);
 }
 
 /// Impl Statement Node
-final class _StatementNode implements StatementNode {
+final class _Statement implements Statement {
   @override
   final Token? label;
 
@@ -81,7 +59,7 @@ final class _StatementNode implements StatementNode {
   @override
   final List<Token> operand;
 
-  _StatementNode(this.label, this.opecode, this.operand);
+  _Statement(this.label, this.opecode, this.operand);
 
   @override
   String toString() {
@@ -96,8 +74,8 @@ final class _StatementNode implements StatementNode {
 }
 
 /// Macro Node
-final class MacroNode extends _StatementNode {
-  MacroNode(Token opecode, {Token? label, List<Token> operand = const []})
+final class Macro extends _Statement {
+  Macro(Token opecode, {Token? label, List<Token> operand = const []})
       : super(label, opecode, operand);
 
   @override
@@ -112,14 +90,14 @@ final class MacroNode extends _StatementNode {
 }
 
 /// Block Node
-abstract class _BlockNode implements Node {
-  final List<StatementNode> _stmtList;
+abstract class _Block {
+  final List<Statement> _stmtList;
 
-  _BlockNode(this._stmtList);
+  _Block(this._stmtList);
 }
 
 /// Subroutine Node
-final class SubroutineNode extends _BlockNode implements StatementNode {
+final class Subroutine extends _Block implements Statement {
   @override
   Token? get label => _startOp.label;
 
@@ -137,9 +115,9 @@ final class SubroutineNode extends _BlockNode implements StatementNode {
   /// FOO     RET
   ///         END
   /// ```
-  final StatementNode _startOp;
+  final Statement _startOp;
 
-  SubroutineNode(this._startOp, List<StatementNode> proc) : super(proc);
+  Subroutine(this._startOp, List<Statement> proc) : super(proc);
 
   @override
   String toString() {
@@ -153,8 +131,8 @@ final class SubroutineNode extends _BlockNode implements StatementNode {
 }
 
 /// Module Node
-final class ModuleNode extends _BlockNode implements Node {
-  ModuleNode(List<StatementNode> stmtList) : super(stmtList);
+final class Module extends _Block {
+  Module(List<Statement> stmtList) : super(stmtList);
 
   @override
   String toString() {

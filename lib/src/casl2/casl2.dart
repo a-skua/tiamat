@@ -15,9 +15,9 @@ class Casl2 {
   factory Casl2.fromString(final String src) =>
       Casl2(Parser(Lexer.fromString(src)));
 
-  Result<ModuleNode, List<ParseError>> parse() {
+  Result<Module, List<ParseError>> parse() {
     final errs = <ParseError>[];
-    final stmts = <StatementNode>[];
+    final stmts = <Statement>[];
 
     for (final result in _parser.nextStatement(_state)) {
       if (result.isError) {
@@ -33,7 +33,7 @@ class Casl2 {
       return Result.err(errs);
     }
 
-    return Result.ok(ModuleNode(stmts));
+    return Result.ok(Module(stmts));
   }
 
   Result<List<Code>, List<ParseError>> compile() {

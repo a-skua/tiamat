@@ -1,7 +1,6 @@
 import 'package:tiamat/src/casl2/token/token.dart';
 import 'package:tiamat/src/casl2/ast/ast.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
-import 'package:tiamat/src/casl2/typedef.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -10,20 +9,11 @@ void main() {
   });
 }
 
-// mock
-Result<List<Code>, ParseError> parser(
-  Node? parent,
-  Token? label,
-  Token opecode,
-  List<Token> operand,
-) =>
-    Result.ok([]);
-
 void testStateGetLabel() {
   expect(State().getLabel('FOO'), equals(null));
 
   {
-    final stmt = StatementNode(
+    final stmt = Statement(
       Token.op('START'.runes),
       label: Token.label('FOO'.runes),
       operand: [Token.dec('1'.runes)],
@@ -32,13 +22,13 @@ void testStateGetLabel() {
   }
 
   {
-    final stmt1 = StatementNode(
+    final stmt1 = Statement(
       Token.op('START'.runes),
       label: Token.label('FOO'.runes),
       operand: [Token.dec('1'.runes)],
     );
 
-    final stmt2 = StatementNode(
+    final stmt2 = Statement(
       Token.op('START'.runes),
       label: Token.label('BAR'.runes),
       operand: [Token.dec('1'.runes)],
