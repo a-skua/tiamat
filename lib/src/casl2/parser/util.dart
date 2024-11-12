@@ -2,7 +2,7 @@ import '../../charcode/charcode.dart';
 import './macro.dart';
 import '../ast/ast.dart';
 import '../token/token.dart';
-import './state.dart';
+import './parser.dart';
 import '../typedef.dart';
 
 /// operand pattern: r1,r2 | r,adr(,x)

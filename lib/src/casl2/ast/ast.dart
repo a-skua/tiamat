@@ -21,34 +21,6 @@ typedef Size = int;
 /// Position of Memory on COMET2
 typedef Position = int;
 
-//// Error of Parser
-class ParseError {
-  final String message;
-  final int start;
-  final int end;
-  final int lineStart;
-  final int lineNumber;
-
-  ParseError(
-    this.message, {
-    required this.start,
-    required this.end,
-    required this.lineStart,
-    required this.lineNumber,
-  });
-
-  factory ParseError.todo(String msg) => ParseError(
-        msg,
-        start: 0,
-        end: 0,
-        lineStart: 0,
-        lineNumber: 0,
-      );
-
-  @override
-  String toString() => 'L$lineNumber: $message';
-}
-
 // Node of CASL2
 abstract class Node {
   @override

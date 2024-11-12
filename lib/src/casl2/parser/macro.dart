@@ -1,7 +1,7 @@
 import '../token/token.dart';
 import '../ast/ast.dart';
 import './util.dart';
-import './state.dart';
+import './parser.dart';
 import '../typedef.dart';
 
 final macroList = <String,
