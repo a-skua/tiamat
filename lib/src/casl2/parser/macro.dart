@@ -1,8 +1,9 @@
-import '../token/token.dart';
-import '../ast/ast.dart';
+import '../lexer/token.dart';
+import './ast.dart';
 import './util.dart';
 import './parser.dart';
-import '../typedef.dart';
+import '../../typedef/typedef.dart';
+import '../compiler/state.dart';
 
 final macroList = <String,
     Result<List<Code>, ParseError> Function(
@@ -34,7 +35,7 @@ Result<List<Code>, ParseError> parseIN(Macro stmt, State state) {
   switch (stmt.operand) {
     case [final buf, final len]:
       if (len.type != TokenType.hex && len.type != TokenType.dec) {
-        return Result.err(ParseError.fromToken(
+        return Err(ParseError.fromToken(
           '[SYNTAX ERROR] ${String.fromCharCodes(len.runes)} wrong type. wants a number.',
           len,
         ));
@@ -54,14 +55,14 @@ Result<List<Code>, ParseError> parseIN(Macro stmt, State state) {
           state,
         ),
       ].reduce((a, b) {
-        if (a.isError) return a;
-        if (b.isError) return b;
+        if (a.isErr) return a;
+        if (b.isErr) return b;
 
         a.ok.addAll(b.ok);
         return a;
       });
     default:
-      return Result.err(ParseError.fromToken(
+      return Err(ParseError.fromToken(
         '[SYNTAX ERROR] ${String.fromCharCodes(stmt.opecode.runes)} wrong number of operands. wants 2 operands.',
         stmt.opecode,
       ));
@@ -72,7 +73,7 @@ Result<List<Code>, ParseError> parseOUT(Macro stmt, State state) {
   switch (stmt.operand) {
     case [final buf, final len]:
       if (len.type != TokenType.hex && len.type != TokenType.dec) {
-        return Result.err(ParseError.fromToken(
+        return Err(ParseError.fromToken(
           '[SYNTAX ERROR] ${String.fromCharCodes(len.runes)} wrong type. wants a number.',
           len,
         ));
@@ -92,14 +93,14 @@ Result<List<Code>, ParseError> parseOUT(Macro stmt, State state) {
           state,
         ),
       ].reduce((a, b) {
-        if (a.isError) return a;
-        if (b.isError) return b;
+        if (a.isErr) return a;
+        if (b.isErr) return b;
 
         a.ok.addAll(b.ok);
         return a;
       });
     default:
-      return Result.err(ParseError.fromToken(
+      return Err(ParseError.fromToken(
         '[SYNTAX ERROR] ${String.fromCharCodes(stmt.opecode.runes)} wrong number of operands. wants 2 operands.',
         stmt.opecode,
       ));
@@ -137,8 +138,8 @@ Result<List<Code>, ParseError> parseRPUSH(Macro stmt, State state) {
       state,
     ),
   ].reduce((a, b) {
-    if (a.isError) return a;
-    if (b.isError) return b;
+    if (a.isErr) return a;
+    if (b.isErr) return b;
 
     a.ok.addAll(b.ok);
     return a;
@@ -176,8 +177,8 @@ Result<List<Code>, ParseError> parseRPOP(Macro stmt, State state) {
       state,
     ),
   ].reduce((a, b) {
-    if (a.isError) return a;
-    if (b.isError) return b;
+    if (a.isErr) return a;
+    if (b.isErr) return b;
 
     a.ok.addAll(b.ok);
     return a;

@@ -1,7 +1,7 @@
-import '../ast/ast.dart';
+import '../parser/ast.dart';
 
 // State of parser
-class State {
+final class State {
   /// Parent Env
   State? _parent;
 

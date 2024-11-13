@@ -1,9 +1,10 @@
 import './lexer/lexer.dart';
-import './ast/ast.dart';
+import './parser/ast.dart';
 import './parser/parser.dart';
-import './typedef.dart';
+import '../typedef/typedef.dart';
+import './compiler/state.dart';
 
-export './ast/ast.dart';
+export './parser/ast.dart';
 
 /// CASL2 instance.
 class Casl2 {
@@ -20,8 +21,8 @@ class Casl2 {
     final stmts = <Statement>[];
 
     for (final result in _parser.nextStatement(_state)) {
-      if (result.isError) {
-        errs.add(result.error);
+      if (result.isErr) {
+        errs.add(result.err);
         continue;
       }
 
@@ -30,19 +31,19 @@ class Casl2 {
     }
 
     if (errs.isNotEmpty) {
-      return Result.err(errs);
+      return Err(errs);
     }
 
-    return Result.ok(Module(stmts));
+    return Ok(Module(stmts));
   }
 
   Result<List<Code>, List<ParseError>> compile() {
     final result = parse();
 
-    if (result.isError) {
-      return Result.err(result.error);
+    if (result.isErr) {
+      return Err(result.err);
     }
 
-    return Result.err([ParseError.todo('Not implemented')]);
+    return Err([ParseError.todo('Not implemented')]);
   }
 }

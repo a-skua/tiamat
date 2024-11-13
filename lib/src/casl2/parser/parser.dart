@@ -1,10 +1,9 @@
-import '../ast/ast.dart';
+import './ast.dart';
 import '../lexer/lexer.dart';
-import '../token/token.dart';
+import '../lexer/token.dart';
 import './util.dart';
-import './state.dart';
-import '../typedef.dart';
-export './state.dart';
+import '../compiler/state.dart';
+import '../../typedef/typedef.dart';
 
 //// Error of Parser
 final class ParseError {
@@ -58,7 +57,7 @@ class _Parser implements Parser {
 
   Result<void, TokenizeError> _skipBlankToken() {
     var token = _lexer.nextToken();
-    if (token.isError) return Result.err(token.error);
+    if (token.isErr) return Err(token.err);
     while (token.isOk &&
         (token.ok.type == TokenType.space ||
             token.ok.type == TokenType.eol ||
@@ -66,77 +65,77 @@ class _Parser implements Parser {
       token = _lexer.nextToken();
     }
 
-    if (token.isError) return Result.err(token.error);
+    if (token.isErr) return Err(token.err);
     _lexer.keepToken(token.ok);
-    return Result.ok(null);
+    return Ok(null);
   }
 
   Result<void, TokenizeError> _skipSpaceToken() {
     var token = _lexer.nextToken();
-    if (token.isError) return Result.err(token.error);
+    if (token.isErr) return Err(token.err);
     while (token.isOk && token.ok.type == TokenType.space) {
       token = _lexer.nextToken();
     }
 
-    if (token.isError) return Result.err(token.error);
+    if (token.isErr) return Err(token.err);
     _lexer.keepToken(token.ok);
-    return Result.ok(null);
+    return Ok(null);
   }
 
   Result<void, TokenizeError> _skipTokenOfLine() {
     var token = _lexer.nextToken();
-    if (token.isError) return Result.err(token.error);
+    if (token.isErr) return Err(token.err);
     while (token.isOk &&
         token.ok.type != TokenType.eol &&
         token.ok.type != TokenType.eof) {
       token = _lexer.nextToken();
     }
-    if (token.isError) return Result.err(token.error);
+    if (token.isErr) return Err(token.err);
     _lexer.keepToken(token.ok);
-    return Result.ok(null);
+    return Ok(null);
   }
 
   /// is EOF or OPECODE(END)
   Result<bool, TokenizeError> _isEnd() {
     final token = _lexer.peekToken();
-    if (token.isError) return Result.err(token.error);
+    if (token.isErr) return Err(token.err);
     if (token.ok.type != TokenType.eof &&
         (String.fromCharCodes(token.ok.runes) != 'END' ||
             token.ok.type != TokenType.op)) {
-      return Result.ok(false);
+      return Ok(false);
     }
 
-    return Result.ok(true);
+    return Ok(true);
   }
 
   Result<Token?, ParseError> _getLabel() {
     _skipSpaceToken();
     final token = _lexer.nextToken();
-    if (token.isError) {
+    if (token.isErr) {
       // skip line
       _skipTokenOfLine();
 
-      final err = token.error;
-      return Result.err(ParseError.fromToken(
+      final err = token.err;
+      return Err(ParseError.fromToken(
         '[SYNTAX ERROR] ${err.message}',
         err.token,
       ));
     }
     switch (token.ok.type) {
       case TokenType.label:
-        return Result.ok(token.ok);
+        return Ok(token.ok);
       default:
         _lexer.keepToken(token.ok);
-        return Result.ok(null);
+        return Ok(null);
     }
   }
 
   Result<Token, ParseError> _getOpecode() {
     {
       final result = _skipSpaceToken();
-      if (result.isError) {
-        final err = result.error;
-        return Result.err(ParseError.fromToken(
+      if (result.isErr) {
+        final err = result.err;
+        return Err(ParseError.fromToken(
           '[SYNTAX ERROR] ${err.message}',
           err.token,
         ));
@@ -144,33 +143,33 @@ class _Parser implements Parser {
     }
 
     final token = _lexer.nextToken();
-    if (token.isError) {
+    if (token.isErr) {
       // skip line
       _skipTokenOfLine();
 
-      final err = token.error;
-      return Result.err(ParseError.fromToken(
+      final err = token.err;
+      return Err(ParseError.fromToken(
         '[SYNTAX ERROR] ${err.message}',
         err.token,
       ));
     }
     switch (token.ok.type) {
       case TokenType.op:
-        return Result.ok(token.ok);
+        return Ok(token.ok);
       default:
         // skip line
         {
           final result = _skipTokenOfLine();
-          if (result.isError) {
-            final err = result.error;
-            return Result.err(ParseError.fromToken(
+          if (result.isErr) {
+            final err = result.err;
+            return Err(ParseError.fromToken(
               '[SYNTAX ERROR] ${err.message}',
               err.token,
             ));
           }
         }
 
-        return Result.err(ParseError(
+        return Err(ParseError(
           '[SYNTAX ERROR] Unexpected token: ${token.ok}',
           start: token.ok.start,
           end: token.ok.end,
@@ -186,12 +185,12 @@ class _Parser implements Parser {
     loop:
     while (true) {
       final token = _lexer.nextToken();
-      if (token.isError) {
+      if (token.isErr) {
         // skip line
         _skipTokenOfLine();
 
-        final err = token.error;
-        return Result.err(ParseError.fromToken(
+        final err = token.err;
+        return Err(ParseError.fromToken(
           '[SYNTAX ERROR] ${err.message}',
           err.token,
         ));
@@ -207,7 +206,7 @@ class _Parser implements Parser {
           // skip line
           _skipTokenOfLine();
 
-          return Result.err(ParseError.fromToken(
+          return Err(ParseError.fromToken(
             '[SYNTAX ERROR] Unexpected token: ${token.ok}',
             token.ok,
           ));
@@ -218,18 +217,18 @@ class _Parser implements Parser {
           operand.add(token.ok);
       }
     }
-    return Result.ok(operand);
+    return Ok(operand);
   }
 
   /// make block-node
   Result<Statement, ParseError> _nextSubroutine(Statement start, State state) {
     final stmtList = <Statement>[];
     for (final result in nextStatement(state)) {
-      if (result.isError) return result;
+      if (result.isErr) return result;
       stmtList.add(result.ok);
     }
 
-    return Result.ok(Statement.subroutine(start, process: stmtList));
+    return Ok(Statement.subroutine(start, process: stmtList));
   }
 
   /// return a parsed result.
@@ -244,10 +243,10 @@ class _Parser implements Parser {
         if (end.isOk && end.ok) {
           return;
         }
-        if (end.isError) {
-          final err = end.error;
+        if (end.isErr) {
+          final err = end.err;
 
-          yield Result.err(ParseError(
+          yield Err(ParseError(
             '[SYNTAX ERROR] ${err.message}',
             start: err.token.start,
             end: err.token.end,
@@ -258,13 +257,13 @@ class _Parser implements Parser {
       }
 
       final label = _getLabel();
-      if (label.isError) yield Result.err(label.error);
+      if (label.isErr) yield Err(label.err);
 
       final opecode = _getOpecode();
-      if (opecode.isError) yield Result.err(opecode.error);
+      if (opecode.isErr) yield Err(opecode.err);
 
       final operand = _getOperand();
-      if (operand.isError) yield Result.err(operand.error);
+      if (operand.isErr) yield Err(operand.err);
 
       final stmt = Statement(
         opecode.ok,
@@ -279,7 +278,7 @@ class _Parser implements Parser {
       if (String.fromCharCodes(stmt.opecode.runes) == 'START') {
         yield _nextSubroutine(stmt, state);
       } else {
-        yield Result.ok(stmt);
+        yield Ok(stmt);
       }
     }
   }
@@ -319,13 +318,13 @@ Result<List<Code>, ParseError> _parse(Statement stmt, State state) {
     case 'POP':
       return parseR(stmt, state);
     case 'RET':
-      return Result.ok([Code((_) => 0x8100)]);
+      return Ok([Code((_) => 0x8100)]);
     case 'NOP':
-      return Result.ok([Code((_) => 0)]);
+      return Ok([Code((_) => 0)]);
     case '':
     case 'START':
     case 'END':
-      return Result.ok([]);
+      return Ok([]);
     case 'DC':
       return parseDC(stmt, state);
     case 'DS':

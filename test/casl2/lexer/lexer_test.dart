@@ -1,4 +1,4 @@
-import 'package:tiamat/src/casl2/token/token.dart';
+import 'package:tiamat/src/casl2/lexer/token.dart';
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
 import 'package:test/test.dart';
 
@@ -262,7 +262,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   for (final tt in tests) {
     final token = l.nextToken();
 
-    expect(token.isError, equals(false), reason: 'unexpected error $token');
+    expect(token.isErr, equals(false), reason: 'unexpected error $token');
 
     testToken(token.ok, runes, currentLineStart, currentLineNumber, tt);
 
@@ -273,7 +273,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   }
 
   final eofToken = l.nextToken();
-  expect(eofToken.isError, equals(false), reason: 'unexpected error $eofToken');
+  expect(eofToken.isErr, equals(false), reason: 'unexpected error $eofToken');
 
   expect(eofToken.ok.type, equals(TokenType.eof));
   expect(String.fromCharCodes(eofToken.ok.runes), equals(''));
@@ -337,8 +337,8 @@ GR1     SUBA    GR2,GR2         ; ラベルエラー
   final l = Lexer(runes);
   for (final tt in tests) {
     final token = l.nextToken();
-    if (token.isError) {
-      final err = token.error;
+    if (token.isErr) {
+      final err = token.err;
       expect(expectedError.moveNext(), isTrue);
       expect(err.token.type, equals(TokenType.unexpected));
       expect(err.message, equals(expectedError.current));
@@ -354,7 +354,7 @@ GR1     SUBA    GR2,GR2         ; ラベルエラー
   }
 
   final eofToken = l.nextToken();
-  expect(eofToken.isError, equals(false), reason: 'unexpected error $eofToken');
+  expect(eofToken.isErr, equals(false), reason: 'unexpected error $eofToken');
 
   expect(eofToken.ok.type, equals(TokenType.eof));
   expect(String.fromCharCodes(eofToken.ok.runes), equals(''));

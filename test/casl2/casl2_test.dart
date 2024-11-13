@@ -46,7 +46,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 ''';
 
   final result = Casl2.fromString(input).compile();
-  expect(result.isError, equals(true));
+  expect(result.isErr, equals(true));
 }
 
 void testParseMacroWithLabel() {

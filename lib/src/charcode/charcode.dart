@@ -1,5 +1,6 @@
 /// JIS X 0201 0x21-0x7E
-const latin = ' !"#\$%&\'()*+,-./'
+const latin = ''
+    ' !"#\$%&\'()*+,-./'
     '0123456789:;<=>?'
     '@ABCDEFGHIJKLMNO'
     'PQRSTUVWXYZ[¥]^_'
@@ -13,7 +14,8 @@ final _latinRuneAsCode = Map.fromIterables(latin.runes, _latinCode);
 final _latinCodeAsRune = Map.fromIterables(_latinCode, latin.runes);
 
 /// JIS X 0201 0xA1-0xDF
-const kana = '。「」、・ヲァィゥェォャュョッ'
+const kana = ''
+    '。「」、・ヲァィゥェォャュョッ'
     'ーアイウエオカキクケコサシスセソ'
     'タチツテトナニヌネノハヒフヘホマ'
     'ミムメモヤユヨラリルレロワン゛゜';

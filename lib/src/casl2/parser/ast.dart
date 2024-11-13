@@ -1,4 +1,4 @@
-import '../token/token.dart';
+import '../lexer/token.dart';
 
 /// Label of CASL2
 typedef Label = String;

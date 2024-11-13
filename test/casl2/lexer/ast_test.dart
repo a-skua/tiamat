@@ -1,6 +1,6 @@
-import 'package:tiamat/src/casl2/token/token.dart';
-import 'package:tiamat/src/casl2/typedef.dart';
-import 'package:tiamat/src/casl2/ast/ast.dart';
+import 'package:tiamat/src/casl2/lexer/token.dart';
+import 'package:tiamat/src/typedef/typedef.dart';
+import 'package:tiamat/src/casl2/parser/ast.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
 import 'package:test/test.dart';
 
@@ -123,7 +123,7 @@ void testStatementNodeCode() {
   final opecode = Token.op('START'.runes);
   final operand = [Token.dec('1'.runes)];
 
-  final code = Result<List<Code>, ParseError>.ok([
+  final code = Ok([
     Code((_) => 1),
     Code((_) => 2),
     Code((_) => 3),
