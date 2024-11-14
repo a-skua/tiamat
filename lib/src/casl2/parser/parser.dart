@@ -1,25 +1,24 @@
 import './ast.dart';
 import '../lexer/lexer.dart';
 import '../lexer/token.dart';
-import './util.dart';
-import '../compiler/state.dart';
 import '../../typedef/typedef.dart';
+import '../casl2.dart';
 
 //// Error of Parser
-final class ParseError {
-  final String message;
-  final int start;
-  final int end;
-  final int lineStart;
-  final int lineNumber;
-
-  ParseError(
-    this.message, {
-    required this.start,
-    required this.end,
-    required this.lineStart,
-    required this.lineNumber,
-  });
+final class ParseError extends Casl2Error {
+  const ParseError(
+    String message, {
+    required int start,
+    required int end,
+    required int lineStart,
+    required int lineNumber,
+  }) : super(
+          message,
+          start: start,
+          end: end,
+          lineStart: lineStart,
+          lineNumber: lineNumber,
+        );
 
   factory ParseError.fromToken(String message, Token token) => ParseError(
         message,
@@ -28,23 +27,11 @@ final class ParseError {
         lineStart: token.lineStart,
         lineNumber: token.lineNumber,
       );
-
-  @deprecated
-  factory ParseError.todo(String msg) => ParseError(
-        msg,
-        start: 0,
-        end: 0,
-        lineStart: 0,
-        lineNumber: 0,
-      );
-
-  @override
-  String toString() => 'L$lineNumber: $message';
 }
 
 /// Parser of CASL2
 abstract class Parser {
-  Iterable<Result<Statement, ParseError>> nextStatement(State state);
+  Iterable<Result<Statement, ParseError>> nextStatement();
 
   /// Create a parser instance.
   factory Parser(Lexer lexer) => _Parser(lexer);
@@ -221,9 +208,9 @@ class _Parser implements Parser {
   }
 
   /// make block-node
-  Result<Statement, ParseError> _nextSubroutine(Statement start, State state) {
+  Result<Statement, ParseError> _nextSubroutine(Statement start) {
     final stmtList = <Statement>[];
-    for (final result in nextStatement(state)) {
+    for (final result in nextStatement()) {
       if (result.isErr) return result;
       stmtList.add(result.ok);
     }
@@ -235,7 +222,7 @@ class _Parser implements Parser {
   ///
   /// EOF or OPECODE(END) is true, finish parsing.
   @override
-  Iterable<Result<Statement, ParseError>> nextStatement(State state) sync* {
+  Iterable<Result<Statement, ParseError>> nextStatement() sync* {
     while (true) {
       _skipBlankToken();
       {
@@ -271,65 +258,11 @@ class _Parser implements Parser {
         operand: operand.ok,
       );
 
-      if (label.ok != null) {
-        state.setLabel(stmt);
-      }
-
       if (String.fromCharCodes(stmt.opecode.runes) == 'START') {
-        yield _nextSubroutine(stmt, state);
+        yield _nextSubroutine(stmt);
       } else {
         yield Ok(stmt);
       }
     }
-  }
-}
-
-/// TODO parser
-Result<List<Code>, ParseError> _parse(Statement stmt, State state) {
-  switch (String.fromCharCodes(stmt.opecode.runes)) {
-    case 'LD':
-    case 'ADDA':
-    case 'SUBA':
-    case 'ADDL':
-    case 'SUBL':
-    case 'AND':
-    case 'OR':
-    case 'XOR':
-    case 'CPA':
-    case 'CPL':
-      return parseGeneral(stmt, state);
-    case 'ST':
-    case 'LAD':
-    case 'SLA':
-    case 'SRA':
-    case 'SLL':
-    case 'SRL':
-      return parseRadrx(stmt, state);
-    case 'JMI':
-    case 'JNZ':
-    case 'JZE':
-    case 'JUMP':
-    case 'JPL':
-    case 'JOV':
-    case 'PUSH':
-    case 'CALL':
-    case 'SVC':
-      return parseAdrx(stmt, state);
-    case 'POP':
-      return parseR(stmt, state);
-    case 'RET':
-      return Ok([Code((_) => 0x8100)]);
-    case 'NOP':
-      return Ok([Code((_) => 0)]);
-    case '':
-    case 'START':
-    case 'END':
-      return Ok([]);
-    case 'DC':
-      return parseDC(stmt, state);
-    case 'DS':
-      return parseDS(stmt, state);
-    default:
-      return parseMacro(stmt as Macro, state);
   }
 }

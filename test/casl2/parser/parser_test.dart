@@ -1,7 +1,6 @@
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
 import 'package:tiamat/src/casl2/parser/ast.dart';
-import 'package:tiamat/src/casl2/compiler/state.dart';
 import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
 
@@ -58,8 +57,8 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         'STATEMENT(OPECODE(CALL),OPERAND(REF(COUNT1))),'
         'STATEMENT(OPECODE(IN),OPERAND(REF(GR1234),DEC(2))),'
         'STATEMENT(OPECODE(RET)),'
-        'STATEMENT(OPECODE(DC),OPERAND(STRING(\'hello\'),STRING(\'world\'))),'
-        'STATEMENT(OPECODE(DC),OPERAND(STRING(\'It\'\'s a small world\'))),'
+        'STATEMENT(OPECODE(DC),OPERAND(TEXT(\'hello\'),TEXT(\'world\'))),'
+        'STATEMENT(OPECODE(DC),OPERAND(TEXT(\'It\'\'s a small world\'))),'
         'STATEMENT(OPECODE(DC),OPERAND(DEC(12),DEC(-34),DEC(56),DEC(-78))),'
         'STATEMENT(OPECODE(DC),OPERAND(HEX(#1234),HEX(#CDEF))),'
         'STATEMENT(LABEL(GR1234),OPECODE(DC),OPERAND(REF(GR1234),REF(MAIN)))'
@@ -88,10 +87,9 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   ];
 
   final parser = Parser(Lexer.fromString(input));
-  final state = State();
 
   var i = 0;
-  for (final actual in parser.nextStatement(state)) {
+  for (final actual in parser.nextStatement()) {
     final expected = test[i++];
     expect('$actual', equals(expected));
   }
@@ -187,10 +185,9 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   ];
 
   final parser = Parser(Lexer.fromString(input));
-  final state = State();
   final stmts = <Statement>[];
 
-  for (final result in parser.nextStatement(state)) {
+  for (final result in parser.nextStatement()) {
     expect(result.isOk, equals(true));
     stmts.add(result.ok);
   }
@@ -204,5 +201,6 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
       // return result.ok.map((c) => c.value(base)).toList();
     }).toList(),
     equals(expected),
+    reason: 'TODO',
   );
 }

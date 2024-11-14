@@ -11,7 +11,8 @@ final class State {
   Statement? getLabel(Label name) => _labels[name] ?? _parent?.getLabel(name);
 
   void setLabel(Statement stmt) {
-    if (stmt.label != null) _labels[stmt.label as Label] = stmt;
+    final label = stmt.label;
+    if (label != null) _labels[String.fromCharCodes(label.runes)] = stmt;
   }
 
   State();

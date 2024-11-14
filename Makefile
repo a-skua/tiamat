@@ -14,6 +14,7 @@ serve:
 
 docs:
 	dart doc
+	python3 -m http.server -d doc/api
 
 fix:
 	dart fix --dry-run

@@ -9,7 +9,7 @@ sealed class Result<T, E> {
   /// error value
   E get err => throw Exception('$this is not err');
 
-  Result();
+  const Result();
 
   @override
   String toString();
@@ -19,7 +19,7 @@ sealed class Result<T, E> {
 final class Ok<T, E> extends Result<T, E> {
   final T _ok;
 
-  Ok(this._ok);
+  const Ok(this._ok) : super();
 
   @override
   bool get isOk => true;
@@ -35,7 +35,7 @@ final class Ok<T, E> extends Result<T, E> {
 final class Err<T, E> extends Result<T, E> {
   final E _err;
 
-  Err(this._err);
+  const Err(this._err) : super();
 
   @override
   bool get isErr => true;

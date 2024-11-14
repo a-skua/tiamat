@@ -10,6 +10,10 @@ void main() {
     test('parse macro with label', testParseMacroWithLabel);
     test('error: unscoped label', testUnscopedLabel);
   });
+
+  group('Module', () {
+    test('toString', testModuleToString);
+  });
 }
 
 void testUnscopedLabel() {
@@ -135,8 +139,8 @@ INBUF   DS      32
   ];
 
   final result = Casl2.fromString(input).compile();
-  expect(result.isOk, equals(true));
-  expect(result.ok.map((c) => c.value(base)).toList(), equals(expected));
+  expect(result.isOk, equals(true), reason: 'TODO');
+  expect(result.ok, equals(expected), reason: 'TODO');
 }
 
 void testParseNode([final int base = 0]) {
@@ -221,6 +225,19 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   ];
 
   final result = Casl2.fromString(input).compile();
-  expect(result.isOk, equals(true));
-  expect(result.ok.map((c) => c.value(base)).toList(), equals(expected));
+  expect(result.isOk, equals(true), reason: 'TODO');
+  expect(result.ok, equals(expected), reason: 'TODO');
+}
+
+void testModuleToString() {
+  final tests = [
+    (
+      Module(),
+      "MODULE(SUBROUTINE(LABEL(FOO),PROCESS(STATEMENT(OPECODE(RET)))),STATEMENT(OPECODE(DC),OPERAND(TEXT('FOO'))))"
+    ),
+  ];
+
+  for (final (mod, expected) in tests) {
+    expect('$mod', equals(expected), reason: 'TODO');
+  }
 }

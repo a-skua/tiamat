@@ -1,23 +1,13 @@
 import 'package:tiamat/src/casl2/lexer/token.dart';
-import 'package:tiamat/src/typedef/typedef.dart';
 import 'package:tiamat/src/casl2/parser/ast.dart';
-import 'package:tiamat/src/casl2/parser/parser.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Code', () {
-    test('value', testCodeValue);
-  });
-
   group('Statement', () {
     test('label', testStatementLabel);
     test('opecode', testStatementOpecode);
     test('operand', testStatementOperand);
     test('toString', testStatementToString);
-
-    test('code', testStatementNodeCode, skip: true);
-    test('size', testStatementNodeSize, skip: true);
-    test('position', testStatementNodePosition, skip: true);
   });
 
   group('Macro', () {
@@ -33,15 +23,6 @@ void main() {
     test('operand', testSubroutineOperand);
     test('toString', testSubroutineToString);
   });
-
-  group('Module', () {
-    test('toString', testModuleToString);
-  });
-}
-
-void testCodeValue() {
-  expect(Code((base) => base + 50).value(), equals(50));
-  expect(Code((base) => base + 50).value(100), equals(150));
 }
 
 void testStatementLabel() {
@@ -116,60 +97,6 @@ void testStatementToString() {
   for (final (stmt, expected) in tests) {
     expect('$stmt', equals(expected));
   }
-}
-
-void testStatementNodeCode() {
-  final label = Token.label('FOO'.runes);
-  final opecode = Token.op('START'.runes);
-  final operand = [Token.dec('1'.runes)];
-
-  final code = Ok([
-    Code((_) => 1),
-    Code((_) => 2),
-    Code((_) => 3),
-  ]);
-
-  expect(
-      // TODO
-      Statement(opecode, label: label, operand: operand),
-      equals(code));
-}
-
-void testStatementNodeSize() {
-  final label = Token.label('FOO'.runes);
-  final opecode = Token.op('START'.runes);
-  final operand = [Token.dec('1'.runes)];
-
-  expect(
-      // TODO
-      Statement(opecode, label: label, operand: operand),
-      equals(0));
-
-  expect(
-      // TODO
-      Statement(opecode, label: label, operand: operand),
-      equals(0));
-
-  expect(
-      // TODO
-      Statement(opecode, label: label, operand: operand),
-      equals(3));
-}
-
-void testStatementNodePosition() {
-  final label = Token.label('FOO'.runes);
-  final opecode = Token.op('START'.runes);
-  final operand = [Token.dec('1'.runes)];
-
-  expect(
-      // TODO
-      Statement(opecode, label: label, operand: operand),
-      equals(0));
-
-  expect(
-      // TODO
-      Statement(opecode, label: label, operand: operand),
-      equals(6));
 }
 
 void testMacroLabel() {
@@ -335,24 +262,5 @@ void testSubroutineToString() {
 
   for (final (stmt, expected) in tests) {
     expect('$stmt', equals(expected));
-  }
-}
-
-void testModuleToString() {
-  final tests = [
-    (
-      Module([
-        Subroutine(
-          Statement(Token.op('START'.runes), label: Token.label('FOO'.runes)),
-          [Statement(Token.op('RET'.runes))],
-        ),
-        Statement(Token.op('DC'.runes), operand: [Token.text("'FOO'".runes)]),
-      ]),
-      "MODULE(SUBROUTINE(LABEL(FOO),PROCESS(STATEMENT(OPECODE(RET)))),STATEMENT(OPECODE(DC),OPERAND(TEXT('FOO'))))"
-    ),
-  ];
-
-  for (final (mod, expected) in tests) {
-    expect('$mod', equals(expected));
   }
 }

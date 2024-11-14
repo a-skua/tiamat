@@ -6,15 +6,6 @@ typedef Label = String;
 /// Opecode of CASL2
 typedef Opecode = String;
 
-/// Code of COMET2
-class Code {
-  final int Function(Position) _value;
-
-  Code(this._value);
-
-  int value([Position base = 0]) => _value(base);
-}
-
 /// Size of Node
 typedef Size = int;
 
@@ -127,15 +118,5 @@ final class Subroutine extends _Block implements Statement {
       if (_stmtList.isNotEmpty) 'PROCESS(${_stmtList.join(',')})',
     ];
     return 'SUBROUTINE(${strs.join(',')})';
-  }
-}
-
-/// Module Node
-final class Module extends _Block {
-  Module(List<Statement> stmtList) : super(stmtList);
-
-  @override
-  String toString() {
-    return 'MODULE(${_stmtList.join(',')})';
   }
 }
