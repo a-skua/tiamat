@@ -1,6 +1,6 @@
 import '../resource.dart' show Resource;
 import '../device.dart' show Device;
-import 'package:tiamat/src/charcode/charcode.dart';
+import 'package:tiamat/src/casl2/compiler/charcode.dart';
 import 'util.dart';
 
 Future<void> write(final Resource r, final Device d) async {
@@ -15,7 +15,7 @@ Future<void> write(final Resource r, final Device d) async {
     if (char == eof.toUnsigned(ram.bits)) {
       break;
     }
-    final rune = codeAsRune(char);
+    final rune = char.asRune;
     if (rune != null) {
       s += String.fromCharCode(rune);
     } else {

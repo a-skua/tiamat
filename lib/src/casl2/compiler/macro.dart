@@ -2,36 +2,17 @@ import '../../typedef/typedef.dart';
 import '../lexer/token.dart';
 import '../parser/ast.dart';
 import './compiler.dart';
-import './state.dart';
-import './util.dart';
+import './const.dart';
 
-final macroList = <String,
-    Result<List<Code>, CompileError> Function(
-  Macro macro,
-  State state,
-)>{
-  'IN': parseIN,
-  'OUT': parseOUT,
-  'RPUSH': parseRPUSH,
-  'RPOP': parseRPOP,
+final embeddedMacro =
+    <String, Result<List<Statement>, CompileError> Function(Macro stmt)>{
+  'IN': _in,
+  'OUT': _out,
+  'RPUSH': _rpush,
+  'RPOP': _rpop,
 };
 
-final _lad = Token.op('LAD'.runes);
-final _svc = Token.op('SVC'.runes);
-final _push = Token.op('PUSH'.runes);
-final _pop = Token.op('POP'.runes);
-final _gr1 = Token.gr('GR1'.runes);
-final _gr2 = Token.gr('GR2'.runes);
-final _gr3 = Token.gr('GR3'.runes);
-final _gr4 = Token.gr('GR4'.runes);
-final _gr5 = Token.gr('GR5'.runes);
-final _gr6 = Token.gr('GR6'.runes);
-final _gr7 = Token.gr('GR7'.runes);
-final _dec0 = Token.dec('0'.runes);
-final _dec1 = Token.dec('1'.runes);
-final _dec2 = Token.dec('2'.runes);
-
-Result<List<Code>, CompileError> parseIN(Macro stmt, State state) {
+Result<List<Statement>, CompileError> _in(Macro stmt) {
   switch (stmt.operand) {
     case [final buf, final len]:
       if (len.type != TokenType.hex && len.type != TokenType.dec) {
@@ -41,26 +22,11 @@ Result<List<Code>, CompileError> parseIN(Macro stmt, State state) {
         ));
       }
 
-      return [
-        parseRadrx(
-          Statement(_lad, operand: [_gr1, buf]),
-          state,
-        ),
-        parseRadrx(
-          Statement(_lad, operand: [_gr2, buf]),
-          state,
-        ),
-        parseAdrx(
-          Statement(_svc, operand: [_dec1]),
-          state,
-        ),
-      ].reduce((a, b) {
-        if (a.isErr) return a;
-        if (b.isErr) return b;
-
-        a.ok.addAll(b.ok);
-        return a;
-      });
+      return Ok([
+        Statement(lad, operand: [gr1, buf], label: stmt.label),
+        Statement(lad, operand: [gr2, len]),
+        Statement(svc, operand: [dec1]),
+      ]);
     default:
       return Err(CompileError.fromToken(
         '[SYNTAX ERROR] ${String.fromCharCodes(stmt.opecode.runes)} wrong number of operands. wants 2 operands.',
@@ -69,7 +35,7 @@ Result<List<Code>, CompileError> parseIN(Macro stmt, State state) {
   }
 }
 
-Result<List<Code>, CompileError> parseOUT(Macro stmt, State state) {
+Result<List<Statement>, CompileError> _out(Macro stmt) {
   switch (stmt.operand) {
     case [final buf, final len]:
       if (len.type != TokenType.hex && len.type != TokenType.dec) {
@@ -79,26 +45,11 @@ Result<List<Code>, CompileError> parseOUT(Macro stmt, State state) {
         ));
       }
 
-      return [
-        parseRadrx(
-          Statement(_lad, operand: [_gr1, buf]),
-          state,
-        ),
-        parseRadrx(
-          Statement(_lad, operand: [_gr2, len]),
-          state,
-        ),
-        parseAdrx(
-          Statement(_svc, operand: [_dec2]),
-          state,
-        ),
-      ].reduce((a, b) {
-        if (a.isErr) return a;
-        if (b.isErr) return b;
-
-        a.ok.addAll(b.ok);
-        return a;
-      });
+      return Ok([
+        Statement(lad, operand: [gr1, buf], label: stmt.label),
+        Statement(lad, operand: [gr2, len]),
+        Statement(svc, operand: [dec2]),
+      ]);
     default:
       return Err(CompileError.fromToken(
         '[SYNTAX ERROR] ${String.fromCharCodes(stmt.opecode.runes)} wrong number of operands. wants 2 operands.',
@@ -107,80 +58,26 @@ Result<List<Code>, CompileError> parseOUT(Macro stmt, State state) {
   }
 }
 
-Result<List<Code>, CompileError> parseRPUSH(Macro stmt, State state) {
-  return [
-    parseAdrx(
-      Statement(_push, operand: [_dec0, _gr1]),
-      state,
-    ),
-    parseAdrx(
-      Statement(_push, operand: [_dec0, _gr2]),
-      state,
-    ),
-    parseAdrx(
-      Statement(_push, operand: [_dec0, _gr3]),
-      state,
-    ),
-    parseAdrx(
-      Statement(_push, operand: [_dec0, _gr4]),
-      state,
-    ),
-    parseAdrx(
-      Statement(_push, operand: [_dec0, _gr5]),
-      state,
-    ),
-    parseAdrx(
-      Statement(_push, operand: [_dec0, _gr6]),
-      state,
-    ),
-    parseAdrx(
-      Statement(_push, operand: [_dec0, _gr7]),
-      state,
-    ),
-  ].reduce((a, b) {
-    if (a.isErr) return a;
-    if (b.isErr) return b;
-
-    a.ok.addAll(b.ok);
-    return a;
-  });
+Result<List<Statement>, CompileError> _rpush(Macro stmt) {
+  return Ok([
+    Statement(push, operand: [dec0, gr1], label: stmt.label),
+    Statement(push, operand: [dec0, gr2]),
+    Statement(push, operand: [dec0, gr3]),
+    Statement(push, operand: [dec0, gr4]),
+    Statement(push, operand: [dec0, gr5]),
+    Statement(push, operand: [dec0, gr6]),
+    Statement(push, operand: [dec0, gr7]),
+  ]);
 }
 
-Result<List<Code>, CompileError> parseRPOP(Macro stmt, State state) {
-  return [
-    parseR(
-      Statement(_pop, operand: [_gr7]),
-      state,
-    ),
-    parseR(
-      Statement(_pop, operand: [_gr6]),
-      state,
-    ),
-    parseR(
-      Statement(_pop, operand: [_gr5]),
-      state,
-    ),
-    parseR(
-      Statement(_pop, operand: [_gr4]),
-      state,
-    ),
-    parseR(
-      Statement(_pop, operand: [_gr3]),
-      state,
-    ),
-    parseR(
-      Statement(_pop, operand: [_gr2]),
-      state,
-    ),
-    parseR(
-      Statement(_pop, operand: [_gr1]),
-      state,
-    ),
-  ].reduce((a, b) {
-    if (a.isErr) return a;
-    if (b.isErr) return b;
-
-    a.ok.addAll(b.ok);
-    return a;
-  });
+Result<List<Statement>, CompileError> _rpop(Macro stmt) {
+  return Ok([
+    Statement(pop, operand: [gr7], label: stmt.label),
+    Statement(pop, operand: [gr6]),
+    Statement(pop, operand: [gr5]),
+    Statement(pop, operand: [gr4]),
+    Statement(pop, operand: [gr3]),
+    Statement(pop, operand: [gr2]),
+    Statement(pop, operand: [gr1]),
+  ]);
 }

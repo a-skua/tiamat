@@ -1,6 +1,6 @@
 typedef Char = int;
 
-/// Type of Token
+/// Type of [Token]
 enum TokenType {
   /// '; COMMENT'
   comment,
@@ -42,25 +42,31 @@ enum TokenType {
   unexpected,
 }
 
-String _typeToString(TokenType type) => switch (type) {
-      TokenType.comment => 'COMMENT',
-      TokenType.label => 'LABEL',
-      TokenType.op => 'OPECODE',
-      TokenType.ref => 'REF',
-      TokenType.gr => 'GR',
-      TokenType.dec => 'DEC',
-      TokenType.hex => 'HEX',
-      TokenType.text => 'TEXT',
-      TokenType.eol => 'EOL',
-      TokenType.eof => 'EOF',
-      TokenType.separation => 'SEPARATION',
-      TokenType.space => 'SPACE',
-      TokenType.unexpected => 'UNEXPECTED',
-    };
+extension ToString on TokenType {
+  /// Convert [TokenType] to [String].
+  String get string => switch (this) {
+        TokenType.comment => 'COMMENT',
+        TokenType.label => 'LABEL',
+        TokenType.op => 'OPECODE',
+        TokenType.ref => 'REF',
+        TokenType.gr => 'GR',
+        TokenType.dec => 'DEC',
+        TokenType.hex => 'HEX',
+        TokenType.text => 'TEXT',
+        TokenType.eol => 'EOL',
+        TokenType.eof => 'EOF',
+        TokenType.separation => 'SEPARATION',
+        TokenType.space => 'SPACE',
+        TokenType.unexpected => 'UNEXPECTED',
+      };
+}
 
 /// Token
 final class Token {
   final Iterable<Char> runes;
+
+  String get string => String.fromCharCodes(runes);
+
   final TokenType type;
 
   /// tokens [start] position.
@@ -208,16 +214,16 @@ final class Token {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is Token &&
-        '${other.runes}' == '$runes' &&
         other.type == type &&
         other.start == start &&
         other.end == end &&
         other.lineStart == lineStart &&
-        other.lineNumber == lineNumber;
+        other.lineNumber == lineNumber &&
+        other.string == string;
   }
 
   @override
   String toString() {
-    return '${_typeToString(type)}(${String.fromCharCodes(runes)})';
+    return '${type.string}($string)';
   }
 }

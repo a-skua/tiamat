@@ -1,17 +1,5 @@
 import '../lexer/token.dart';
 
-/// Label of CASL2
-typedef Label = String;
-
-/// Opecode of CASL2
-typedef Opecode = String;
-
-/// Size of Node
-typedef Size = int;
-
-/// Position of Memory on COMET2
-typedef Position = int;
-
 /// Statement Node
 abstract class Statement {
   Token? get label;
@@ -40,17 +28,9 @@ abstract class Statement {
 }
 
 /// Impl Statement Node
-final class _Statement implements Statement {
-  @override
-  final Token? label;
-
-  @override
-  final Token opecode;
-
-  @override
-  final List<Token> operand;
-
-  _Statement(this.label, this.opecode, this.operand);
+final class _Statement extends Macro implements Statement {
+  _Statement(Token? label, Token opecode, List<Token> operand)
+      : super(opecode, label: label, operand: operand);
 
   @override
   String toString() {
@@ -65,30 +45,36 @@ final class _Statement implements Statement {
 }
 
 /// Macro Node
-final class Macro extends _Statement {
-  Macro(Token opecode, {Token? label, List<Token> operand = const []})
-      : super(label, opecode, operand);
+final class Macro implements Statement {
+  @override
+  final Token? label;
+
+  @override
+  final Token opecode;
+
+  @override
+  final List<Token> operand;
+
+  Macro(
+    this.opecode, {
+    this.label,
+    this.operand = const [],
+  });
 
   @override
   String toString() {
-    final strs = <String>[
+    final stmt = <String>[
       if (label != null) label.toString(),
       opecode.toString(),
       if (operand.isNotEmpty) 'OPERAND(${operand.join(',')})',
     ];
-    return 'MACRO(${strs.join(',')})';
+
+    return 'MACRO(${stmt.join(',')})';
   }
 }
 
-/// Block Node
-abstract class _Block {
-  final List<Statement> _stmtList;
-
-  _Block(this._stmtList);
-}
-
 /// Subroutine Node
-final class Subroutine extends _Block implements Statement {
+final class Subroutine implements Statement {
   @override
   Token? get label => _startOp.label;
 
@@ -98,24 +84,26 @@ final class Subroutine extends _Block implements Statement {
   @override
   List<Token> get operand => _startOp.operand;
 
-  /// Start Opecode
+  /// Start Statement
   ///
   /// ### example
   /// ```asm
-  /// MAIN    START   FOO    ; StatementNode(START, label=MAIN operand=FOO)
+  /// MAIN    START   FOO    ; StatementNode(START, label: MAIN operand: FOO)
   /// FOO     RET
   ///         END
   /// ```
   final Statement _startOp;
 
-  Subroutine(this._startOp, List<Statement> proc) : super(proc);
+  final List<Statement> process;
+
+  Subroutine(this._startOp, this.process);
 
   @override
   String toString() {
     final strs = [
       if (label != null) label.toString(),
       if (operand.isNotEmpty) 'START(${operand.join(',')})',
-      if (_stmtList.isNotEmpty) 'PROCESS(${_stmtList.join(',')})',
+      if (process.isNotEmpty) 'PROCESS(${process.join(',')})',
     ];
     return 'SUBROUTINE(${strs.join(',')})';
   }

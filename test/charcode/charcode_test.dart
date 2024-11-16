@@ -1,4 +1,4 @@
-import 'package:tiamat/src/charcode/charcode.dart';
+import 'package:tiamat/src/casl2/compiler/charcode.dart';
 import 'package:test/test.dart';
 
 void main() {

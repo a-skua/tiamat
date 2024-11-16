@@ -214,6 +214,7 @@ class _Parser implements Parser {
       if (result.isErr) return result;
       stmtList.add(result.ok);
     }
+    _skipTokenOfLine();
 
     return Ok(Statement.subroutine(start, process: stmtList));
   }
@@ -244,13 +245,22 @@ class _Parser implements Parser {
       }
 
       final label = _getLabel();
-      if (label.isErr) yield Err(label.err);
+      if (label.isErr) {
+        yield Err(label.err);
+        continue;
+      }
 
       final opecode = _getOpecode();
-      if (opecode.isErr) yield Err(opecode.err);
+      if (opecode.isErr) {
+        yield Err(opecode.err);
+        continue;
+      }
 
       final operand = _getOperand();
-      if (operand.isErr) yield Err(operand.err);
+      if (operand.isErr) {
+        yield Err(operand.err);
+        continue;
+      }
 
       final stmt = Statement(
         opecode.ok,

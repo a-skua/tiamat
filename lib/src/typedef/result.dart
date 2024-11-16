@@ -11,6 +11,8 @@ sealed class Result<T, E> {
 
   const Result();
 
+  Result<U, E> map<U>(U Function(T) f) => isOk ? Ok(f(ok)) : Err(err);
+
   @override
   String toString();
 }
@@ -29,6 +31,12 @@ final class Ok<T, E> extends Result<T, E> {
 
   @override
   String toString() => 'Ok($_ok)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Ok && other._ok == _ok;
+  }
 }
 
 /// [Result] is Err
@@ -45,4 +53,10 @@ final class Err<T, E> extends Result<T, E> {
 
   @override
   String toString() => 'Err($_err)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Err && other._err == _err;
+  }
 }

@@ -1,17 +1,15 @@
 import 'package:tiamat/src/casl2/lexer/lexer.dart';
 import 'package:tiamat/src/casl2/parser/parser.dart';
-import 'package:tiamat/src/casl2/parser/ast.dart';
-import 'package:tiamat/src/charcode/charcode.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Parser', () {
-    test('nextNode', testNextNode);
-    test('nextNode..code', testParseNode);
+    test('nextStatement() 1', testParserNextStatement1);
+    test('nextStatement() 2', testParserNextStatement2);
   });
 }
 
-void testNextNode() {
+void testParserNextStatement1() {
   final input = '''
 MAIN    START                   ; コメント
         CALL    COUNT1          ; COUNT1呼び出し
@@ -50,7 +48,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         DC 'hello,world
 ''';
 
-  final test = [
+  final expected = [
     'Ok(SUBROUTINE('
         'LABEL(MAIN),'
         'PROCESS('
@@ -90,14 +88,13 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 
   var i = 0;
   for (final actual in parser.nextStatement()) {
-    final expected = test[i++];
-    expect('$actual', equals(expected));
+    expect('$actual', equals(expected[i++]));
   }
 }
 
-void testParseNode() {
+void testParserNextStatement2() {
   final input = '''
-MAIN    START                   ; コメント
+MAIN    START   FOO             ; コメント
         CALL    COUNT1          ; COUNT1呼び出し
         RET
         DC      'hello','world' ; 文字定数
@@ -121,86 +118,53 @@ MORE    LAD     GR2,1,GR2       ; Count = Count + 1
         AND     GR1,GR0         ;   '0'に変える
         JNZ     MORE            ; '1'のビットが残っていれば繰り返し
 RETURN  LD      GR0,GR2         ; GR0 = Count
+        RPUSH
+        RPOP
         POP     GR2             ;
         POP     GR1             ;
         RET                     ; 呼び出しプログラムへ戻る
         END                     ;
 ''';
 
-  const base = 100;
-
-  final expected = <List<int>>[
-    [
-      // MAIN    START
-      //         CALL    COUNT1
-      0x8000, 39 + base,
-      //         RET
-      0x8100,
-      //         DC      'hello','world'
-      ...'hello'.runes.map((rune) => runeAsCode(rune) ?? 0).toList(),
-      ...'world'.runes.map((rune) => runeAsCode(rune) ?? 0).toList(),
-      //         DC      'it''s a small world'
-      ..."it's a small world"
-          .runes
-          .map((rune) => runeAsCode(rune) ?? 0)
-          .toList(),
-      //         DC      12,-34,56,-78
-      12, -34, 56, -78,
-      //         DC      #1234,#CDEF
-      0x1234, 0xcdef,
-      // GR1234  DC      GR1234,MAIN
-      37 + base, 0 + base,
-      //         END
-    ],
-    [
-      // COUNT1  START
-      //         PUSH    0,GR1
-      0x7001, 0,
-      //         PUSH    0,GR2
-      0x7002, 0,
-      //         SUBA    GR2,GR2
-      0x2522,
-      //         AND     GR1,GR1
-      0x3411,
-      //         JZE     RETURN
-      0x6300, 54 + base,
-      // MORE    LAD     GR2,1,GR2
-      0x1222, 1,
-      //         LAD     GR0,-1,GR1
-      0x1201, -1,
-      //         AND     GR1,GR0
-      0x3410,
-      //         JNZ     MORE
-      0x6200, 47 + base,
-      // RETURN  LD      GR0,GR2
-      0x1402,
-      //         POP     GR2
-      0x7120,
-      //         POP     GR1
-      0x7110,
-      //         RET
-      0x8100,
-      //         END
-    ],
+  final expected = [
+    'Ok(SUBROUTINE('
+        'LABEL(MAIN),'
+        'START(REF(FOO)),'
+        'PROCESS('
+        'STATEMENT(OPECODE(CALL),OPERAND(REF(COUNT1))),'
+        'STATEMENT(OPECODE(RET)),'
+        'STATEMENT(OPECODE(DC),OPERAND(TEXT(\'hello\'),TEXT(\'world\'))),'
+        'STATEMENT(OPECODE(DC),OPERAND(TEXT(\'it\'\'s a small world\'))),'
+        'STATEMENT(OPECODE(DC),OPERAND(DEC(12),DEC(-34),DEC(56),DEC(-78))),'
+        'STATEMENT(OPECODE(DC),OPERAND(HEX(#1234),HEX(#CDEF))),'
+        'STATEMENT(LABEL(GR1234),OPECODE(DC),OPERAND(REF(GR1234),REF(MAIN)))'
+        ')))',
+    'Ok(SUBROUTINE('
+        'LABEL(COUNT1),'
+        'PROCESS('
+        'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR1))),'
+        'STATEMENT(OPECODE(PUSH),OPERAND(DEC(0),GR(GR2))),'
+        'STATEMENT(OPECODE(SUBA),OPERAND(GR(GR2),GR(GR2))),'
+        'STATEMENT(OPECODE(AND),OPERAND(GR(GR1),GR(GR1))),'
+        'STATEMENT(OPECODE(JZE),OPERAND(REF(RETURN))),'
+        'STATEMENT(LABEL(MORE),OPECODE(LAD),OPERAND(GR(GR2),DEC(1),GR(GR2))),'
+        'STATEMENT(OPECODE(LAD),OPERAND(GR(GR0),DEC(-1),GR(GR1))),'
+        'STATEMENT(OPECODE(AND),OPERAND(GR(GR1),GR(GR0))),'
+        'STATEMENT(OPECODE(JNZ),OPERAND(REF(MORE))),'
+        'STATEMENT(LABEL(RETURN),OPECODE(LD),OPERAND(GR(GR0),GR(GR2))),'
+        'STATEMENT(OPECODE(RPUSH)),'
+        'STATEMENT(OPECODE(RPOP)),'
+        'STATEMENT(OPECODE(POP),OPERAND(GR(GR2))),'
+        'STATEMENT(OPECODE(POP),OPERAND(GR(GR1))),'
+        'STATEMENT(OPECODE(RET))'
+        ')))',
+    'Ok(())',
   ];
 
   final parser = Parser(Lexer.fromString(input));
-  final stmts = <Statement>[];
 
-  for (final result in parser.nextStatement()) {
-    expect(result.isOk, equals(true));
-    stmts.add(result.ok);
+  var i = 0;
+  for (final actual in parser.nextStatement()) {
+    expect('$actual', equals(expected[i++]));
   }
-
-  expect(
-    stmts.map((n) {
-      return n;
-      // TODO
-      // final result = n.code;
-      // expect(result.isOk, equals(true));
-      // return result.ok.map((c) => c.value(base)).toList();
-    }).toList(),
-    equals(expected),
-    reason: 'TODO',
-  );
 }

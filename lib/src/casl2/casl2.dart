@@ -3,9 +3,7 @@ import './parser/ast.dart';
 import './parser/parser.dart';
 import '../typedef/typedef.dart';
 import './compiler/compiler.dart';
-
-// TODO
-export './compiler/compiler.dart' show Code;
+import './compiler/word.dart';
 
 abstract class Casl2Error {
   final String message;
@@ -24,6 +22,17 @@ abstract class Casl2Error {
 
   @override
   String toString() => 'L$lineNumber: $message';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Casl2Error &&
+        other.start == start &&
+        other.end == end &&
+        other.lineStart == lineStart &&
+        other.lineNumber == lineNumber &&
+        other.message == message;
+  }
 }
 
 /// CASL2 instance.
@@ -57,27 +66,57 @@ final class Casl2 {
     return Ok(stmts);
   }
 
-  Result<Module, List<Casl2Error>> compile() {
+  Result<Module, List<Casl2Error>> build() {
     final result = parse();
-
-    if (result.isErr) {
-      return Err(result.err);
-    }
+    if (result.isErr) return Err(result.err);
 
     final errs = <CompileError>[];
+    final words = <Word>[];
+    final blocks = <WordBlock>[];
+    final refs = <Label, Word>{};
     for (final stmt in result.ok) {
-      final result = _compiler.compile(stmt);
-      if (result.isErr) {
-        errs.add(result.err);
-      }
+      final result = _compiler.compile(stmt).map((block) {
+        final label = block.label;
+        if (label != null) refs[label.$1] = label.$2;
+        blocks.add(block);
+        words.addAll(block.words);
+      });
+      if (result.isErr) errs.add(result.err);
+    }
+    if (errs.isNotEmpty) return Err(errs);
+
+    final bin = <Real>[];
+    for (final block in blocks) {
+      final result = block.reals((label) {
+        final word = refs[label];
+        if (word == null) {
+          return null;
+        }
+        return words.indexOf(word);
+      }, bin.length).map((reals) {
+        bin.addAll(reals);
+      });
+      if (result.isErr) errs.addAll(result.err);
     }
 
-    // TODO
-    return Err(errs);
+    if (errs.isNotEmpty) return Err(errs);
+    return Ok(Module(
+      refs.map((label, word) => MapEntry(label, words.indexOf(word))),
+      bin,
+    ));
   }
 }
 
 /// CASL2 Module
 final class Module {
-  Module();
+  final Map<Label, Address> labels;
+  final List<Real> bin;
+  Module(this.labels, this.bin);
+
+  @override
+  String toString() {
+    final refs = labels.entries.map((e) => '${e.key}=${e.value}');
+    final words = bin.map((word) => 'CONST($word)');
+    return '(REFS(${refs.join(',')}),WORDS(${words.join(',')})';
+  }
 }

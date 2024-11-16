@@ -3,7 +3,7 @@ import 'resource.dart' show Resource;
 import 'device.dart';
 import './instruction.dart';
 import 'supervisor_call.dart' show supervisorCall;
-import 'package:tiamat/tiamat.dart' show Code;
+import 'package:tiamat/src/casl2/compiler/word.dart' show Real;
 
 export 'device.dart';
 
@@ -38,7 +38,7 @@ abstract class Comet2 {
   Future<Resource> run([Status]);
 
   /// load code on compute
-  void load(LoadPoint start, List<Code> code);
+  void load(LoadPoint start, List<Real> words);
 
   factory Comet2(
     Device device, {
@@ -99,8 +99,8 @@ class _Comet2 implements Comet2 {
   set delay(final int ms) => _delay = getDuration(ms);
 
   @override
-  void load(final int start, final List<Code> code) {
-    resource.memory.setAll(start, code.map((c) => c.value(start)).toList());
+  void load(final int start, final List<Real> words) {
+    resource.memory.setAll(start, words);
     resource.programRegister.value = start;
     resource.stackPointer.value = 0xffff; // reset.
   }
@@ -144,8 +144,8 @@ class _Comet2 implements Comet2 {
   bool get _isExit => resource.stackPointer.value == 0;
 
   /// load nad run
-  Future<Resource> loadAndRun(LoadPoint start, List<Code> code) async {
-    load(start, code);
+  Future<Resource> loadAndRun(LoadPoint start, List<Real> words) async {
+    load(start, words);
     await run();
     return resource;
   }

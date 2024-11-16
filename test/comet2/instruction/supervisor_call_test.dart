@@ -4,7 +4,7 @@ import 'package:tiamat/src/comet2/instruction/supervisor_call.dart' as ins;
 import 'package:tiamat/src/comet2/supervisor_call.dart';
 import 'package:tiamat/src/comet2/resource.dart';
 import 'package:tiamat/src/comet2/comet2.dart';
-import 'package:tiamat/src/charcode/charcode.dart';
+import 'package:tiamat/src/casl2/compiler/charcode.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -45,7 +45,7 @@ void testSupervisorCallWrite() async {
     {
       final runes = expected.runes.toList();
       for (var i = 0; i < runes.length; i++) {
-        resource.memory[buf + i] = runeAsCode(runes[i]) ?? 0;
+        resource.memory[buf + i] = runes[i].asReal ?? 0;
       }
     }
 
@@ -91,7 +91,7 @@ void testSupervisorCallRead() async {
     expect(resource.programRegister.value, equals((pr + 2) & 0xffff));
     final runes = value.runes.toList();
     for (var i = 0; i < len; i++) {
-      expect(resource.memory[buf + i], equals(runeAsCode(runes[i])));
+      expect(resource.memory[buf + i], equals(runes[i].asReal));
     }
   }
 }

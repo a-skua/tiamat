@@ -1,6 +1,6 @@
 import '../resource.dart' show Resource;
 import '../device.dart' show Device;
-import 'package:tiamat/src/charcode/charcode.dart';
+import 'package:tiamat/src/casl2/compiler/charcode.dart';
 import 'util.dart';
 
 Future<void> read(final Resource r, final Device d) async {
@@ -17,7 +17,7 @@ Future<void> read(final Resource r, final Device d) async {
     }
     length.value -= 1;
 
-    ram[pointer.value] = runeAsCode(rune) ?? 0;
+    ram[pointer.value] = rune.asReal ?? 0;
     pointer.value += 1;
   }
 
