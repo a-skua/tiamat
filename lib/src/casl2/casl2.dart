@@ -1,9 +1,13 @@
-import './lexer/lexer.dart';
-import './parser/ast.dart';
-import './parser/parser.dart';
-import '../typedef/typedef.dart';
-import './compiler/compiler.dart';
-import './compiler/word.dart';
+import 'package:tiamat/typedef.dart';
+import './lexer.dart';
+import './parser.dart';
+import './compiler.dart';
+import './word.dart';
+
+export './lexer.dart';
+export './parser.dart';
+export './compiler.dart';
+export './word.dart';
 
 abstract class Casl2Error {
   final String message;
@@ -71,28 +75,28 @@ final class Casl2 {
     if (result.isErr) return Err(result.err);
 
     final errs = <CompileError>[];
-    final words = <Word>[];
-    final blocks = <WordBlock>[];
+    final flatWords = <Word>[];
+    final blockWords = <Words>[];
     final refs = <Label, Word>{};
     for (final stmt in result.ok) {
       final result = _compiler.compile(stmt).map((block) {
         final label = block.label;
         if (label != null) refs[label.$1] = label.$2;
-        blocks.add(block);
-        words.addAll(block.words);
+        blockWords.add(block);
+        flatWords.addAll(block.words);
       });
       if (result.isErr) errs.add(result.err);
     }
     if (errs.isNotEmpty) return Err(errs);
 
     final bin = <Real>[];
-    for (final block in blocks) {
+    for (final block in blockWords) {
       final result = block.reals((label) {
         final word = refs[label];
         if (word == null) {
           return null;
         }
-        return words.indexOf(word);
+        return flatWords.indexOf(word);
       }, bin.length).map((reals) {
         bin.addAll(reals);
       });
@@ -101,7 +105,7 @@ final class Casl2 {
 
     if (errs.isNotEmpty) return Err(errs);
     return Ok(Module(
-      refs.map((label, word) => MapEntry(label, words.indexOf(word))),
+      refs.map((label, word) => MapEntry(label, flatWords.indexOf(word))),
       bin,
     ));
   }

@@ -1,4 +1,4 @@
-import '../lexer/token.dart';
+import '../lexer.dart' show Token;
 
 final lad = Token.op('LAD'.runes);
 final svc = Token.op('SVC'.runes);

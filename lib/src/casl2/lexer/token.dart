@@ -1,7 +1,7 @@
-typedef Char = int;
+import '../word.dart' show Rune;
 
 /// Type of [Token]
-enum TokenType {
+enum Type {
   /// '; COMMENT'
   comment,
 
@@ -42,32 +42,32 @@ enum TokenType {
   unexpected,
 }
 
-extension ToString on TokenType {
-  /// Convert [TokenType] to [String].
+extension ToString on Type {
+  /// Convert [Type] to [String].
   String get string => switch (this) {
-        TokenType.comment => 'COMMENT',
-        TokenType.label => 'LABEL',
-        TokenType.op => 'OPECODE',
-        TokenType.ref => 'REF',
-        TokenType.gr => 'GR',
-        TokenType.dec => 'DEC',
-        TokenType.hex => 'HEX',
-        TokenType.text => 'TEXT',
-        TokenType.eol => 'EOL',
-        TokenType.eof => 'EOF',
-        TokenType.separation => 'SEPARATION',
-        TokenType.space => 'SPACE',
-        TokenType.unexpected => 'UNEXPECTED',
+        Type.comment => 'COMMENT',
+        Type.label => 'LABEL',
+        Type.op => 'OPECODE',
+        Type.ref => 'REF',
+        Type.gr => 'GR',
+        Type.dec => 'DEC',
+        Type.hex => 'HEX',
+        Type.text => 'TEXT',
+        Type.eol => 'EOL',
+        Type.eof => 'EOF',
+        Type.separation => 'SEPARATION',
+        Type.space => 'SPACE',
+        Type.unexpected => 'UNEXPECTED',
       };
 }
 
 /// Token
 final class Token {
-  final Iterable<Char> runes;
+  final Iterable<Rune> runes;
 
   String get string => String.fromCharCodes(runes);
 
-  final TokenType type;
+  final Type type;
 
   /// tokens [start] position.
   final int start;
@@ -81,134 +81,40 @@ final class Token {
   /// tokens [lineNumber].
   final int lineNumber;
 
-  const Token(
-    this.runes,
-    this.type, {
-    this.start = 0,
-    this.end = 0,
-    this.lineStart = 0,
-    this.lineNumber = 1,
-  });
+  const Token._(this.runes, this.type, this.start, this.end, this.lineStart,
+      this.lineNumber);
 
-  factory Token.comment(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.comment,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+  bool get isComment => type == Type.comment;
+  bool get isNotComment => !isComment;
+  bool get isLabel => type == Type.label;
+  bool get isNotLabel => !isLabel;
+  bool get isOp => type == Type.op;
+  bool get isNotOp => !isOp;
+  bool get isRef => type == Type.ref;
+  bool get isNotRef => !isRef;
+  bool get isGr => type == Type.gr;
+  bool get isNotGr => !isGr;
+  bool get isDec => type == Type.dec;
+  bool get isNotDec => !isDec;
+  bool get isHex => type == Type.hex;
+  bool get isNotHex => !isHex;
+  bool get isText => type == Type.text;
+  bool get isNotText => !isText;
+  bool get isEol => type == Type.eol;
+  bool get isNotEol => !isEol;
+  bool get isEof => type == Type.eof;
+  bool get isNotEof => !isEof;
+  bool get isSeparation => type == Type.separation;
+  bool get isNotSeparation => !isSeparation;
+  bool get isSpace => type == Type.space;
+  bool get isNotSpace => !isSpace;
+  bool get isUnexpected => type == Type.unexpected;
+  bool get isNotUnexpected => !isUnexpected;
 
-  factory Token.label(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.label,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.op(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.op,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.ref(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.ref,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.gr(
-    final Iterable<Char> runes, {
-    final int start = 0,
-    final int end = 0,
-    final int lineStart = 0,
-    final int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.gr,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.dec(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.dec,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.hex(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.hex,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.text(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.text,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.eol(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.eol,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.eof(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.eof,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.separation(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.separation,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
-
-  factory Token.space(
-    Iterable<Char> runes, {
-    int start = 0,
-    int end = 0,
-    int lineStart = 0,
-    int lineNumber = 1,
-  }) =>
-      Token(runes, TokenType.space,
-          start: start, end: end, lineStart: lineStart, lineNumber: lineNumber);
+  @override
+  String toString() {
+    return '${type.string}($string)';
+  }
 
   @override
   bool operator ==(Object other) {
@@ -222,8 +128,130 @@ final class Token {
         other.string == string;
   }
 
-  @override
-  String toString() {
-    return '${type.string}($string)';
-  }
+  factory Token(
+    Iterable<Rune> runes,
+    Type type, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, type, start, end, lineStart, lineNumber);
+
+  factory Token.comment(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.comment, start, end, lineStart, lineNumber);
+
+  factory Token.label(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.label, start, end, lineStart, lineNumber);
+
+  factory Token.op(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.op, start, end, lineStart, lineNumber);
+
+  factory Token.ref(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.ref, start, end, lineStart, lineNumber);
+
+  factory Token.gr(
+    final Iterable<Rune> runes, {
+    final int start = 0,
+    final int end = 0,
+    final int lineStart = 0,
+    final int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.gr, start, end, lineStart, lineNumber);
+
+  factory Token.dec(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.dec, start, end, lineStart, lineNumber);
+
+  factory Token.hex(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.hex, start, end, lineStart, lineNumber);
+
+  factory Token.text(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.text, start, end, lineStart, lineNumber);
+
+  factory Token.eol(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.eol, start, end, lineStart, lineNumber);
+
+  factory Token.eof(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.eof, start, end, lineStart, lineNumber);
+
+  factory Token.separation(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.separation, start, end, lineStart, lineNumber);
+
+  factory Token.space(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.space, start, end, lineStart, lineNumber);
+
+  factory Token.unexpected(
+    Iterable<Rune> runes, {
+    int start = 0,
+    int end = 0,
+    int lineStart = 0,
+    int lineNumber = 1,
+  }) =>
+      Token._(runes, Type.unexpected, start, end, lineStart, lineNumber);
 }

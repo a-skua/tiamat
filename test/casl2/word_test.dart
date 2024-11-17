@@ -1,6 +1,6 @@
 import 'package:tiamat/src/casl2/lexer/token.dart';
-import 'package:tiamat/src/casl2/compiler/compiler.dart';
-import 'package:tiamat/src/casl2/compiler/word.dart';
+import 'package:tiamat/src/casl2/compiler.dart';
+import 'package:tiamat/src/casl2/word.dart';
 import 'package:tiamat/src/typedef/typedef.dart';
 import 'package:test/test.dart';
 
@@ -15,9 +15,9 @@ void main() {
     test('get labels', testReferenceLabels);
   });
 
-  group('WordBlock', () {
-    test('get word', testWordBlockWord);
-    test('get label', testWordBlockLabel);
+  group('Words', () {
+    test('get words', testWordsWords);
+    test('get label', testWordsLabel);
   });
 }
 
@@ -76,10 +76,10 @@ void testReferenceLabels() {
   }
 }
 
-void testWordBlockWord() {
+void testWordsWords() {
   final tests = [
     (
-      WordBlock(null, [Constant(1, []), Constant(2, [])]),
+      Words(null, [Constant(1, []), Constant(2, [])]),
       '[CONST(1), CONST(2)]',
     ),
   ];
@@ -89,14 +89,14 @@ void testWordBlockWord() {
   }
 }
 
-void testWordBlockLabel() {
+void testWordsLabel() {
   final tests = [
     (
-      WordBlock(null, []),
+      Words(null, []),
       'null',
     ),
     (
-      WordBlock('FOO', [
+      Words('FOO', [
         Constant(1, ['FOO']),
         Constant(2, ['BAR']),
       ]),

@@ -1,11 +1,18 @@
-import '../../typedef/result.dart';
-import '../lexer/token.dart';
+import '../typedef/result.dart';
+import './lexer/token.dart' show Token;
 import './compiler.dart' show CompileError;
 
+/// Dart [Rune]
+typedef Rune = int;
+
+/// [Real] [Word]
 typedef Real = int;
-typedef Label = String;
+
+/// [Address] [Real] Word
 typedef Address = int;
-typedef Resolve = Address? Function(String label);
+
+typedef Label = String;
+typedef Resolve = Address? Function(Label label);
 
 /// [Word] of COMET2
 sealed class Word {
@@ -59,12 +66,13 @@ final class Reference extends Word {
   String toString() => 'REF($_label)';
 }
 
-final class WordBlock {
+/// [Words] is Block of [Word]
+final class Words {
   final Label? _label;
   final List<Word> words;
   final Map<Label, Word> _references = {};
 
-  WordBlock(this._label, this.words) {
+  Words(this._label, this.words) {
     for (final word in words) {
       for (final label in word.labels) {
         _references[label] = word;

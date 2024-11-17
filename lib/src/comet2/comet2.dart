@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'package:tiamat/casl2.dart' show Real;
 import 'resource.dart' show Resource;
 import 'device.dart';
 import './instruction.dart';
 import 'supervisor_call.dart' show supervisorCall;
-import 'package:tiamat/src/casl2/compiler/word.dart' show Real;
 
 export 'device.dart';
 

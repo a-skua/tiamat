@@ -1,4 +1,4 @@
-import '../lexer/token.dart';
+import '../lexer.dart' show Token;
 
 /// Statement Node
 abstract class Statement {
@@ -27,24 +27,7 @@ abstract class Statement {
       Subroutine(startOp, process);
 }
 
-/// Impl Statement Node
-final class _Statement extends Macro implements Statement {
-  _Statement(Token? label, Token opecode, List<Token> operand)
-      : super(opecode, label: label, operand: operand);
-
-  @override
-  String toString() {
-    final stmt = <String>[
-      if (label != null) label.toString(),
-      opecode.toString(),
-      if (operand.isNotEmpty) 'OPERAND(${operand.join(',')})',
-    ];
-
-    return 'STATEMENT(${stmt.join(',')})';
-  }
-}
-
-/// Macro Node
+/// Macro [Statement]
 final class Macro implements Statement {
   @override
   final Token? label;
@@ -73,7 +56,24 @@ final class Macro implements Statement {
   }
 }
 
-/// Subroutine Node
+/// Common [Statement]
+final class _Statement extends Macro implements Statement {
+  _Statement(Token? label, Token opecode, List<Token> operand)
+      : super(opecode, label: label, operand: operand);
+
+  @override
+  String toString() {
+    final stmt = <String>[
+      if (label != null) label.toString(),
+      opecode.toString(),
+      if (operand.isNotEmpty) 'OPERAND(${operand.join(',')})',
+    ];
+
+    return 'STATEMENT(${stmt.join(',')})';
+  }
+}
+
+/// Subroutine [Statement]
 final class Subroutine implements Statement {
   @override
   Token? get label => _startOp.label;
