@@ -1,11 +1,11 @@
-import '../../typedef/typedef.dart';
-import '../parser/ast.dart';
-import '../lexer/token.dart';
-import '../casl2.dart';
+import 'package:tiamat/typedef.dart';
+import './parser.dart' show Subroutine, Statement, Macro;
+import './lexer.dart' show Token;
+import './casl2.dart' show Casl2Error;
+import './charcode.dart' show RuneToReal;
 import './word.dart';
-import './charcode.dart';
-import './macro.dart';
-import './const.dart';
+import './compiler/macro.dart';
+import './compiler/const.dart';
 
 /// Error of [Compiler]
 final class CompileError extends Casl2Error {
@@ -35,7 +35,7 @@ final class CompileError extends Casl2Error {
 /// [Compiler] of CASL2
 abstract class Compiler {
   /// Compile the source code.
-  Result<WordBlock, CompileError> compile(Statement stmt);
+  Result<Words, CompileError> compile(Statement stmt);
 
   factory Compiler() => _Compler();
 }
@@ -44,8 +44,8 @@ final class _Compler implements Compiler {
   const _Compler();
 
   @override
-  Result<WordBlock, CompileError> compile(Statement stmt) {
-    return _compile(stmt).map((words) => WordBlock(stmt.label?.string, words));
+  Result<Words, CompileError> compile(Statement stmt) {
+    return _compile(stmt).map((words) => Words(stmt.label?.string, words));
   }
 }
 
@@ -99,7 +99,7 @@ Result<List<Word>, CompileError> _compile(Statement stmt) {
           stmt.opecode,
         ));
       }
-      return _compileSTART(stmt as Subroutine);
+      return _compileSTART(stmt);
     case 'END':
       return Ok([]);
     case 'DC':
@@ -118,7 +118,7 @@ extension RegisterToNumber on Token {
 /// operand pattern: r1,r2 | r,adr(,x)
 Result<List<Word>, CompileError> _compileGeneral(Statement stmt) {
   switch (stmt.operand) {
-    case [_, final r2] when r2.type == TokenType.gr:
+    case [_, final r2] when r2.isGr:
       return _compileR1r2(stmt);
     default:
       return _compileRadrx(stmt);
@@ -151,35 +151,29 @@ Result<List<Word>, CompileError> _compileRadrx(Statement stmt) {
   }
 
   switch (stmt.operand) {
+    case [final r, _] when r.isNotGr:
+      return Err(CompileError.fromToken(
+        '[SYNTAX ERROR] ${r.string} is not an expected value. value expects between GR0 and GR7.',
+        r,
+      ));
     case [final r, final adr]:
-      if (r.type != TokenType.gr) {
-        return Err(CompileError.fromToken(
-          '[SYNTAX ERROR] ${r.string} is not an expected value. value expects between GR0 and GR7.',
-          r,
-        ));
-      }
-
       return _compileRadrx(stmt.opecode, r, adr, gr0);
+    case [final r, _, _] when r.isNotGr:
+      return Err(CompileError.fromToken(
+        '[SYNTAX ERROR] ${r.string} is not an expected value. value expects between GR0 and GR7.',
+        r,
+      ));
+    case [_, _, final x] when x.isNotGr:
+      return Err(CompileError.fromToken(
+        '[SYNTAX ERROR] ${x.string} is not an expected value. value expects between GR1 and GR7.',
+        x,
+      ));
+    case [_, _, final x] when x.string == 'GR0':
+      return Err(CompileError.fromToken(
+        '[SYNTAX ERROR] ${x.string} is not an expected value. value expects between GR1 and GR7.',
+        x,
+      ));
     case [final r, final adr, final x]:
-      if (r.type != TokenType.gr) {
-        return Err(CompileError.fromToken(
-          '[SYNTAX ERROR] ${r.string} is not an expected value. value expects between GR0 and GR7.',
-          r,
-        ));
-      }
-      if (x.type != TokenType.gr) {
-        return Err(CompileError.fromToken(
-          '[SYNTAX ERROR] ${x.string} is not an expected value. value expects between GR1 and GR7.',
-          x,
-        ));
-      }
-      if (x.string == 'GR0') {
-        return Err(CompileError.fromToken(
-          '[SYNTAX ERROR] ${x.string} is not an expected value. value expects between GR1 and GR7.',
-          x,
-        ));
-      }
-
       return _compileRadrx(stmt.opecode, r, adr, x);
     default:
       return Err(CompileError.fromToken(
@@ -202,20 +196,17 @@ Result<List<Word>, CompileError> _compileR1r2(Statement stmt) {
   }
 
   switch (stmt.operand) {
+    case [final r1, _] when r1.isNotGr:
+      return Err(CompileError.fromToken(
+        '[SYNTAX ERROR] ${r1.string} is not an expected value. value expects between GR0 and GR7.',
+        r1,
+      ));
+    case [_, final r2] when r2.isNotGr:
+      return Err(CompileError.fromToken(
+        '[SYNTAX ERROR] ${r2.string} is not an expected value. value expects between GR0 and GR7.',
+        r2,
+      ));
     case [final r1, final r2]:
-      if (r1.type != TokenType.gr) {
-        return Err(CompileError.fromToken(
-          '[SYNTAX ERROR] ${r1.string} is not an expected value. value expects between GR0 and GR7.',
-          r1,
-        ));
-      }
-      if (r2.type != TokenType.gr) {
-        return Err(CompileError.fromToken(
-          '[SYNTAX ERROR] ${r2.string} is not an expected value. value expects between GR0 and GR7.',
-          r2,
-        ));
-      }
-
       return _compileR1r2(stmt.opecode, r1, r2);
     default:
       return Err(CompileError.fromToken(
@@ -261,14 +252,12 @@ Result<List<Word>, CompileError> _compileR(Statement stmt) {
   }
 
   switch (stmt.operand) {
+    case [final r] when r.isNotGr:
+      return Err(CompileError.fromToken(
+        '[SYNTAX ERROR] ${r.string} is not an expected value. value expects between GR0 and GR7.',
+        r,
+      ));
     case [final r]:
-      if (r.type != TokenType.gr) {
-        return Err(CompileError.fromToken(
-          '[SYNTAX ERROR] ${r.string} is not an expected value. value expects between GR0 and GR7.',
-          r,
-        ));
-      }
-
       return _compileR(stmt.opecode, r);
     default:
       return Err(CompileError.fromToken(
@@ -280,27 +269,27 @@ Result<List<Word>, CompileError> _compileR(Statement stmt) {
 
 /// Operand's token to code
 ///
-/// TokenType: string, dec, hex, ref
+/// [Token] is string, dec, hex, ref
 Result<List<Word>, CompileError> _compileOperand(Token token) {
-  switch (token.type) {
-    case TokenType.text:
+  switch (token) {
+    case final token when token.isText:
       // "'is''s a small world'" to "'is's a small world'"
       final str = token.string.replaceAll("''", "'");
 
       final code = <Word>[];
       for (final rune in str.substring(1, str.length - 1).runes) {
-        code.add(Constant(rune.asReal ?? 0, []));
+        code.add(Constant(rune.real, []));
       }
       return Ok(code);
-    case TokenType.dec:
+    case final token when token.isDec:
       return Ok([
         Constant(int.parse(token.string), []),
       ]);
-    case TokenType.hex:
+    case final token when token.isHex:
       return Ok([
         Constant(int.parse(token.string.replaceFirst('#', '0x')), []),
       ]);
-    case TokenType.ref:
+    case final token when token.isRef:
       return Ok([Reference(token, [])]);
     default:
       return Err(CompileError.fromToken(
@@ -341,7 +330,7 @@ Result<List<Word>, CompileError> _compileMacro(Macro stmt) {
   final macro = embeddedMacro[stmt.opecode.string];
   if (macro == null) {
     return Err(CompileError.fromToken(
-      '[SYNTAX ERROR] ${stmt.opecode.string} not found.',
+      '[SYNTAX ERROR] Macro ${stmt.opecode.string} not found.',
       stmt.opecode,
     ));
   }
@@ -385,6 +374,7 @@ Result<List<Word>, CompileError> _compileSTART(Subroutine stmt) {
   return Ok(words);
 }
 
+/// [Token] to [Real]
 extension OpecodeToReal on Token {
   Real get r1r2Real => switch (string) {
         'LD' => 0x1400,

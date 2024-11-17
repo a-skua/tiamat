@@ -1,8 +1,5 @@
 import 'package:tiamat/src/casl2/casl2.dart';
-import 'package:tiamat/src/casl2/lexer/token.dart';
-import 'package:tiamat/src/casl2/parser/ast.dart';
-import 'package:tiamat/src/casl2/compiler/compiler.dart';
-import 'package:tiamat/src/casl2/compiler/charcode.dart';
+import 'package:tiamat/src/casl2/charcode.dart' show RuneToReal;
 import 'package:tiamat/src/typedef/typedef.dart';
 import 'package:test/test.dart';
 
@@ -285,7 +282,7 @@ INBUF   DS      32
     // RET
     0x8100, // 45
     // [OUTBUF] DC '12345'
-    ...'12345'.runes.map((rune) => rune.asReal ?? 0).toList(), // 46
+    ...'12345'.runes.map((rune) => rune.real).toList(), // 46
     // [INBUF] DS 32
     ...List.generate(32, (_) => 0), // 51
   ]));
@@ -337,13 +334,10 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
     //         RET
     0x8100, // 2
     //         DC      'hello','world'
-    ...'hello'.runes.map((rune) => rune.asReal ?? 0).toList(), // 3
-    ...'world'.runes.map((rune) => rune.asReal ?? 0).toList(), // 8
+    ...'hello'.runes.map((rune) => rune.real).toList(), // 3
+    ...'world'.runes.map((rune) => rune.real).toList(), // 8
     //         DC      'it''s a small world'
-    ..."it's a small world"
-        .runes
-        .map((rune) => rune.asReal ?? 0)
-        .toList(), // 13
+    ..."it's a small world".runes.map((rune) => rune.real).toList(), // 13
     //         DC      12,-34,56,-78
     12, -34, 56, -78, // 31
     //         DC      #1234,#CDEF
@@ -428,13 +422,10 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
     //         RET
     0x8100, // 2
     //         DC      'hello','world'
-    ...'hello'.runes.map((rune) => rune.asReal ?? 0).toList(), // 3
-    ...'world'.runes.map((rune) => rune.asReal ?? 0).toList(), // 8
+    ...'hello'.runes.map((rune) => rune.real).toList(), // 3
+    ...'world'.runes.map((rune) => rune.real).toList(), // 8
     //         DC      'it''s a small world'
-    ..."it's a small world"
-        .runes
-        .map((rune) => rune.asReal ?? 0)
-        .toList(), // 13
+    ..."it's a small world".runes.map((rune) => rune.real).toList(), // 13
     //         DC      12,-34,56,-78
     12, -34, 56, -78, // 31
     //         DC      #1234,#CDEF

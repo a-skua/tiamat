@@ -1,6 +1,6 @@
 import '../resource.dart' show Resource;
 import '../device.dart' show Device;
-import 'package:tiamat/src/casl2/compiler/charcode.dart';
+import 'package:tiamat/src/casl2/charcode.dart' show RealToRune;
 import 'util.dart';
 
 Future<void> write(final Resource r, final Device d) async {
@@ -9,19 +9,15 @@ Future<void> write(final Resource r, final Device d) async {
 
   final pointer = gr[1].value;
   final length = gr[2].value;
-  var s = '';
+  var str = '';
   for (var i = 0; i < length; i++) {
-    final char = ram[pointer + i];
-    if (char == eof.toUnsigned(ram.bits)) {
+    final real = ram[pointer + i];
+    if (real == eof.toUnsigned(ram.bits)) {
       break;
     }
-    final rune = char.asRune;
-    if (rune != null) {
-      s += String.fromCharCode(rune);
-    } else {
-      s += '*';
-    }
+    final rune = real.rune;
+    str += String.fromCharCode(rune);
   }
 
-  d.output(s);
+  d.output(str);
 }

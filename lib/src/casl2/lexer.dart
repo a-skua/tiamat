@@ -1,6 +1,8 @@
-import 'dart:collection';
-import '../../typedef/typedef.dart';
-import './token.dart';
+import 'package:tiamat/typedef.dart';
+import './lexer/token.dart';
+import './word.dart' show Rune;
+
+export './lexer/token.dart';
 
 /// space
 final space = ' '.runes.first;
@@ -16,14 +18,14 @@ final comma = ','.runes.first;
 final sharp = '#'.runes.first;
 final minus = '-'.runes.first;
 final quote = '\''.runes.first;
-final decNumbers = HashSet<int>.from('0123456789'.runes);
-final hexNumbers = HashSet<int>.from(decNumbers)..addAll('ABCDEF'.runes);
+final decNumbers = Set<Rune>.from('0123456789'.runes);
+final hexNumbers = Set<Rune>.from(decNumbers)..addAll('ABCDEF'.runes);
 
 bool isSpace(final int? rune) => rune == space || rune == tab;
 bool isNewline(final int? rune) => rune == newline;
 bool isSeparation(final int? rune) => rune == comma;
 
-const tokenEOF = Token([], TokenType.eof);
+final tokenEOF = Token.eof([]);
 
 /// expected current status.
 enum ExpectedStatus {
@@ -52,7 +54,7 @@ abstract class Lexer {
   Result<Token, TokenizeError> peekToken();
   void keepToken(Token token);
 
-  factory Lexer(Iterable<Char> runes) => _Lexer(runes);
+  factory Lexer(Iterable<Rune> runes) => _Lexer(runes);
   factory Lexer.fromString(String src) => _Lexer(src.runes);
 }
 
@@ -68,19 +70,16 @@ class _Lexer implements Lexer {
   /// lexical state.
   var _expectedStatus = ExpectedStatus.label;
 
-  _Lexer(Iterable<Char> runes) {
+  _Lexer(Iterable<Rune> runes) {
     _runes = runes.toList();
   }
 
   @override
   Result<Token, TokenizeError> peekToken() {
-    final token = nextToken();
-    if (token.isErr) {
+    return nextToken().map((token) {
+      keepToken(token);
       return token;
-    }
-
-    keepToken(token.ok);
-    return token;
+    });
   }
 
   @override
@@ -124,10 +123,10 @@ class _Lexer implements Lexer {
           final gr = String.fromCharCodes(_runes.getRange(start, end));
           return Err(TokenizeError(
             '$gr cannot be used as label',
-            _getToken(start, end, TokenType.unexpected),
+            _getToken(start, end, Type.unexpected),
           ));
         }
-        return Ok(_getToken(start, end, TokenType.label));
+        return Ok(_getToken(start, end, Type.label));
       case ExpectedStatus.expectOpecode:
         if (_isSpace) {
           return Ok(_getSpace());
@@ -151,7 +150,7 @@ class _Lexer implements Lexer {
         final end = _currentIndex;
 
         _expectedStatus = ExpectedStatus.expectOperand;
-        return Ok(_getToken(start, end, TokenType.op));
+        return Ok(_getToken(start, end, Type.op));
       case ExpectedStatus.expectOperand:
         if (_isSpace) {
           return Ok(_getSpace());
@@ -174,7 +173,7 @@ class _Lexer implements Lexer {
           final start = _currentIndex;
           _readChar();
           final end = _currentIndex;
-          return Ok(_getToken(start, end, TokenType.separation));
+          return Ok(_getToken(start, end, Type.separation));
         }
 
         if (_isSpace) {
@@ -186,14 +185,14 @@ class _Lexer implements Lexer {
           final start = _currentIndex;
           _readDec();
           final end = _currentIndex;
-          return Ok(_getToken(start, end, TokenType.dec));
+          return Ok(_getToken(start, end, Type.dec));
         }
 
         if (_isHex) {
           final start = _currentIndex;
           _readHex();
           final end = _currentIndex;
-          return Ok(_getToken(start, end, TokenType.hex));
+          return Ok(_getToken(start, end, Type.hex));
         }
 
         if (_isText) {
@@ -204,10 +203,10 @@ class _Lexer implements Lexer {
             final str = String.fromCharCodes(_runes.getRange(start, end));
             return Err(TokenizeError(
               'Invalid String: $str',
-              _getToken(start, end, TokenType.unexpected),
+              _getToken(start, end, Type.unexpected),
             ));
           }
-          return Ok(_getToken(start, end, TokenType.text));
+          return Ok(_getToken(start, end, Type.text));
         }
 
         final start = _currentIndex;
@@ -215,9 +214,9 @@ class _Lexer implements Lexer {
         final end = _currentIndex;
 
         if (_isGRToken(start, end)) {
-          return Ok(_getToken(start, end, TokenType.gr));
+          return Ok(_getToken(start, end, Type.gr));
         }
-        return Ok(_getToken(start, end, TokenType.ref));
+        return Ok(_getToken(start, end, Type.ref));
       case ExpectedStatus.expectComment:
         if (_isSpace) {
           return Ok(_getSpace());
@@ -231,11 +230,11 @@ class _Lexer implements Lexer {
         final end = _currentIndex;
 
         _expectedStatus = ExpectedStatus.eol;
-        return Ok(_getToken(start, end, TokenType.comment));
+        return Ok(_getToken(start, end, Type.comment));
       case ExpectedStatus.eol:
         _expectedStatus = ExpectedStatus.label;
         final start = _currentIndex;
-        final eol = _getToken(start, start + 1, TokenType.eol);
+        final eol = _getToken(start, start + 1, Type.eol);
         _readChar();
         _currentLineStart = _currentIndex;
         _currentLineNumber += 1;
@@ -250,9 +249,8 @@ class _Lexer implements Lexer {
     }
     final end = _currentIndex;
 
-    return Token(
+    return Token.space(
       _runes.getRange(start, end),
-      TokenType.space,
       start: start,
       end: end,
       lineStart: _currentLineStart,
@@ -260,7 +258,7 @@ class _Lexer implements Lexer {
     );
   }
 
-  Token _getToken(int start, int end, TokenType type) {
+  Token _getToken(int start, int end, Type type) {
     return Token(
       _runes.getRange(start, end),
       type,
@@ -389,11 +387,4 @@ class _Lexer implements Lexer {
         }
         return _runes[nextIndex];
       }();
-
-  List<int> _range(final int start, final int end) {
-    if (start < 0 || end >= _runes.length) {
-      return [];
-    }
-    return List.from(_runes.getRange(start, end));
-  }
 }

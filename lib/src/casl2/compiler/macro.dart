@@ -1,7 +1,6 @@
-import '../../typedef/typedef.dart';
-import '../lexer/token.dart';
-import '../parser/ast.dart';
-import './compiler.dart';
+import 'package:tiamat/typedef.dart';
+import '../parser.dart' show Macro, Statement;
+import '../compiler.dart' show CompileError;
 import './const.dart';
 
 final embeddedMacro =
@@ -15,7 +14,7 @@ final embeddedMacro =
 Result<List<Statement>, CompileError> _in(Macro stmt) {
   switch (stmt.operand) {
     case [final buf, final len]:
-      if (len.type != TokenType.hex && len.type != TokenType.dec) {
+      if (len.isNotHex && len.isNotDec) {
         return Err(CompileError.fromToken(
           '[SYNTAX ERROR] ${String.fromCharCodes(len.runes)} wrong type. wants a number.',
           len,
@@ -38,7 +37,7 @@ Result<List<Statement>, CompileError> _in(Macro stmt) {
 Result<List<Statement>, CompileError> _out(Macro stmt) {
   switch (stmt.operand) {
     case [final buf, final len]:
-      if (len.type != TokenType.hex && len.type != TokenType.dec) {
+      if (len.isNotHex && len.isNotDec) {
         return Err(CompileError.fromToken(
           '[SYNTAX ERROR] ${String.fromCharCodes(len.runes)} wrong type. wants a number.',
           len,
