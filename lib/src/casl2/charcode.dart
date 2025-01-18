@@ -33,3 +33,14 @@ extension RuneToReal on Rune {
 extension RealToRune on Real {
   Rune get rune => _jis2rune[this] ?? ' '.runes.first;
 }
+
+/// [String] to [List<Real>]
+extension StringToReals on String {
+  List<Real> get reals => runes.map((rune) => rune.real).toList();
+}
+
+/// [List<Real>] to [String]
+extension RealsToString on List<Real> {
+  String get string =>
+      map((real) => real.rune).map((rune) => String.fromCharCode(rune)).join();
+}

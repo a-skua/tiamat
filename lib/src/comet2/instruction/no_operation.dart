@@ -5,7 +5,6 @@ import '../resource.dart';
 /// That's one word instruction,
 /// do nothing.
 /// Syntax: NOP
-Future<void> noOperation(final Resource r) async {
-  final pr = r.programRegister;
-  pr.value += 1;
+Future<void> noOperation(final Resource r, Device _) async {
+  r.pr += 1;
 }

@@ -1,1 +1,0 @@
-const eof = -1;

@@ -1,238 +1,97 @@
-import 'resource/flag.dart';
-import 'resource/memory.dart';
-import 'resource/register.dart';
-import 'supervisor_call.dart' show SupervisorCall;
+import 'package:tiamat/typedef.dart';
+import 'package:tiamat/casl2.dart' show Real;
+import './resource/device.dart' as device;
 
-export 'resource/flag.dart';
-export 'resource/memory.dart';
-export 'resource/register.dart';
+/// Flag position bits.
+final class Flag {
+  static const zero = 0x0001;
+  static const sign = 0x0002;
+  static const overflow = 0x0004;
+}
 
-/// COMET2's resource.
-class Resource {
-  /// Supervisor call
-  SupervisorCall supervisorCall = (final int code) async {};
+typedef GR = int;
 
-  /// Memory
-  final Memory memory = Memory();
+extension ToSigned on Real {
+  int get signed => toSigned(16);
+}
 
-  /// General Register 0 - 7.
-  final List<Register> generalRegisters =
-      List.generate(8, (i) => Register('GR$i'));
+extension ToUnsigned on Real {
+  int get unsigned => toUnsigned(16);
+}
 
-  /// Stack Pointer
-  final Register stackPointer = Register('SP')..value = 0xffff;
+final class Resource {
+  final List<Real> memory = List.filled(0x10000, 0, growable: false);
 
-  /// Program Register
-  final Register programRegister = Register('PR');
+  /// General Register
+  final List<GR> gr = List.filled(8, 0, growable: false);
 
-  /// Flag Register
-  final FlagRegister flagRegister = FlagRegister();
+  /// Program Counter
+  Real sp = 0xffff;
+  Real pr = 0;
+  Real fr = 0;
+
+  Resource();
+
+  bool get zf => fr & Flag.zero != 0;
+  set zf(final bool isZero) {
+    if (isZero) {
+      fr |= Flag.zero;
+    } else {
+      fr &= Flag.zero ^ 0xffff;
+    }
+  }
+
+  bool get sf => fr & Flag.sign != 0;
+  set sf(final bool isSign) {
+    if (isSign) {
+      fr |= Flag.sign;
+    } else {
+      fr &= Flag.sign ^ 0xffff;
+    }
+  }
+
+  bool get of => fr & Flag.overflow != 0;
+  set of(final bool isOverflow) {
+    if (isOverflow) {
+      fr |= Flag.overflow;
+    } else {
+      fr &= Flag.overflow ^ 0xffff;
+    }
+  }
 
   @override
   String toString() {
-    var str = '';
-    for (var i = 0; i < generalRegisters.length; i++) {
-      str += 'GR$i: ${generalRegisters[i].value}, ';
-    }
-    str += 'SP: ${stackPointer.value}, ';
-    str += 'PR: ${programRegister.value}, ';
-    str += 'FR: ${flagRegister.value}';
-    return str;
+    final gr = this
+        .gr
+        .map((e) => e.toRadixString(16).toUpperCase().padLeft(4, '0'))
+        .toList();
+    final pr = this.pr.toRadixString(16).toUpperCase().padLeft(4, '0');
+    final sp = this.sp.toRadixString(16).toUpperCase().padLeft(4, '0');
+    final zf = this.zf ? '1' : '0';
+    final sf = this.sf ? '1' : '0';
+    final of = this.of ? '1' : '0';
+    return ''
+        'GR [0:${gr[0]}, 1:${gr[1]}, 2:${gr[2]}, 3:${gr[3]}, 4:${gr[4]}, 5:${gr[5]}, 6:${gr[6]}, 7:${gr[7]}]\n'
+        'PR [$pr]\n'
+        'SP [$sp]\n'
+        'FR [ZF:$zf, SF:$sf, OF:$of]';
   }
+}
 
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final gr = r.generalRegisters;
-  /// final value = gr[0].value;
-  /// ```
-  @deprecated
-  int getGR(final int i) => generalRegisters[i % generalRegisters.length].value;
+final class DeviceError extends Error {
+  final String message;
+  DeviceError(this.message) : super();
 
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final gr = r.generalRegisters;
-  /// gr[0].value = 0x4444;
-  /// ```
-  @deprecated
-  bool setGR(final int i, final int val) {
-    generalRegisters[i % generalRegisters.length].value = val;
-    return true;
-  }
+  @override
+  String toString() => 'DeviceError: $message';
+}
 
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final sp = r.stackPointer;
-  /// final value = sp.value;
-  /// ```
-  @deprecated
-  int get SP => stackPointer.value;
+abstract class Device {
+  /// [len] is the number of bytes to read.
+  Future<Result<String, DeviceError>> read(int len);
 
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final sp = r.stackPointer;
-  /// sp.value = 0xffff;
-  /// ```
-  @deprecated
-  set SP(final int val) => stackPointer.value = val;
+  /// [str] is the bytes to write.
+  Future<Result<void, DeviceError>> write(String str);
 
-  /// Deprecated: will be deleted the next major version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final pr = r.programRegister;
-  /// final value = pr.value;
-  /// ```
-  @deprecated
-  int get PR => programRegister.value;
-
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final pr = r.programRegister;
-  /// pr.value = 0x6000;
-  /// ```
-  @deprecated
-  set PR(final int val) => programRegister.value = val;
-
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final fr = r.flagRegister;
-  /// final value = fr.value;
-  /// ```
-  @deprecated
-  int get FR => flagRegister.value;
-
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final fr = r.flagRegister;
-  /// fr.value = Flag.zero | Flag.sign;
-  /// ```
-  @deprecated
-  set FR(final int val) => flagRegister.value = val;
-
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal: to used `isOverflow` or `isNotOverflow`
-  /// ```
-  /// final r = Resource();
-  /// final fr = r.flagRegister;
-  /// if (fr.isOverflow) {
-  ///   // any...
-  /// }
-  /// ```
-  @deprecated
-  bool get OF => flagRegister.isOverflow;
-
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal: to used `isSign` or `isNotSign`
-  /// ```
-  /// final r = Resource();
-  /// final fr = r.flagRegister;
-  /// if (fr.isSign) {
-  ///   // any...
-  /// }
-  /// ```
-  @deprecated
-  bool get SF => flagRegister.isSign;
-
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal: to used `isZero` or `isNotZero`
-  /// ```
-  /// final r = Resource();
-  /// final fr = r.flagRegister;
-  /// if (fr.isZero) {
-  ///   // any...
-  /// }
-  /// ```
-  @deprecated
-  bool get ZF => flagRegister.isZero;
-
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final fr = r.flagRegister;
-  /// // true
-  /// fr.value |= Flag.overflow;
-  /// // false
-  /// fr.value &= Flag.overflow ^ -1;
-  /// ```
-  @deprecated
-  set OF(final bool f) {
-    final fr = flagRegister;
-
-    if (f) {
-      fr.value |= Flag.overflow;
-    } else {
-      fr.value &= Flag.overflow ^ -1;
-    }
-  }
-
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final fr = r.flagRegister;
-  /// // true
-  /// fr.value |= Flag.sign;
-  /// // false
-  /// fr.value &= Flag.sign ^ -1;
-  /// ```
-  @deprecated
-  set SF(final bool f) {
-    final fr = flagRegister;
-
-    if (f) {
-      fr.value |= Flag.sign;
-    } else {
-      fr.value &= Flag.sign ^ -1;
-    }
-  }
-
-  /// Deprecated: will be deleted the next mejor version.
-  ///
-  /// Proposal:
-  /// ```
-  /// final r = Resource();
-  /// final fr = r.flagRegister;
-  /// // true
-  /// fr.value |= Flag.zero;
-  /// // false
-  /// fr.value &= Flag.zero ^ -1;
-  /// ```
-  @deprecated
-  set ZF(final bool f) {
-    final fr = flagRegister;
-
-    if (f) {
-      fr.value |= Flag.zero;
-    } else {
-      fr.value &= Flag.zero ^ -1;
-    }
-  }
+  factory Device() => device.Default();
 }

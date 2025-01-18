@@ -1,8 +1,6 @@
 import 'package:tiamat/tiamat.dart';
-import 'package:tiamat/casl2.dart';
-import 'dart:io';
 
-void main() {
+Future<void> main() async {
   const asm = '''
 ; サンプルコード
 DO      START
@@ -49,34 +47,15 @@ MAIN    START
 
   final casl2 = Casl2.fromString(asm);
 
-  final result = casl2.compile();
-  if (result.hasError) {
-    for (final error in result.errors) {
-      print(error);
-    }
-    return;
-  }
+  final mod = switch (casl2.build()) {
+    Ok<Module, dynamic> ok => ok.unwrap,
+    Err<dynamic, List<Casl2Error>> err => throw Exception(err.unwrap),
+  };
 
-  final comet2 = ImplComet2(
-    Device(() {
-      stdout.write('YOUR INPUT> ');
-      final input = stdin.readLineSync();
-      return Future(() => input ?? '');
-    }, (str) => print(str)),
-    onUpdate: (final r) {
-      print(r);
-    },
-    onChangeStatus: (final s) {
-      print('change state: $s');
-    },
-  )..delay = 10;
+  final comet2 = Comet2(mod.bin);
 
-  const loadPosition = 100;
-
-  comet2.loadAndRun(loadPosition, result).then((final r) {
-    print('exit');
-    print(r);
-  });
+  final start = mod.labels['MAIN'] ?? 0;
+  await comet2.run(start);
 }
 
 void syntaxHighlight(final String asm) {
@@ -87,36 +66,45 @@ void syntaxHighlight(final String asm) {
   const red = 196;
   const gray = 240;
 
-  final lexer = ImplLexer(asm.runes);
+  final lexer = Lexer(asm.runes);
 
   var str = '';
-  while (!lexer.isLast) {
-    final token = lexer.nextToken();
+  while (true) {
+    final result = lexer.nextToken();
+    if (result.isErr) {
+      print(result);
+      break;
+    }
+    final token = result.ok;
+    if (token == tokenEOF) {
+      break;
+    }
+
     switch (token.type) {
-      case TokenType.label:
-        str += '\u001b[38;5;${yellow}m${token.runesAsString}';
+      case Type.label:
+        str += '\u001b[38;5;${yellow}m${token.string}';
         break;
-      case TokenType.hex:
-      case TokenType.dec:
-        str += '\u001b[38;5;92m${token.runesAsString}';
+      case Type.hex:
+      case Type.dec:
+        str += '\u001b[38;5;92m${token.string}';
         break;
-      case TokenType.ident:
-        str += '\u001b[38;5;${yellow}m${token.runesAsString}';
+      case Type.ref:
+        str += '\u001b[38;5;${yellow}m${token.string}';
         break;
-      case TokenType.gr:
-        str += '\u001b[38;5;${orange}m${token.runesAsString}';
+      case Type.gr:
+        str += '\u001b[38;5;${orange}m${token.string}';
         break;
-      case TokenType.string:
-        str += '\u001b[38;5;${green}m${token.runesAsString}';
+      case Type.text:
+        str += '\u001b[38;5;${green}m${token.string}';
         break;
-      case TokenType.error:
-        str += '\u001b[38;5;${red}m${token.runesAsString}';
+      case Type.unexpected:
+        str += '\u001b[38;5;${red}m${token.string}';
         break;
-      case TokenType.comment:
-        str += '\u001b[38;5;${gray}m${token.runesAsString}';
+      case Type.comment:
+        str += '\u001b[38;5;${gray}m${token.string}';
         break;
       default:
-        str += '\u001b[38;5;${white}m${token.runesAsString}';
+        str += '\u001b[38;5;${white}m${token.string}';
     }
   }
   print(str);

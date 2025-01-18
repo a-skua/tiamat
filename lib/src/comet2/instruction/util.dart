@@ -2,10 +2,9 @@ import '../resource.dart';
 
 /// Calculate an effective address.
 int getEffectiveAddress(final Resource r, final int x) {
-  final pr = r.programRegister;
-  final gr = r.generalRegisters;
-  final ram = r.memory;
-  return x == 0 ? ram[pr.value] : (ram[pr.value] + gr[x].value);
+  return x == 0
+      ? r.memory[r.pr.unsigned].unsigned
+      : (r.memory[r.pr.unsigned].unsigned + r.gr[x].unsigned);
 }
 
 /// Parse instruction word
@@ -68,7 +67,7 @@ class ArithmeticFlagger extends Flagger {
   int get sign => _value & 0x8000 > 0 ? Flag.sign : 0;
 
   @override
-  int get zero => _value == 0 ? Flag.zero : 0;
+  int get zero => _value.unsigned == 0 ? Flag.zero : 0;
 }
 
 /// Calculate a flag when logical.
@@ -87,7 +86,10 @@ class LogicalFlagger extends Flagger {
   int get overflow => _value < 0 || _value > 0xffff ? Flag.overflow : 0;
 
   @override
-  int get zero => _value == 0 ? Flag.zero : 0;
+  int get zero => _value.unsigned == 0 ? Flag.zero : 0;
+
+  @override
+  int get sign => _value & 0x8000 > 0 ? Flag.sign : 0;
 }
 
 /// Calculate a compared flag.
