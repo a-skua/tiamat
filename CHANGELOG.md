@@ -1,3 +1,22 @@
+## 1.0.0-rc1
+Rewrite Comet2 and Casl2.
+dart 3.0.0 required.
+
+e.g.
+```dart
+final casl2 = Casl2.fromString(asm);
+
+final mod = switch (casl2.build()) {
+  Ok<Module, dynamic> ok => ok.unwrap,
+  Err<dynamic, List<Casl2Error>> err => throw Exception(err.unwrap),
+};
+
+final comet2 = Comet2(mod.bin);
+
+final start = mod.labels['MAIN'] ?? 0;
+await comet2.run(start);
+```
+
 ## 0.5.0-6
 Saported OECODE `NOP`
 
