@@ -7,7 +7,7 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 dev_dependencies:
   test: ^1.18.1
-  pedantic: ^1.11.1
   build_runner: ^2.0.6
   build_web_compilers: ^4.0.4
   analyzer: ^7.2.0
+  lints: ^5.1.1
