@@ -8,9 +8,9 @@ void main() {
   group('LD', () {
     group('r.adr.x', () {
       final tests = [
-        _test_laod_1(),
-        _test_laod_2(),
-        _test_laod_3(),
+        _testLaod1(),
+        _testLaod2(),
+        _testLaod3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -19,9 +19,9 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_laodGR_1(),
-        _test_laodGR_2(),
-        _test_laodGR_3(),
+        _testLaodGR1(),
+        _testLaodGR2(),
+        _testLaodGR3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -32,7 +32,7 @@ void main() {
   group('ST', () {
     group('r.adr.x', () {
       final tests = [
-        _test_store(),
+        _testStore(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -43,7 +43,7 @@ void main() {
   group('LAD', () {
     group('r,adr,x', () {
       final tests = [
-        _test_loadAddress(),
+        _testLoadAddress(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -52,7 +52,7 @@ void main() {
   });
 }
 
-TestCase _test_laod_1() {
+TestCase _testLaod1() {
   return (
     'LG GR1,#8000,GR2(#0001) ; RAM[#8001] = #7FFF',
     () {
@@ -74,7 +74,7 @@ TestCase _test_laod_1() {
   );
 }
 
-TestCase _test_laod_2() {
+TestCase _testLaod2() {
   return (
     'LG GR1,#8000,GR2(#0001) ; RAM[#8001] = #0000',
     () {
@@ -96,7 +96,7 @@ TestCase _test_laod_2() {
   );
 }
 
-TestCase _test_laod_3() {
+TestCase _testLaod3() {
   return (
     'LG GR1,#8000,GR2(#0001) ; RAM[#8001] = #8000',
     () {
@@ -118,7 +118,7 @@ TestCase _test_laod_3() {
   );
 }
 
-TestCase _test_laodGR_1() {
+TestCase _testLaodGR1() {
   return (
     'LG GR1,GR2 ; GR2 = #7FFF',
     () {
@@ -138,7 +138,7 @@ TestCase _test_laodGR_1() {
   );
 }
 
-TestCase _test_laodGR_2() {
+TestCase _testLaodGR2() {
   return (
     'LG GR1,GR2 ; GR2 = #0000',
     () {
@@ -158,7 +158,7 @@ TestCase _test_laodGR_2() {
   );
 }
 
-TestCase _test_laodGR_3() {
+TestCase _testLaodGR3() {
   return (
     'LG GR1,GR2 ; GR2 = #8000',
     () {
@@ -178,7 +178,7 @@ TestCase _test_laodGR_3() {
   );
 }
 
-TestCase _test_store() {
+TestCase _testStore() {
   return (
     'ST GR1,#8000,GR2(#0001) ; GR1 = #7FFF',
     () {
@@ -198,7 +198,7 @@ TestCase _test_store() {
   );
 }
 
-TestCase _test_loadAddress() {
+TestCase _testLoadAddress() {
   return (
     'LAD GR1,#8000,GR2 ; GR2 = #0001',
     () {

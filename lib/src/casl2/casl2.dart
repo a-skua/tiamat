@@ -37,6 +37,9 @@ abstract class Casl2Error {
         other.lineNumber == lineNumber &&
         other.message == message;
   }
+
+  @override
+  int get hashCode => message.hashCode;
 }
 
 /// CASL2 instance.

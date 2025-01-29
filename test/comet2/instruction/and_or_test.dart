@@ -8,8 +8,8 @@ void main() {
   group('AND', () {
     group('r,adr,x', () {
       final tests = [
-        _test_and_1(),
-        _test_and_2(),
+        _testAnd1(),
+        _testAnd2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -18,8 +18,8 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_andGR_1(),
-        _test_andGR_2(),
+        _testAndGR1(),
+        _testAndGR2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -30,8 +30,8 @@ void main() {
   group('OR', () {
     group('r,adr,x', () {
       final tests = [
-        _test_or_1(),
-        _test_or_2(),
+        _testOr1(),
+        _testOr2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -40,8 +40,8 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_orGR_1(),
-        _test_orGR_2(),
+        _testOrGR1(),
+        _testOrGR2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -52,8 +52,8 @@ void main() {
   group('XOR', () {
     group('r,adr,x', () {
       final tests = [
-        _test_xor_1(),
-        _test_xor_2(),
+        _testXor1(),
+        _testXor2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -62,8 +62,8 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_xorGR_1(),
-        _test_xorGR_2(),
+        _testXorGR1(),
+        _testXorGR2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -72,7 +72,7 @@ void main() {
   });
 }
 
-TestCase _test_and_1() {
+TestCase _testAnd1() {
   return (
     'AND GR1,#4000,GR2 ; GR1 = #8000, GR2 = #0001, RAM[#4001] = #FFFF (#8000 & #FFFF = #8000)',
     () {
@@ -99,7 +99,7 @@ TestCase _test_and_1() {
   );
 }
 
-TestCase _test_and_2() {
+TestCase _testAnd2() {
   return (
     'AND GR1,#4000,GR2 ; GR1 = #0000, GR2 = #0001, RAM[#4001] = #FFFF (#0000 & #FFFF = #0000)',
     () {
@@ -126,7 +126,7 @@ TestCase _test_and_2() {
   );
 }
 
-TestCase _test_andGR_1() {
+TestCase _testAndGR1() {
   return (
     'AND GR1,GR2 ; GR1 = #8000, GR2 = #FFFF (#8000 & #FFFF = #8000)',
     () {
@@ -151,7 +151,7 @@ TestCase _test_andGR_1() {
   );
 }
 
-TestCase _test_andGR_2() {
+TestCase _testAndGR2() {
   return (
     'AND GR1,GR2 ; GR1 = #0000, GR2 = #FFFF (#0000 & #FFFF = #0000)',
     () {
@@ -176,7 +176,7 @@ TestCase _test_andGR_2() {
   );
 }
 
-TestCase _test_or_1() {
+TestCase _testOr1() {
   return (
     'OR GR1,#4000,GR2 ; GR1 = #8000, GR2 = #0001, RAM[#4001] = #7FFF (#8000 | #7FFF = #FFFF)',
     () {
@@ -203,7 +203,7 @@ TestCase _test_or_1() {
   );
 }
 
-TestCase _test_or_2() {
+TestCase _testOr2() {
   return (
     'OR GR1,#4000,GR2 ; GR1 = 0, GR2 = #0001, RAM[#4001] = 0 (0 | 0 = 0)',
     () {
@@ -230,7 +230,7 @@ TestCase _test_or_2() {
   );
 }
 
-TestCase _test_orGR_1() {
+TestCase _testOrGR1() {
   return (
     'OR GR1,GR2 ; GR1 = #8000, GR2 = #7FFF (#8000 | #7FFF = #FFFF)',
     () {
@@ -255,7 +255,7 @@ TestCase _test_orGR_1() {
   );
 }
 
-TestCase _test_orGR_2() {
+TestCase _testOrGR2() {
   return (
     'OR GR1,GR2 ; GR1 = 0, GR2 = 0 (0 | 0 = 0)',
     () {
@@ -280,7 +280,7 @@ TestCase _test_orGR_2() {
   );
 }
 
-TestCase _test_xor_1() {
+TestCase _testXor1() {
   return (
     'XOR GR1,#4000,GR2 ; GR1 = #8000, GR2 = #0001, RAM[#4001] = #7FFF (#8000 ^ #7FFF = #FFFF)',
     () {
@@ -307,7 +307,7 @@ TestCase _test_xor_1() {
   );
 }
 
-TestCase _test_xor_2() {
+TestCase _testXor2() {
   return (
     'XOR GR1,#4000,GR2 ; GR1 = #8000, GR2 = #0001, RAM[#4001] = #8000 (#8000 ^ #8000 = #0000)',
     () {
@@ -334,7 +334,7 @@ TestCase _test_xor_2() {
   );
 }
 
-TestCase _test_xorGR_1() {
+TestCase _testXorGR1() {
   return (
     'XOR GR1,GR2 ; GR1 = #8000, GR2 = #7FFF (#8000 ^ #7FFF = #FFFF)',
     () {
@@ -359,7 +359,7 @@ TestCase _test_xorGR_1() {
   );
 }
 
-TestCase _test_xorGR_2() {
+TestCase _testXorGR2() {
   return (
     'XOR GR1,GR2 ; GR1 = #8000, GR2 = #8000 (#8000 ^ #8000 = #0000)',
     () {

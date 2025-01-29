@@ -8,11 +8,11 @@ void main() {
   group('ADDA', () {
     group('r,adr,x', () {
       final tests = [
-        _test_addArithmetic_1(),
-        _test_addArithmetic_2(),
-        _test_addArithmetic_3(),
-        _test_addArithmetic_4(),
-        _test_addArithmetic_5(),
+        _testAddArithmetic1(),
+        _testAddArithmetic2(),
+        _testAddArithmetic3(),
+        _testAddArithmetic4(),
+        _testAddArithmetic5(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -21,11 +21,11 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_addArithmeticGR_1(),
-        _test_addArithmeticGR_2(),
-        _test_addArithmeticGR_3(),
-        _test_addArithmeticGR_4(),
-        _test_addArithmeticGR_5(),
+        _testAddArithmeticGR1(),
+        _testAddArithmeticGR2(),
+        _testAddArithmeticGR3(),
+        _testAddArithmeticGR4(),
+        _testAddArithmeticGR5(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -36,10 +36,10 @@ void main() {
   group('ADDL', () {
     group('r,adr,x', () {
       final tests = [
-        _test_addLogical_1(),
-        _test_addLogical_2(),
-        _test_addLogical_3(),
-        _test_addLogical_4(),
+        _testAddLogical1(),
+        _testAddLogical2(),
+        _testAddLogical3(),
+        _testAddLogical4(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -48,10 +48,10 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_addLogicalGR_1(),
-        _test_addLogicalGR_2(),
-        _test_addLogicalGR_3(),
-        _test_addLogicalGR_4(),
+        _testAddLogicalGR1(),
+        _testAddLogicalGR2(),
+        _testAddLogicalGR3(),
+        _testAddLogicalGR4(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -62,11 +62,11 @@ void main() {
   group('SUBA', () {
     group('r,adr,x', () {
       final tests = [
-        _test_subArithmetic_1(),
-        _test_subArithmetic_2(),
-        _test_subArithmetic_3(),
-        _test_subArithmetic_4(),
-        _test_subArithmetic_5(),
+        _testSubArithmetic1(),
+        _testSubArithmetic2(),
+        _testSubArithmetic3(),
+        _testSubArithmetic4(),
+        _testSubArithmetic5(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -75,11 +75,11 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_subArithmeticGR_1(),
-        _test_subArithmeticGR_2(),
-        _test_subArithmeticGR_3(),
-        _test_subArithmeticGR_4(),
-        _test_subArithmeticGR_5(),
+        _testSubArithmeticGR1(),
+        _testSubArithmeticGR2(),
+        _testSubArithmeticGR3(),
+        _testSubArithmeticGR4(),
+        _testSubArithmeticGR5(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -90,9 +90,9 @@ void main() {
   group('SUBL', () {
     group('r,adr,x', () {
       final tests = [
-        _test_subLogical_1(),
-        _test_subLogical_2(),
-        _test_subLogical_3(),
+        _testSubLogical1(),
+        _testSubLogical2(),
+        _testSubLogical3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -101,9 +101,9 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_subLogicalGR_1(),
-        _test_subLogicalGR_2(),
-        _test_subLogicalGR_3(),
+        _testSubLogicalGR1(),
+        _testSubLogicalGR2(),
+        _testSubLogicalGR3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -112,7 +112,7 @@ void main() {
   });
 }
 
-TestCase _test_addArithmetic_1() {
+TestCase _testAddArithmetic1() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = -1, GR2 = #0001, RAM[#8001] = 2 (-1 + 2 = 1)',
     () {
@@ -136,7 +136,7 @@ TestCase _test_addArithmetic_1() {
   );
 }
 
-TestCase _test_addArithmetic_2() {
+TestCase _testAddArithmetic2() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = -1, GR2 = #0001, RAM[#8001] = -1 (-1 + -1 = -2)',
     () {
@@ -160,7 +160,7 @@ TestCase _test_addArithmetic_2() {
   );
 }
 
-TestCase _test_addArithmetic_3() {
+TestCase _testAddArithmetic3() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = -1, GR2 = #0001, RAM[#8001] = 1 (-1 + 1 = 0)',
     () {
@@ -184,7 +184,7 @@ TestCase _test_addArithmetic_3() {
   );
 }
 
-TestCase _test_addArithmetic_4() {
+TestCase _testAddArithmetic4() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = #7FFF, GR2 = #0001, RAM[#8001] = 1 (0x7fff + 1 = 0x8000)',
     () {
@@ -210,7 +210,7 @@ TestCase _test_addArithmetic_4() {
   );
 }
 
-TestCase _test_addArithmetic_5() {
+TestCase _testAddArithmetic5() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = #8000, GR2 = #0001, RAM[#8001] = #FFFF (0x8000 + 0xfffff = 0x7fff)',
     () {
@@ -236,7 +236,7 @@ TestCase _test_addArithmetic_5() {
   );
 }
 
-TestCase _test_addArithmeticGR_1() {
+TestCase _testAddArithmeticGR1() {
   return (
     'ADDA GR1,GR2 ; GR1 = -1, GR2 = 2 (-1 + 2 = 1)',
     () {
@@ -258,7 +258,7 @@ TestCase _test_addArithmeticGR_1() {
   );
 }
 
-TestCase _test_addArithmeticGR_2() {
+TestCase _testAddArithmeticGR2() {
   return (
     'ADDA GR1,GR2 ; GR1 = -1, GR2 = -1 (-1 + -1 = -2)',
     () {
@@ -280,7 +280,7 @@ TestCase _test_addArithmeticGR_2() {
   );
 }
 
-TestCase _test_addArithmeticGR_3() {
+TestCase _testAddArithmeticGR3() {
   return (
     'ADDA GR1,GR2 ; GR1 = -1, GR2 = 1 (-1 + 1 = 0)',
     () {
@@ -302,7 +302,7 @@ TestCase _test_addArithmeticGR_3() {
   );
 }
 
-TestCase _test_addArithmeticGR_4() {
+TestCase _testAddArithmeticGR4() {
   return (
     'ADDA GR1,GR2 ; GR1 = #7FFF, GR2 = 1 (0x7fff + 1 = 0x8000)',
     () {
@@ -326,7 +326,7 @@ TestCase _test_addArithmeticGR_4() {
   );
 }
 
-TestCase _test_addArithmeticGR_5() {
+TestCase _testAddArithmeticGR5() {
   return (
     'ADDA GR1,GR2 ; GR1 = #8000, GR2 = #FFFF (0x8000 + 0xfffff = 0x7fff)',
     () {
@@ -350,7 +350,7 @@ TestCase _test_addArithmeticGR_5() {
   );
 }
 
-TestCase _test_addLogical_1() {
+TestCase _testAddLogical1() {
   return (
     'ADDL GR1,#8000,GR2 ; GR1 = -1, GR2 = #0001, RAM[#8001] = 2 (-1 + 2 = 0x10001)',
     () {
@@ -376,7 +376,7 @@ TestCase _test_addLogical_1() {
   );
 }
 
-TestCase _test_addLogical_2() {
+TestCase _testAddLogical2() {
   return (
     'ADDL GR1,#8000,GR2 ; GR1 = -1, GR2 = #0001, RAM[#8001] = 1 (-1 + 1 = 0x10000)',
     () {
@@ -402,7 +402,7 @@ TestCase _test_addLogical_2() {
   );
 }
 
-TestCase _test_addLogical_3() {
+TestCase _testAddLogical3() {
   return (
     'ADDL GR1,#8000,GR2 ; GR1 = 1, GR2 = #0001, RAM[#8001] = 2 (1 + 2 = 3)',
     () {
@@ -428,7 +428,7 @@ TestCase _test_addLogical_3() {
   );
 }
 
-TestCase _test_addLogical_4() {
+TestCase _testAddLogical4() {
   return (
     'ADDL GR1,#8000,GR2 ; GR1 = 0, GR2 = #0001, RAM[#8001] = 0 (0 + 0 = 0)',
     () {
@@ -454,7 +454,7 @@ TestCase _test_addLogical_4() {
   );
 }
 
-TestCase _test_addLogicalGR_1() {
+TestCase _testAddLogicalGR1() {
   return (
     'ADDL GR1,GR2 ; GR1 = -1, GR2 = 2 (-1 + 2 = 0x10001)',
     () {
@@ -478,7 +478,7 @@ TestCase _test_addLogicalGR_1() {
   );
 }
 
-TestCase _test_addLogicalGR_2() {
+TestCase _testAddLogicalGR2() {
   return (
     'ADDL GR1,GR2 ; GR1 = -1, GR2 = 1 (-1 + 1 = 0x10000)',
     () {
@@ -502,7 +502,7 @@ TestCase _test_addLogicalGR_2() {
   );
 }
 
-TestCase _test_addLogicalGR_3() {
+TestCase _testAddLogicalGR3() {
   return (
     'ADDL GR1,GR2 ; GR1 = 1, GR2 = 2 (1 + 2 = 3)',
     () {
@@ -526,7 +526,7 @@ TestCase _test_addLogicalGR_3() {
   );
 }
 
-TestCase _test_addLogicalGR_4() {
+TestCase _testAddLogicalGR4() {
   return (
     'ADDL GR1,GR2 ; GR1 = 0, GR2 = 0 (0 + 0 = 0)',
     () {
@@ -550,7 +550,7 @@ TestCase _test_addLogicalGR_4() {
   );
 }
 
-TestCase _test_subArithmetic_1() {
+TestCase _testSubArithmetic1() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = 2, GR2 = #0001, RAM[#8001] = 1 (2 - 1 = 1)',
     () {
@@ -574,7 +574,7 @@ TestCase _test_subArithmetic_1() {
   );
 }
 
-TestCase _test_subArithmetic_2() {
+TestCase _testSubArithmetic2() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = 1, GR2 = #0001, RAM[#8001] = 2 (1 - 2 = -1)',
     () {
@@ -598,7 +598,7 @@ TestCase _test_subArithmetic_2() {
   );
 }
 
-TestCase _test_subArithmetic_3() {
+TestCase _testSubArithmetic3() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = 1, GR2 = #0001, RAM[#8001] = 1 (1 - 1 = 0)',
     () {
@@ -622,7 +622,7 @@ TestCase _test_subArithmetic_3() {
   );
 }
 
-TestCase _test_subArithmetic_4() {
+TestCase _testSubArithmetic4() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = #7FFF, GR2 = #0001, RAM[#8001] = -1 (0x7fff - (-1) = 0x8000)',
     () {
@@ -648,7 +648,7 @@ TestCase _test_subArithmetic_4() {
   );
 }
 
-TestCase _test_subArithmetic_5() {
+TestCase _testSubArithmetic5() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = #8000, GR2 = #0001, RAM[#8001] = #7FFF (0x8000 - 0x7fff = 0x10000)',
     () {
@@ -674,7 +674,7 @@ TestCase _test_subArithmetic_5() {
   );
 }
 
-TestCase _test_subArithmeticGR_1() {
+TestCase _testSubArithmeticGR1() {
   return (
     'SUBA, GR1,GR2 ; GR1 = 2, GR2 = 1 (2 - 1 = 1)',
     () {
@@ -696,7 +696,7 @@ TestCase _test_subArithmeticGR_1() {
   );
 }
 
-TestCase _test_subArithmeticGR_2() {
+TestCase _testSubArithmeticGR2() {
   return (
     'SUBA, GR1,GR2 ; GR1 = 1, GR2 = 2 (1 - 2 = -1)',
     () {
@@ -718,7 +718,7 @@ TestCase _test_subArithmeticGR_2() {
   );
 }
 
-TestCase _test_subArithmeticGR_3() {
+TestCase _testSubArithmeticGR3() {
   return (
     'SUBA, GR1,GR2 ; GR1 = 1, GR2 = 1 (1 - 1 = 0)',
     () {
@@ -740,7 +740,7 @@ TestCase _test_subArithmeticGR_3() {
   );
 }
 
-TestCase _test_subArithmeticGR_4() {
+TestCase _testSubArithmeticGR4() {
   return (
     'SUBA, GR1,GR2 ; GR1 = #7FFF, GR2 = -1 (0x7fff - (-1) = 0x8000)',
     () {
@@ -764,7 +764,7 @@ TestCase _test_subArithmeticGR_4() {
   );
 }
 
-TestCase _test_subArithmeticGR_5() {
+TestCase _testSubArithmeticGR5() {
   return (
     'SUBA, GR1,GR2 ; GR1 = #8000, GR2 = #7FFF (0x8000 - 0x7fff = 0x10000)',
     () {
@@ -788,7 +788,7 @@ TestCase _test_subArithmeticGR_5() {
   );
 }
 
-TestCase _test_subLogical_1() {
+TestCase _testSubLogical1() {
   return (
     'SUBL GR1,#8000,GR2 ; GR1 = 2, GR2 = #0001, RAM[#8001] = 1 (2 - 1 = 1)',
     () {
@@ -812,7 +812,7 @@ TestCase _test_subLogical_1() {
   );
 }
 
-TestCase _test_subLogical_2() {
+TestCase _testSubLogical2() {
   return (
     'SUBL GR1,#8000,GR2 ; GR1 = 1, GR2 = #0001, RAM[#8001] = 2 (1 - 2 = 0xffff)',
     () {
@@ -838,7 +838,7 @@ TestCase _test_subLogical_2() {
   );
 }
 
-TestCase _test_subLogical_3() {
+TestCase _testSubLogical3() {
   return (
     'SUBL GR1,#8000,GR2 ; GR1 = 1, GR2 = #0001, RAM[#8001] = 1 (1 - 1 = 0)',
     () {
@@ -862,7 +862,7 @@ TestCase _test_subLogical_3() {
   );
 }
 
-TestCase _test_subLogicalGR_1() {
+TestCase _testSubLogicalGR1() {
   return (
     'SUBL GR1,GR2 ; GR1 = 2, GR2 = 1 (2 - 1 = 1)',
     () {
@@ -884,7 +884,7 @@ TestCase _test_subLogicalGR_1() {
   );
 }
 
-TestCase _test_subLogicalGR_2() {
+TestCase _testSubLogicalGR2() {
   return (
     'SUBL GR1,GR2 ; GR1 = 1, GR2 = 2 (1 - 2 = 0xffff)',
     () {
@@ -908,7 +908,7 @@ TestCase _test_subLogicalGR_2() {
   );
 }
 
-TestCase _test_subLogicalGR_3() {
+TestCase _testSubLogicalGR3() {
   return (
     'SUBL GR1,GR2 ; GR1 = 1, GR2 = 1 (1 - 1 = 0)',
     () {

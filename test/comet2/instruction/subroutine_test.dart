@@ -8,7 +8,7 @@ void main() {
   group('CALL', () {
     group('adr,x', () {
       final tests = [
-        _test_call(),
+        _testCall(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -18,7 +18,7 @@ void main() {
 
   group('RET', () {
     final tests = [
-      _test_ret(),
+      _testRet(),
     ];
     for (final (description, body) in tests) {
       test(description, body);
@@ -26,7 +26,7 @@ void main() {
   });
 }
 
-TestCase _test_call() {
+TestCase _testCall() {
   return (
     'CALL #4000,GR1 ; GR1 = 1',
     () async {
@@ -47,7 +47,7 @@ TestCase _test_call() {
   );
 }
 
-TestCase _test_ret() {
+TestCase _testRet() {
   return (
     'RET',
     () {

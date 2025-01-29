@@ -122,7 +122,7 @@ class CompareFlagger extends Flagger {
 /// }
 /// ```
 class ShiftLeftArithmeticFlagger extends ArithmeticFlagger {
-  const ShiftLeftArithmeticFlagger(final int value) : super(value);
+  const ShiftLeftArithmeticFlagger(super.value);
 
   @override
   int get overflow => _value & 0x10000 > 0 ? Flag.overflow : 0;
@@ -163,7 +163,7 @@ class ShiftRightArithmeticFlagger extends ArithmeticFlagger {
 /// }
 /// ```
 class ShiftLeftLogicalFlagger extends LogicalFlagger {
-  const ShiftLeftLogicalFlagger(final int value) : super(value);
+  const ShiftLeftLogicalFlagger(super.value);
 
   @override
   int get overflow => _value & 0x10000 > 0 ? Flag.overflow : 0;

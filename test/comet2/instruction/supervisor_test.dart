@@ -7,8 +7,6 @@ import 'package:test/test.dart';
 typedef TestCase = (String, void Function());
 
 final class TestDevice implements Device {
-  late final readFn = () {};
-
   late Future<Result<String, DeviceError>> Function(int) _read;
   late Future<Result<void, DeviceError>> Function(String) _write;
 
@@ -26,10 +24,10 @@ final class TestDevice implements Device {
 void main() {
   group('SVC', () {
     final tests = [
-      _test_svc_read_1(),
-      _test_svc_read_2(),
-      _test_svc_write_1(),
-      _test_svc_write_2(),
+      _testSvcRead1(),
+      _testSvcRead2(),
+      _testSvcWrite1(),
+      _testSvcWrite2(),
     ];
     for (final (description, body) in tests) {
       test(description, body);
@@ -37,7 +35,7 @@ void main() {
   });
 }
 
-TestCase _test_svc_read_1() {
+TestCase _testSvcRead1() {
   return (
     'SVC 0,GR7 ; GR7 = 1, LEN = 32, INPUT = "Hello, World!"',
     () async {
@@ -70,7 +68,7 @@ TestCase _test_svc_read_1() {
   );
 }
 
-TestCase _test_svc_read_2() {
+TestCase _testSvcRead2() {
   return (
     'SVC 0,GR7 ; GR7 = 1, LEN = 5, INPUT = "Hello, World!"',
     () async {
@@ -103,7 +101,7 @@ TestCase _test_svc_read_2() {
   );
 }
 
-TestCase _test_svc_write_1() {
+TestCase _testSvcWrite1() {
   return (
     'SVC 1,GR7 ; GR7 = 1, LEN = 32, OUTPUT = "Hello, World!"',
     () async {
@@ -134,7 +132,7 @@ TestCase _test_svc_write_1() {
   );
 }
 
-TestCase _test_svc_write_2() {
+TestCase _testSvcWrite2() {
   return (
     'SVC 1,GR7 ; GR7 = 1, LEN = 32, OUTPUT = "Hell"',
     () async {

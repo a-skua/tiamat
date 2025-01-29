@@ -42,6 +42,9 @@ final class Ok<T, E> extends Result<T, E> {
     if (identical(this, other)) return true;
     return other is Ok && other._ok == _ok;
   }
+
+  @override
+  int get hashCode => _ok.hashCode;
 }
 
 /// [Result] is Err
@@ -67,4 +70,7 @@ final class Err<T, E> extends Result<T, E> {
     if (identical(this, other)) return true;
     return other is Err && other._err == _err;
   }
+
+  @override
+  int get hashCode => _err.hashCode;
 }

@@ -8,9 +8,9 @@ void main() {
   group('SLA', () {
     group('r,adr,x', () {
       final tests = [
-        _test_sla_1(),
-        _test_sla_2(),
-        _test_sla_3(),
+        _testSla1(),
+        _testSla2(),
+        _testSla3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -21,9 +21,9 @@ void main() {
   group('SRA', () {
     group('r,adr,x', () {
       final tests = [
-        _test_sra_1(),
-        _test_sra_2(),
-        _test_sra_3(),
+        _testSra1(),
+        _testSra2(),
+        _testSra3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -34,9 +34,9 @@ void main() {
   group('SLL', () {
     group('r,adr,x', () {
       final tests = [
-        _test_sll_1(),
-        _test_sll_2(),
-        _test_sll_3(),
+        _testSll1(),
+        _testSll2(),
+        _testSll3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -47,9 +47,9 @@ void main() {
   group('SRL', () {
     group('r,adr,x', () {
       final tests = [
-        _test_srl_1(),
-        _test_srl_2(),
-        _test_srl_3(),
+        _testSrl1(),
+        _testSrl2(),
+        _testSrl3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -58,7 +58,7 @@ void main() {
   });
 }
 
-TestCase _test_sla_1() {
+TestCase _testSla1() {
   return (
     'SLA GR1,3,GR2 ; GR1 = #FFFF, GR2 = 1 (#FFFF << 4 = #FFF0)',
     () {
@@ -81,7 +81,7 @@ TestCase _test_sla_1() {
   );
 }
 
-TestCase _test_sla_2() {
+TestCase _testSla2() {
   return (
     'SLA GR1,3,GR2 ; GR1 = #0FFF, GR2 = 1 (#0FFF << 4 = #FFF0)',
     () {
@@ -104,7 +104,7 @@ TestCase _test_sla_2() {
   );
 }
 
-TestCase _test_sla_3() {
+TestCase _testSla3() {
   return (
     'SLA GR1,3,GR2 ; GR1 = #F000, GR2 = 1 (#F000 << 4 = #0000)',
     () {
@@ -127,7 +127,7 @@ TestCase _test_sla_3() {
   );
 }
 
-TestCase _test_sra_1() {
+TestCase _testSra1() {
   return (
     'SRA GR1,3,GR2 ; GR1 = #8FFF, GR2 = 1 (#8FFF >> 4 = #F8FF)',
     () {
@@ -150,7 +150,7 @@ TestCase _test_sra_1() {
   );
 }
 
-TestCase _test_sra_2() {
+TestCase _testSra2() {
   return (
     'SRA GR1,3,GR2 ; GR1 = #0FF0, GR2 = 1 (#0FF0 >> 4 = #00ff)',
     () {
@@ -173,7 +173,7 @@ TestCase _test_sra_2() {
   );
 }
 
-TestCase _test_sra_3() {
+TestCase _testSra3() {
   return (
     'SRA GR1,3,GR2 ; GR1 = #000F, GR2 = 1 (#F000 >> 4 = #0000)',
     () {
@@ -196,7 +196,7 @@ TestCase _test_sra_3() {
   );
 }
 
-TestCase _test_sll_1() {
+TestCase _testSll1() {
   return (
     'SLL GR1,3,GR2 ; GR1 = #FFFF, GR2 = 1 (#FFFF << 4 = #FFF0)',
     () {
@@ -219,7 +219,7 @@ TestCase _test_sll_1() {
   );
 }
 
-TestCase _test_sll_2() {
+TestCase _testSll2() {
   return (
     'SLL GR1,3,GR2 ; GR1 = #0FFF, GR2 = 1 (#0FFF << 4 = #FFF0)',
     () {
@@ -242,7 +242,7 @@ TestCase _test_sll_2() {
   );
 }
 
-TestCase _test_sll_3() {
+TestCase _testSll3() {
   return (
     'SLL GR1,3,GR2 ; GR1 = #F000, GR2 = 1 (#F000 << 4 = #0000)',
     () {
@@ -265,7 +265,7 @@ TestCase _test_sll_3() {
   );
 }
 
-TestCase _test_srl_1() {
+TestCase _testSrl1() {
   return (
     'SRL GR1,3,GR2 ; GR1 = #8FFF, GR2 = 1 (#8FFF >> 4 = #08FF)',
     () {
@@ -288,7 +288,7 @@ TestCase _test_srl_1() {
   );
 }
 
-TestCase _test_srl_2() {
+TestCase _testSrl2() {
   return (
     'SRL GR1,3,GR2 ; GR1 = #0FF0, GR2 = 1 (#0FF0 >> 4 = #00ff)',
     () {
@@ -311,7 +311,7 @@ TestCase _test_srl_2() {
   );
 }
 
-TestCase _test_srl_3() {
+TestCase _testSrl3() {
   return (
     'SRL GR1,3,GR2 ; GR1 = #000F, GR2 = 1 (#F000 >> 4 = #0000)',
     () {

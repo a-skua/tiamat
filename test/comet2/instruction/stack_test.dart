@@ -8,7 +8,7 @@ void main() {
   group('PUSH', () {
     group('adr,x', () {
       final tests = [
-        _test_push(),
+        _testPush(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -19,7 +19,7 @@ void main() {
   group('POP', () {
     group('r', () {
       final tests = [
-        _test_pop(),
+        _testPop(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -28,7 +28,7 @@ void main() {
   });
 }
 
-TestCase _test_push() {
+TestCase _testPush() {
   return (
     'PUSH 0,GR1 ; GR1 = 1',
     () async {
@@ -49,7 +49,7 @@ TestCase _test_push() {
   );
 }
 
-TestCase _test_pop() {
+TestCase _testPop() {
   return (
     'POP GR1',
     () async {

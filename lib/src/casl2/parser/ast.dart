@@ -11,7 +11,7 @@ abstract class Statement {
     Token? label,
     List<Token> operand = const [],
   }) =>
-      _Statement(label, opecode, operand);
+      _Statement(opecode, label: label, operand: operand);
 
   factory Statement.macro(
     Token opecode, {
@@ -58,8 +58,7 @@ final class Macro implements Statement {
 
 /// Common [Statement]
 final class _Statement extends Macro implements Statement {
-  _Statement(Token? label, Token opecode, List<Token> operand)
-      : super(opecode, label: label, operand: operand);
+  _Statement(super.opecode, {required super.label, required super.operand});
 
   @override
   String toString() {

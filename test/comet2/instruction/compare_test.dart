@@ -8,9 +8,9 @@ void main() {
   group('CPA', () {
     group('r,adr,x', () {
       final tests = [
-        _test_cpa_1(),
-        _test_cpa_2(),
-        _test_cpa_3(),
+        _testCpa1(),
+        _testCpa2(),
+        _testCpa3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -19,9 +19,9 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_cpaGR_1(),
-        _test_cpaGR_2(),
-        _test_cpaGR_3(),
+        _testCpaGR1(),
+        _testCpaGR2(),
+        _testCpaGR3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -32,9 +32,9 @@ void main() {
   group('CPL', () {
     group('r,adr,x', () {
       final tests = [
-        _test_cpl_1(),
-        _test_cpl_2(),
-        _test_cpl_3(),
+        _testCpl1(),
+        _testCpl2(),
+        _testCpl3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -43,9 +43,9 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _test_cplGR_1(),
-        _test_cplGR_2(),
-        _test_cplGR_3(),
+        _testCplGR1(),
+        _testCplGR2(),
+        _testCplGR3(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -54,7 +54,7 @@ void main() {
   });
 }
 
-TestCase _test_cpa_1() {
+TestCase _testCpa1() {
   return (
     'CPA GR1,#4000,GR2 ; GR1 = #8000, GR2 = #0001 RAM[#4001] = #7FFF (#8000 < #7FFF)',
     () {
@@ -77,7 +77,7 @@ TestCase _test_cpa_1() {
   );
 }
 
-TestCase _test_cpa_2() {
+TestCase _testCpa2() {
   return (
     'CPA GR1,#4000,GR2 ; GR1 = #8000, GR2 = #0001 RAM[#4001] = #8000 (#8000 = #8000)',
     () {
@@ -100,7 +100,7 @@ TestCase _test_cpa_2() {
   );
 }
 
-TestCase _test_cpa_3() {
+TestCase _testCpa3() {
   return (
     'CPA GR1,#4000,GR2 ; GR1 = #7FFF, GR2 = #0001 RAM[#4001] = #8000 (#7FFF > #8000)',
     () {
@@ -123,7 +123,7 @@ TestCase _test_cpa_3() {
   );
 }
 
-TestCase _test_cpaGR_1() {
+TestCase _testCpaGR1() {
   return (
     'CPA GR1,GR2 ; GR1 = #8000, GR2 = = #7FFF (#8000 < #7FFF)',
     () {
@@ -144,7 +144,7 @@ TestCase _test_cpaGR_1() {
   );
 }
 
-TestCase _test_cpaGR_2() {
+TestCase _testCpaGR2() {
   return (
     'CPA GR1,GR2 ; GR1 = #8000, GR2 = #8000 (#8000 = #8000)',
     () {
@@ -165,7 +165,7 @@ TestCase _test_cpaGR_2() {
   );
 }
 
-TestCase _test_cpaGR_3() {
+TestCase _testCpaGR3() {
   return (
     'CPA GR1,GR2 ; GR1 = #7FFF, GR2 = = #8000 (#7FFF > #8000)',
     () {
@@ -186,7 +186,7 @@ TestCase _test_cpaGR_3() {
   );
 }
 
-TestCase _test_cpl_1() {
+TestCase _testCpl1() {
   return (
     'CPL GR1,#4000,GR2 ; GR1 = #8000, GR2 = #0001 RAM[#4001] = #7FFF (#8000 > #7FFF)',
     () {
@@ -209,7 +209,7 @@ TestCase _test_cpl_1() {
   );
 }
 
-TestCase _test_cpl_2() {
+TestCase _testCpl2() {
   return (
     'CPL GR1,#4000,GR2 ; GR1 = #8000, GR2 = #0001 RAM[#4001] = #8000 (#8000 = #8000)',
     () {
@@ -232,7 +232,7 @@ TestCase _test_cpl_2() {
   );
 }
 
-TestCase _test_cpl_3() {
+TestCase _testCpl3() {
   return (
     'CPL GR1,#4000,GR2 ; GR1 = #7FFF, GR2 = #0001 RAM[#4001] = #8000 (#7FFF < #8000)',
     () {
@@ -255,7 +255,7 @@ TestCase _test_cpl_3() {
   );
 }
 
-TestCase _test_cplGR_1() {
+TestCase _testCplGR1() {
   return (
     'CPL GR1,GR2 ; GR1 = #8000, GR2 = = #7FFF (#8000 > #7FFF)',
     () {
@@ -276,7 +276,7 @@ TestCase _test_cplGR_1() {
   );
 }
 
-TestCase _test_cplGR_2() {
+TestCase _testCplGR2() {
   return (
     'CPL GR1,GR2 ; GR1 = #8000, GR2 = #8000 (#8000 = #8000)',
     () {
@@ -297,7 +297,7 @@ TestCase _test_cplGR_2() {
   );
 }
 
-TestCase _test_cplGR_3() {
+TestCase _testCplGR3() {
   return (
     'CPL GR1,GR2 ; GR1 = #7FFF, GR2 = = #8000 (#7FFF < #8000)',
     () {

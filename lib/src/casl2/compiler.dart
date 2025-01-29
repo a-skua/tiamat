@@ -10,18 +10,12 @@ import './compiler/const.dart';
 /// Error of [Compiler]
 final class CompileError extends Casl2Error {
   const CompileError(
-    String message, {
-    required int start,
-    required int end,
-    required int lineStart,
-    required int lineNumber,
-  }) : super(
-          message,
-          start: start,
-          end: end,
-          lineStart: lineStart,
-          lineNumber: lineNumber,
-        );
+    super.message, {
+    required super.start,
+    required super.end,
+    required super.lineStart,
+    required super.lineNumber,
+  });
 
   factory CompileError.fromToken(String message, Token token) => CompileError(
         message,
@@ -127,7 +121,7 @@ Result<List<Word>, CompileError> _compileGeneral(Statement stmt) {
 
 /// operand pattern: r,adr(,x)
 Result<List<Word>, CompileError> _compileRadrx(Statement stmt) {
-  Result<List<Word>, CompileError> _compileRadrx(
+  Result<List<Word>, CompileError> compileRadrx(
     Token op,
     Token r,
     Token adr,
@@ -157,7 +151,7 @@ Result<List<Word>, CompileError> _compileRadrx(Statement stmt) {
         r,
       ));
     case [final r, final adr]:
-      return _compileRadrx(stmt.opecode, r, adr, gr0);
+      return compileRadrx(stmt.opecode, r, adr, gr0);
     case [final r, _, _] when r.isNotGr:
       return Err(CompileError.fromToken(
         '[SYNTAX ERROR] ${r.string} is not an expected value. value expects between GR0 and GR7.',
@@ -174,7 +168,7 @@ Result<List<Word>, CompileError> _compileRadrx(Statement stmt) {
         x,
       ));
     case [final r, final adr, final x]:
-      return _compileRadrx(stmt.opecode, r, adr, x);
+      return compileRadrx(stmt.opecode, r, adr, x);
     default:
       return Err(CompileError.fromToken(
         '[SYNTAX ERROR] ${stmt.opecode.string} wrong number of operands. wants 2 or 3 operands.',
@@ -185,7 +179,7 @@ Result<List<Word>, CompileError> _compileRadrx(Statement stmt) {
 
 /// operand pattern: r1,r2
 Result<List<Word>, CompileError> _compileR1r2(Statement stmt) {
-  Result<List<Word>, CompileError> _compileR1r2(Token op, Token r1, Token r2) {
+  Result<List<Word>, CompileError> compileR1r2(Token op, Token r1, Token r2) {
     final label = stmt.label;
     return Ok([
       Constant(
@@ -207,7 +201,7 @@ Result<List<Word>, CompileError> _compileR1r2(Statement stmt) {
         r2,
       ));
     case [final r1, final r2]:
-      return _compileR1r2(stmt.opecode, r1, r2);
+      return compileR1r2(stmt.opecode, r1, r2);
     default:
       return Err(CompileError.fromToken(
         '[SYNTAX ERROR] ${stmt.opecode.string} wrong number of operands. wants 2 operands.',
@@ -218,7 +212,7 @@ Result<List<Word>, CompileError> _compileR1r2(Statement stmt) {
 
 /// operand pattern: adr(,x)
 Result<List<Word>, CompileError> _compileAdrx(Statement stmt) {
-  Result<List<Word>, CompileError> _compileAdrx(Token op, Token adr, Token x) {
+  Result<List<Word>, CompileError> compileAdrx(Token op, Token adr, Token x) {
     final result = _compileOperand(adr);
     if (result.isErr) return result;
 
@@ -231,9 +225,9 @@ Result<List<Word>, CompileError> _compileAdrx(Statement stmt) {
 
   switch (stmt.operand) {
     case [final adr]:
-      return _compileAdrx(stmt.opecode, adr, gr0);
+      return compileAdrx(stmt.opecode, adr, gr0);
     case [final adr, final x]:
-      return _compileAdrx(stmt.opecode, adr, x);
+      return compileAdrx(stmt.opecode, adr, x);
     default:
       return Err(CompileError.fromToken(
         '[SYNTAX ERROR] ${stmt.opecode.string} wrong number of operands. wants 1 or 2 operands.',
@@ -244,7 +238,7 @@ Result<List<Word>, CompileError> _compileAdrx(Statement stmt) {
 
 /// operand pattern: r
 Result<List<Word>, CompileError> _compileR(Statement stmt) {
-  Result<List<Word>, CompileError> _compileR(Token op, Token r) {
+  Result<List<Word>, CompileError> compileR(Token op, Token r) {
     final label = stmt.label;
     return Ok([
       Constant(op.rReal + (r.grNumber << 4), [if (label != null) label.string])
@@ -258,7 +252,7 @@ Result<List<Word>, CompileError> _compileR(Statement stmt) {
         r,
       ));
     case [final r]:
-      return _compileR(stmt.opecode, r);
+      return compileR(stmt.opecode, r);
     default:
       return Err(CompileError.fromToken(
         '[SYNTAX ERROR] ${stmt.opecode.string} wrong number of operands. wants 1 operands.',

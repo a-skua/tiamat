@@ -21,3 +21,6 @@ fix:
 
 pub:
 	dart pub publish --dry-run
+
+analyze:
+	dart analyze

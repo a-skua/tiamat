@@ -8,8 +8,8 @@ void main() {
   group('JMI', () {
     group('adr,x', () {
       final tests = [
-        _test_jmi_1(),
-        _test_jmi_2(),
+        _testJmi1(),
+        _testJmi2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -20,8 +20,8 @@ void main() {
   group('JNZ', () {
     group('adr,x', () {
       final tests = [
-        _test_jnz_1(),
-        _test_jnz_2(),
+        _testJnz1(),
+        _testJnz2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -32,8 +32,8 @@ void main() {
   group('JZE', () {
     group('adr,x', () {
       final tests = [
-        _test_jze_1(),
-        _test_jze_2(),
+        _testJze1(),
+        _testJze2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -44,7 +44,7 @@ void main() {
   group('JUMP', () {
     group('adr,x', () {
       final tests = [
-        _test_jump(),
+        _testJump(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -55,10 +55,10 @@ void main() {
   group('JPL', () {
     group('adr,x', () {
       final tests = [
-        _test_jpl_1(),
-        _test_jpl_2(),
-        _test_jpl_3(),
-        _test_jpl_4(),
+        _testJpl1(),
+        _testJpl2(),
+        _testJpl3(),
+        _testJpl4(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -69,8 +69,8 @@ void main() {
   group('JOV', () {
     group('adr,x', () {
       final tests = [
-        _test_jov_1(),
-        _test_jov_2(),
+        _testJov1(),
+        _testJov2(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -79,7 +79,7 @@ void main() {
   });
 }
 
-TestCase _test_jmi_1() {
+TestCase _testJmi1() {
   return (
     'JMI #4000,GR1 ; SF = 0, GR1 = 1',
     () {
@@ -98,7 +98,7 @@ TestCase _test_jmi_1() {
   );
 }
 
-TestCase _test_jmi_2() {
+TestCase _testJmi2() {
   return (
     'JMI #4000,GR1 ; SF = 1, GR1 = 1',
     () {
@@ -117,7 +117,7 @@ TestCase _test_jmi_2() {
   );
 }
 
-TestCase _test_jnz_1() {
+TestCase _testJnz1() {
   return (
     'JNZ #4000,GR1 ; ZF = 0, GR1 = 1',
     () {
@@ -136,7 +136,7 @@ TestCase _test_jnz_1() {
   );
 }
 
-TestCase _test_jnz_2() {
+TestCase _testJnz2() {
   return (
     'JNZ #4000,GR1 ; ZF = 1, GR1 = 1',
     () {
@@ -155,7 +155,7 @@ TestCase _test_jnz_2() {
   );
 }
 
-TestCase _test_jze_1() {
+TestCase _testJze1() {
   return (
     'JZE #4000,GR1 ; ZF = 0, GR1 = 1',
     () {
@@ -174,7 +174,7 @@ TestCase _test_jze_1() {
   );
 }
 
-TestCase _test_jze_2() {
+TestCase _testJze2() {
   return (
     'JZE #4000,GR1 ; ZF = 1, GR1 = 1',
     () {
@@ -193,7 +193,7 @@ TestCase _test_jze_2() {
   );
 }
 
-TestCase _test_jump() {
+TestCase _testJump() {
   return (
     'JUMP #4000,GR1 ; GR1 = 1',
     () {
@@ -211,7 +211,7 @@ TestCase _test_jump() {
   );
 }
 
-TestCase _test_jpl_1() {
+TestCase _testJpl1() {
   return (
     'JPL #4000,GR1 ; SF = 0, ZF = 0, GR1 = 1',
     () {
@@ -231,7 +231,7 @@ TestCase _test_jpl_1() {
   );
 }
 
-TestCase _test_jpl_2() {
+TestCase _testJpl2() {
   return (
     'JPL #4000,GR1 ; SF = 1, ZF = 0, GR1 = 1',
     () {
@@ -251,7 +251,7 @@ TestCase _test_jpl_2() {
   );
 }
 
-TestCase _test_jpl_3() {
+TestCase _testJpl3() {
   return (
     'JPL #4000,GR1 ; SF = 0, ZF = 1, GR1 = 1',
     () {
@@ -271,7 +271,7 @@ TestCase _test_jpl_3() {
   );
 }
 
-TestCase _test_jpl_4() {
+TestCase _testJpl4() {
   return (
     'JPL #4000,GR1 ; SF = 1, ZF = 1, GR1 = 1',
     () {
@@ -291,7 +291,7 @@ TestCase _test_jpl_4() {
   );
 }
 
-TestCase _test_jov_1() {
+TestCase _testJov1() {
   return (
     'JOV #4000,GR1 ; OF = 0, GR1 = 1',
     () {
@@ -310,7 +310,7 @@ TestCase _test_jov_1() {
   );
 }
 
-TestCase _test_jov_2() {
+TestCase _testJov2() {
   return (
     'JOV #4000,GR1 ; OF = 1, GR1 = 1',
     () {

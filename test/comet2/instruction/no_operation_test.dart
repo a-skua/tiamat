@@ -7,7 +7,7 @@ typedef TestCase = (String, void Function());
 void main() {
   group('NOP', () {
     final tests = [
-      _test_nop(),
+      _testNop(),
     ];
     for (final (description, body) in tests) {
       test(description, body);
@@ -15,7 +15,7 @@ void main() {
   });
 }
 
-TestCase _test_nop() {
+TestCase _testNop() {
   return (
     'NOP',
     () {

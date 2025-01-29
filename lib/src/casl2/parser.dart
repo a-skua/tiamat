@@ -8,18 +8,12 @@ export './parser/ast.dart';
 //// Error of Parser
 final class ParseError extends Casl2Error {
   const ParseError(
-    String message, {
-    required int start,
-    required int end,
-    required int lineStart,
-    required int lineNumber,
-  }) : super(
-          message,
-          start: start,
-          end: end,
-          lineStart: lineStart,
-          lineNumber: lineNumber,
-        );
+    super.message, {
+    required super.start,
+    required super.end,
+    required super.lineStart,
+    required super.lineNumber,
+  });
 
   factory ParseError.fromToken(String message, Token token) => ParseError(
         message,

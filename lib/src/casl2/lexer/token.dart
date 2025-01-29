@@ -128,6 +128,9 @@ final class Token {
         other.string == string;
   }
 
+  @override
+  int get hashCode => runes.hashCode;
+
   factory Token(
     Iterable<Rune> runes,
     Type type, {
