@@ -1,4 +1,4 @@
-import 'package:tiamat/src/casl2/lexer.dart';
+import 'package:tiamat/casl2.dart';
 import 'package:tiamat/typedef.dart';
 import 'package:test/test.dart';
 

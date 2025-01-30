@@ -1,4 +1,4 @@
-import '../resource.dart';
+import '../resource/resource.dart';
 
 /// An instruction of COMET2, named NOP.
 ///

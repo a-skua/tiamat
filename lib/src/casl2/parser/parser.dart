@@ -1,9 +1,9 @@
-import 'package:tiamat/typedef.dart';
-import './lexer.dart' show Lexer, TokenizeError, Token;
-import './casl2.dart' show Casl2Error;
-import './parser/ast.dart';
+import '../../typedef/typedef.dart';
+import '../lexer/lexer.dart' show Lexer, TokenizeError, Token;
+import '../casl2.dart' show Casl2Error;
+import './ast.dart';
 
-export './parser/ast.dart';
+export './ast.dart';
 
 //// Error of Parser
 final class ParseError extends Casl2Error {

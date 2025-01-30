@@ -9,8 +9,6 @@ sealed class Result<T, E> {
   /// error value
   E get err => throw Exception('$this is not err');
 
-  dynamic get unwrap;
-
   const Result();
 
   Result<U, E> map<U>(U Function(T) f) => isOk ? Ok(f(ok)) : Err(err);
@@ -31,7 +29,6 @@ final class Ok<T, E> extends Result<T, E> {
   @override
   T get ok => _ok;
 
-  @override
   T get unwrap => _ok;
 
   @override
@@ -59,7 +56,6 @@ final class Err<T, E> extends Result<T, E> {
   @override
   E get err => _err;
 
-  @override
   E get unwrap => _err;
 
   @override

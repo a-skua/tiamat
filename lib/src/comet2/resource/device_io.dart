@@ -1,5 +1,5 @@
 import 'package:tiamat/typedef.dart';
-import '../resource.dart';
+import './resource.dart';
 import 'dart:io';
 
 final class Default implements Device {

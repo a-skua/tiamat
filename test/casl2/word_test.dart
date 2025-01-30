@@ -1,6 +1,4 @@
-import 'package:tiamat/src/casl2/lexer/token.dart';
-import 'package:tiamat/src/casl2/compiler.dart';
-import 'package:tiamat/src/casl2/word.dart';
+import 'package:tiamat/casl2.dart';
 import 'package:tiamat/src/typedef/typedef.dart';
 import 'package:test/test.dart';
 

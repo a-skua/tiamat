@@ -1,5 +1,5 @@
 import 'package:tiamat/src/comet2/instruction/subroutine.dart';
-import 'package:tiamat/src/comet2/resource.dart';
+import 'package:tiamat/comet2.dart';
 import 'package:test/test.dart';
 
 typedef TestCase = (String, void Function());

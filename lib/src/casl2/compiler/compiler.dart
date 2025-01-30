@@ -1,11 +1,11 @@
-import 'package:tiamat/typedef.dart';
-import './parser.dart' show Subroutine, Statement, Macro;
-import './lexer.dart' show Token;
-import './casl2.dart' show Casl2Error;
-import './charcode.dart' show RuneToReal;
-import './word.dart';
-import './compiler/macro.dart';
-import './compiler/const.dart';
+import '../../typedef/typedef.dart';
+import '../parser/parser.dart' show Subroutine, Statement, Macro;
+import '../lexer/lexer.dart' show Token;
+import '../casl2.dart' show Casl2Error;
+import '../charcode.dart' show RuneToReal;
+import '../word.dart';
+import './macro.dart';
+import './const.dart';
 
 /// Error of [Compiler]
 final class CompileError extends Casl2Error {

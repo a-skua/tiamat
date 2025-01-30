@@ -1,14 +1,14 @@
-import 'resource.dart' show Resource, Device;
-import './instruction/load_store.dart';
-import './instruction/add_sub.dart';
-import './instruction/and_or.dart';
-import './instruction/shift.dart';
-import './instruction/jump.dart';
-import './instruction/compare.dart';
-import './instruction/stack.dart';
-import './instruction/subroutine.dart';
-import './instruction/supervisor.dart';
-import './instruction/no_operation.dart';
+import '../resource/resource.dart' show Resource, Device;
+import './load_store.dart';
+import './add_sub.dart';
+import './and_or.dart';
+import './shift.dart';
+import './jump.dart';
+import './compare.dart';
+import './stack.dart';
+import './subroutine.dart';
+import './supervisor.dart';
+import './no_operation.dart';
 
 typedef Instruction = Future<void> Function(Resource r, Device d);
 

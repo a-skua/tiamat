@@ -1,6 +1,6 @@
-import 'package:tiamat/src/casl2/casl2.dart';
+import 'package:tiamat/casl2.dart';
 import 'package:tiamat/src/casl2/charcode.dart' show RuneToReal;
-import 'package:tiamat/src/typedef/typedef.dart';
+import 'package:tiamat/typedef.dart';
 import 'package:test/test.dart';
 
 void main() {

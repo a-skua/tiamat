@@ -1,6 +1,6 @@
 import '../typedef/result.dart';
 import './lexer/token.dart' show Token;
-import './compiler.dart' show CompileError;
+import './compiler/compiler.dart' show CompileError;
 
 /// Dart [Rune]
 typedef Rune = int;

@@ -1,4 +1,4 @@
-import '../lexer.dart' show Token;
+import '../lexer/lexer.dart' show Token;
 
 /// Statement Node
 abstract class Statement {

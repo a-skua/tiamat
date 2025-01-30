@@ -1,5 +1,5 @@
-import 'package:tiamat/typedef.dart';
-import '../resource.dart';
+import '../resource/resource.dart';
+import '../../typedef/typedef.dart';
 import '../../casl2/charcode.dart';
 import 'util.dart';
 

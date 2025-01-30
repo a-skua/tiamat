@@ -1,6 +1,6 @@
-import 'package:tiamat/typedef.dart';
-import 'package:tiamat/casl2.dart' show Real;
-import './resource/device.dart' as device;
+import '../../typedef/typedef.dart';
+import '../../casl2/casl2.dart' show Real;
+import './device.dart' as device;
 
 /// Flag position bits.
 final class Flag {

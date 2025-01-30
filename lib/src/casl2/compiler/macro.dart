@@ -1,6 +1,6 @@
-import 'package:tiamat/typedef.dart';
-import '../parser.dart' show Macro, Statement;
-import '../compiler.dart' show CompileError;
+import '../../typedef/typedef.dart';
+import '../parser/parser.dart' show Macro, Statement;
+import './compiler.dart' show CompileError;
 import './const.dart';
 
 final embeddedMacro =

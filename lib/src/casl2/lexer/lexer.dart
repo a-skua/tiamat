@@ -1,8 +1,8 @@
-import 'package:tiamat/typedef.dart';
-import './lexer/token.dart';
-import './word.dart' show Rune;
+import '../../typedef/typedef.dart';
+import '../lexer/token.dart';
+import '../word.dart' show Rune;
 
-export './lexer/token.dart';
+export './token.dart';
 
 /// space
 final space = ' '.runes.first;

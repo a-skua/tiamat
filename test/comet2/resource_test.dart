@@ -1,4 +1,4 @@
-import 'package:tiamat/src/comet2/resource.dart';
+import 'package:tiamat/src/comet2/resource/resource.dart';
 import 'package:test/test.dart';
 
 void main() {

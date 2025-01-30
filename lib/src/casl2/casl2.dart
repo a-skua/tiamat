@@ -1,12 +1,12 @@
-import 'package:tiamat/typedef.dart';
-import './lexer.dart';
-import './parser.dart';
-import './compiler.dart';
+import '../typedef/typedef.dart';
+import './lexer/lexer.dart';
+import './parser/parser.dart';
+import './compiler/compiler.dart';
 import './word.dart';
 
-export './lexer.dart';
-export './parser.dart';
-export './compiler.dart';
+export './lexer/lexer.dart';
+export './parser/parser.dart';
+export './compiler/compiler.dart';
 export './word.dart';
 
 abstract class Casl2Error {

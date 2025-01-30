@@ -1,6 +1,6 @@
-import 'package:tiamat/typedef.dart';
 import 'package:tiamat/src/comet2/instruction/supervisor.dart';
-import 'package:tiamat/src/comet2/resource.dart';
+import 'package:tiamat/typedef.dart';
+import 'package:tiamat/comet2.dart';
 import 'package:tiamat/src/casl2/charcode.dart';
 import 'package:test/test.dart';
 
