@@ -238,54 +238,57 @@ INBUF   DS      32
         END
 ''';
 
-  final expected = Ok(Module({
-    'MAIN': 0,
-  }, [
-    // [MAIN] LAD GR1,5
-    0x1210, 5, // 0
-    // LAD GR2,0
-    0x1220, 0, // 2
-    // [LOOP] LAD GR2,1,GR2
-    0x1222, 1, // 4
-    // CPL GR2,GR1
-    0x4521, // 5
-    // JZE [BREAK]
-    0x6300, 11, // 7
-    // JUMP [LOOP]
-    0x6400, 4, // 9
-    // [BREAK] OUT [OUTBUF],5
-    0x1210, 46, // 11
-    0x1220, 5, // 13
-    0xf000, 2, // 15
-    // IN [INBUF],32
-    0x1210, 51, // 17
-    0x1220, 32, // 19
-    0xf000, 1, // 21
-    // RPUSH
-    0x7001, 0, // 23
-    0x7002, 0, // 25
-    0x7003, 0, // 27
-    0x7004, 0, // 29
-    0x7005, 0, // 31
-    0x7006, 0, // 33
-    0x7007, 0, // 35
-    // RPOP
-    0x7170, // 37
-    0x7160, // 38
-    0x7150, // 39
-    0x7140, // 40
-    0x7130, // 41
-    0x7120, // 42
-    0x7110, // 43
-    // NOP
-    0, // 44
-    // RET
-    0x8100, // 45
-    // [OUTBUF] DC '12345'
-    ...'12345'.runes.map((rune) => rune.real), // 46
-    // [INBUF] DS 32
-    ...List.generate(32, (_) => 0), // 51
-  ]));
+  final expected = Ok((
+    [
+      // [MAIN] LAD GR1,5
+      0x1210, 5, // 0
+      // LAD GR2,0
+      0x1220, 0, // 2
+      // [LOOP] LAD GR2,1,GR2
+      0x1222, 1, // 4
+      // CPL GR2,GR1
+      0x4521, // 5
+      // JZE [BREAK]
+      0x6300, 11, // 7
+      // JUMP [LOOP]
+      0x6400, 4, // 9
+      // [BREAK] OUT [OUTBUF],5
+      0x1210, 46, // 11
+      0x1220, 5, // 13
+      0xf000, 2, // 15
+      // IN [INBUF],32
+      0x1210, 51, // 17
+      0x1220, 32, // 19
+      0xf000, 1, // 21
+      // RPUSH
+      0x7001, 0, // 23
+      0x7002, 0, // 25
+      0x7003, 0, // 27
+      0x7004, 0, // 29
+      0x7005, 0, // 31
+      0x7006, 0, // 33
+      0x7007, 0, // 35
+      // RPOP
+      0x7170, // 37
+      0x7160, // 38
+      0x7150, // 39
+      0x7140, // 40
+      0x7130, // 41
+      0x7120, // 42
+      0x7110, // 43
+      // NOP
+      0, // 44
+      // RET
+      0x8100, // 45
+      // [OUTBUF] DC '12345'
+      ...'12345'.runes.map((rune) => rune.real), // 46
+      // [INBUF] DS 32
+      ...List.generate(32, (_) => 0), // 51
+    ],
+    {
+      'MAIN': 0,
+    }
+  ));
 
   final actual = Casl2.fromString(input).build();
   expect('$actual', equals('$expected'));
@@ -324,56 +327,59 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 '''
       .trim();
 
-  final expected = Ok(Module({
-    'MAIN': 0,
-    'COUNT1': 39,
-  }, [
-    // MAIN    START
-    //         CALL    COUNT1
-    0x8000, 39, // 0
-    //         RET
-    0x8100, // 2
-    //         DC      'hello','world'
-    ...'hello'.runes.map((rune) => rune.real), // 3
-    ...'world'.runes.map((rune) => rune.real), // 8
-    //         DC      'it''s a small world'
-    ..."it's a small world".runes.map((rune) => rune.real), // 13
-    //         DC      12,-34,56,-78
-    12, -34, 56, -78, // 31
-    //         DC      #1234,#CDEF
-    0x1234, 0xcdef, // 35
-    // GR1234  DC      GR1234,MAIN
-    37, 0, // 37
-    //         END
-    // COUNT1  START
-    //         PUSH    0,GR1
-    0x7001, 0, // 39
-    //         PUSH    0,GR2
-    0x7002, 0,
-    //         SUBA    GR2,GR2
-    0x2522,
-    //         AND     GR1,GR1
-    0x3411,
-    //         JZE     RETURN
-    0x6300, 54,
-    // MORE    LAD     GR2,1,GR2
-    0x1222, 1,
-    //         LAD     GR0,-1,GR1
-    0x1201, -1,
-    //         AND     GR1,GR0
-    0x3410,
-    //         JNZ     MORE
-    0x6200, 47,
-    // RETURN  LD      GR0,GR2
-    0x1402,
-    //         POP     GR2
-    0x7120,
-    //         POP     GR1
-    0x7110,
-    //         RET
-    0x8100,
-    //         END
-  ]));
+  final expected = Ok((
+    [
+      // MAIN    START
+      //         CALL    COUNT1
+      0x8000, 39, // 0
+      //         RET
+      0x8100, // 2
+      //         DC      'hello','world'
+      ...'hello'.runes.map((rune) => rune.real), // 3
+      ...'world'.runes.map((rune) => rune.real), // 8
+      //         DC      'it''s a small world'
+      ..."it's a small world".runes.map((rune) => rune.real), // 13
+      //         DC      12,-34,56,-78
+      12, -34, 56, -78, // 31
+      //         DC      #1234,#CDEF
+      0x1234, 0xcdef, // 35
+      // GR1234  DC      GR1234,MAIN
+      37, 0, // 37
+      //         END
+      // COUNT1  START
+      //         PUSH    0,GR1
+      0x7001, 0, // 39
+      //         PUSH    0,GR2
+      0x7002, 0,
+      //         SUBA    GR2,GR2
+      0x2522,
+      //         AND     GR1,GR1
+      0x3411,
+      //         JZE     RETURN
+      0x6300, 54,
+      // MORE    LAD     GR2,1,GR2
+      0x1222, 1,
+      //         LAD     GR0,-1,GR1
+      0x1201, -1,
+      //         AND     GR1,GR0
+      0x3410,
+      //         JNZ     MORE
+      0x6200, 47,
+      // RETURN  LD      GR0,GR2
+      0x1402,
+      //         POP     GR2
+      0x7120,
+      //         POP     GR1
+      0x7110,
+      //         RET
+      0x8100,
+      //         END
+    ],
+    {
+      'MAIN': 0,
+      'COUNT1': 39,
+    }
+  ));
 
   final actual = Casl2.fromString(input).build();
   expect('$actual', equals('$expected'));
@@ -412,56 +418,59 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
 '''
       .trim();
 
-  final expected = Ok(Module({
-    'MAIN': 2,
-    'COUNT1': 39,
-  }, [
-    // MAIN    START
-    //         CALL    COUNT1
-    0x8000, 39, // 0
-    //         RET
-    0x8100, // 2
-    //         DC      'hello','world'
-    ...'hello'.runes.map((rune) => rune.real), // 3
-    ...'world'.runes.map((rune) => rune.real), // 8
-    //         DC      'it''s a small world'
-    ..."it's a small world".runes.map((rune) => rune.real), // 13
-    //         DC      12,-34,56,-78
-    12, -34, 56, -78, // 31
-    //         DC      #1234,#CDEF
-    0x1234, 0xcdef, // 35
-    // GR1234  DC      GR1234,MAIN
-    37, 2, // 37
-    //         END
-    // COUNT1  START
-    //         PUSH    0,GR1
-    0x7001, 0, // 39
-    //         PUSH    0,GR2
-    0x7002, 0,
-    //         SUBA    GR2,GR2
-    0x2522,
-    //         AND     GR1,GR1
-    0x3411,
-    //         JZE     RETURN
-    0x6300, 54,
-    // MORE    LAD     GR2,1,GR2
-    0x1222, 1,
-    //         LAD     GR0,-1,GR1
-    0x1201, -1,
-    //         AND     GR1,GR0
-    0x3410,
-    //         JNZ     MORE
-    0x6200, 47,
-    // RETURN  LD      GR0,GR2
-    0x1402,
-    //         POP     GR2
-    0x7120,
-    //         POP     GR1
-    0x7110,
-    //         RET
-    0x8100,
-    //         END
-  ]));
+  final expected = Ok((
+    [
+      // MAIN    START
+      //         CALL    COUNT1
+      0x8000, 39, // 0
+      //         RET
+      0x8100, // 2
+      //         DC      'hello','world'
+      ...'hello'.runes.map((rune) => rune.real), // 3
+      ...'world'.runes.map((rune) => rune.real), // 8
+      //         DC      'it''s a small world'
+      ..."it's a small world".runes.map((rune) => rune.real), // 13
+      //         DC      12,-34,56,-78
+      12, -34, 56, -78, // 31
+      //         DC      #1234,#CDEF
+      0x1234, 0xcdef, // 35
+      // GR1234  DC      GR1234,MAIN
+      37, 2, // 37
+      //         END
+      // COUNT1  START
+      //         PUSH    0,GR1
+      0x7001, 0, // 39
+      //         PUSH    0,GR2
+      0x7002, 0,
+      //         SUBA    GR2,GR2
+      0x2522,
+      //         AND     GR1,GR1
+      0x3411,
+      //         JZE     RETURN
+      0x6300, 54,
+      // MORE    LAD     GR2,1,GR2
+      0x1222, 1,
+      //         LAD     GR0,-1,GR1
+      0x1201, -1,
+      //         AND     GR1,GR0
+      0x3410,
+      //         JNZ     MORE
+      0x6200, 47,
+      // RETURN  LD      GR0,GR2
+      0x1402,
+      //         POP     GR2
+      0x7120,
+      //         POP     GR1
+      0x7110,
+      //         RET
+      0x8100,
+      //         END
+    ],
+    {
+      'MAIN': 2,
+      'COUNT1': 39,
+    }
+  ));
 
   final actual = Casl2.fromString(input).build();
   expect('$actual', equals('$expected'));

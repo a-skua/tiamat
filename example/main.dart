@@ -47,14 +47,14 @@ MAIN    START
 
   final casl2 = Casl2.fromString(asm);
 
-  final mod = switch (casl2.build()) {
-    Ok<Module, dynamic> ok => ok.unwrap,
+  final (words, labels) = switch (casl2.build()) {
+    Ok<(List<Real>, Map<String, Address>), dynamic> ok => ok.unwrap,
     Err<dynamic, List<Casl2Error>> err => throw Exception(err.unwrap),
   };
 
-  final comet2 = Comet2(mod.bin);
+  final comet2 = Comet2(words);
 
-  final start = mod.labels['MAIN'] ?? 0;
+  final start = labels['MAIN'] ?? 0;
   await comet2.run(start);
 }
 

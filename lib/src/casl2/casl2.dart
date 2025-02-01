@@ -74,7 +74,7 @@ final class Casl2 {
     return Ok(stmts);
   }
 
-  Result<Module, List<Casl2Error>> build() {
+  Result<(List<Real>, Map<Label, Address>), List<Casl2Error>> build() {
     final result = parse();
     if (result.isErr) return Err(result.err);
 
@@ -93,7 +93,7 @@ final class Casl2 {
     }
     if (errs.isNotEmpty) return Err(errs);
 
-    final bin = <Real>[];
+    final words = <Real>[];
     for (final block in blockWords) {
       final result = block.reals((label) {
         final word = refs[label];
@@ -101,30 +101,16 @@ final class Casl2 {
           return null;
         }
         return flatWords.indexOf(word);
-      }, bin.length).map((reals) {
-        bin.addAll(reals);
+      }, words.length).map((reals) {
+        words.addAll(reals);
       });
       if (result.isErr) errs.addAll(result.err);
     }
 
     if (errs.isNotEmpty) return Err(errs);
-    return Ok(Module(
+    return Ok((
+      words,
       refs.map((label, word) => MapEntry(label, flatWords.indexOf(word))),
-      bin,
     ));
-  }
-}
-
-/// CASL2 Module
-final class Module {
-  final Map<Label, Address> labels;
-  final List<Real> bin;
-  Module(this.labels, this.bin);
-
-  @override
-  String toString() {
-    final refs = labels.entries.map((e) => '${e.key}=${e.value}');
-    final words = bin.map((word) => 'CONST($word)');
-    return '(REFS(${refs.join(',')}),WORDS(${words.join(',')})';
   }
 }
