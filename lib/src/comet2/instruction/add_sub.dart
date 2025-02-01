@@ -1,17 +1,17 @@
 import '../resource/resource.dart';
-import 'util.dart';
+import './util.dart';
 
 /// An instruction of COMET2, named ADDA
 ///
 /// That's two words instruction,
 /// add(arithmetic) effective address to register.
 /// Syntax: ADDA r,adr,x
-Future<void> addArithmetic(final Resource r, Device _) async {
+Future<void> add(final Resource r, Device _) async {
   final op = r.count();
   final adr = r.count().effectiveAddress(r.gr, op.x);
 
   final result = r.gr[op.r].signed + r.memory[adr].signed;
-  final (of, sf, zf) = result.arithmeticFlag;
+  final (of, sf, zf) = result.flag;
 
   r.gr[op.r] = result;
   r.of = of;
@@ -24,11 +24,11 @@ Future<void> addArithmetic(final Resource r, Device _) async {
 /// That's one word instruction,
 /// add(arithmetic) 2nd register to 1st register.
 /// Syntax: ADDA r1,r2
-Future<void> addArithmeticGR(final Resource r, Device _) async {
+Future<void> addGR(final Resource r, Device _) async {
   final op = r.count();
 
   final result = r.gr[op.r1].signed + r.gr[op.r2].signed;
-  final (of, sf, zf) = result.arithmeticFlag;
+  final (of, sf, zf) = result.flag;
 
   r.gr[op.r1] = result;
   r.of = of;
@@ -76,12 +76,12 @@ Future<void> addLogicalGR(final Resource r, Device _) async {
 /// That's two words instruction,
 /// subtract(arithmetic) effective address to register.
 /// Syntax: SUBA r,adr,x
-Future<void> subtractArithmetic(final Resource r, Device _) async {
+Future<void> subtract(final Resource r, Device _) async {
   final op = r.count();
   final adr = r.count().effectiveAddress(r.gr, op.x);
 
   final result = r.gr[op.r].signed - r.memory[adr].signed;
-  final (of, sf, zf) = result.arithmeticFlag;
+  final (of, sf, zf) = result.flag;
 
   r.gr[op.r] = result;
   r.of = of;
@@ -94,11 +94,11 @@ Future<void> subtractArithmetic(final Resource r, Device _) async {
 /// That's one word instruction,
 /// subtract(arithmetic) 2nd register to 1st register.
 /// Syntax: SUBA r1,r2
-Future<void> subtractArithmeticGR(final Resource r, Device _) async {
+Future<void> subtractGR(final Resource r, Device _) async {
   final op = r.count();
 
   final result = r.gr[op.r1].signed - r.gr[op.r2].signed;
-  final (of, sf, zf) = result.arithmeticFlag;
+  final (of, sf, zf) = result.flag;
 
   r.gr[op.r1] = result;
   r.of = of;

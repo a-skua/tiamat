@@ -1,16 +1,16 @@
 import '../resource/resource.dart';
-import 'util.dart';
+import './util.dart' as util;
 
 /// An instruction of COMET2, named CPA.
 ///
 /// That's two words instruction,
 /// compare(arithmetic) register and effective address.
 /// Syntax: CPA r,adr,x
-Future<void> compareArithmetic(final Resource r, Device _) async {
+Future<void> compare(final Resource r, Device _) async {
   final op = r.count();
   final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final (sf, zf) = compare(r.gr[op.r].signed, r.memory[adr].signed);
+  final (sf, zf) = util.compare(r.gr[op.r].signed, r.memory[adr].signed);
 
   r.sf = sf;
   r.zf = zf;
@@ -21,10 +21,10 @@ Future<void> compareArithmetic(final Resource r, Device _) async {
 /// That's one word instruction,
 /// compare(arithmetic) 1st register and 2nd register.
 /// Syntax: CPA r1,r2
-Future<void> compareArithmeticGR(final Resource r, Device _) async {
+Future<void> compareGR(final Resource r, Device _) async {
   final op = r.count();
 
-  final (sf, zf) = compare(r.gr[op.r1].signed, r.gr[op.r2].signed);
+  final (sf, zf) = util.compare(r.gr[op.r1].signed, r.gr[op.r2].signed);
 
   r.sf = sf;
   r.zf = zf;
@@ -39,7 +39,7 @@ Future<void> compareLogical(final Resource r, Device _) async {
   final op = r.count();
   final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final (sf, zf) = compare(r.gr[op.r].unsigned, r.memory[adr].unsigned);
+  final (sf, zf) = util.compare(r.gr[op.r].unsigned, r.memory[adr].unsigned);
 
   r.sf = sf;
   r.zf = zf;
@@ -53,7 +53,7 @@ Future<void> compareLogical(final Resource r, Device _) async {
 Future<void> compareLogicalGR(final Resource r, Device _) async {
   final op = r.count();
 
-  final (sf, zf) = compare(r.gr[op.r1].unsigned, r.gr[op.r2].unsigned);
+  final (sf, zf) = util.compare(r.gr[op.r1].unsigned, r.gr[op.r2].unsigned);
 
   r.sf = sf;
   r.zf = zf;

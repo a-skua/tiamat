@@ -35,7 +35,7 @@ final class Comet2 {
 
   Iterable<Future<void> Function()> step() sync* {
     final sp = resource.sp;
-    resource.sp -= 1;
+    resource.push(resource.pr);
     while (sp != resource.sp) {
       final ins = instruction(resource.memory[resource.pr]);
       yield () => ins(resource, device);

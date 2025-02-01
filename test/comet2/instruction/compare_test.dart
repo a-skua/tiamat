@@ -67,7 +67,7 @@ TestCase _testCpa1() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      compareArithmetic(r, Device());
+      compare(r, Device());
 
       expect(r.pr, 0x3002);
       expect(r.of, equals(false));
@@ -90,7 +90,7 @@ TestCase _testCpa2() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      compareArithmetic(r, Device());
+      compare(r, Device());
 
       expect(r.pr, 0x3002);
       expect(r.of, equals(false));
@@ -113,7 +113,7 @@ TestCase _testCpa3() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      compareArithmetic(r, Device());
+      compare(r, Device());
 
       expect(r.pr, 0x3002);
       expect(r.of, equals(false));
@@ -134,7 +134,7 @@ TestCase _testCpaGR1() {
       r.gr[2] = 0x7fff;
       r.pr = 0x3000;
 
-      compareArithmeticGR(r, Device());
+      compareGR(r, Device());
 
       expect(r.pr, 0x3001);
       expect(r.of, equals(false));
@@ -155,7 +155,7 @@ TestCase _testCpaGR2() {
       r.gr[2] = -32768;
       r.pr = 0x3000;
 
-      compareArithmeticGR(r, Device());
+      compareGR(r, Device());
 
       expect(r.pr, 0x3001);
       expect(r.of, equals(false));
@@ -176,7 +176,7 @@ TestCase _testCpaGR3() {
       r.gr[2] = 0x8000;
       r.pr = 0x3000;
 
-      compareArithmeticGR(r, Device());
+      compareGR(r, Device());
 
       expect(r.pr, 0x3001);
       expect(r.of, equals(false));

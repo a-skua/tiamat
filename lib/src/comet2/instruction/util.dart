@@ -53,23 +53,9 @@ extension RealToAddress on Real {
   }
 }
 
-/// Interface.
-class Flagger {
-  const Flagger();
-
-  /// Get overflow flag.
-  int get overflow => 0;
-
-  /// Get sign flag.
-  int get sign => 0;
-
-  /// Get zero flag.
-  int get zero => 0;
-}
-
-/// Real to Arithmetic Flag.
-extension RealToArithmeticFlag on Real {
-  (OverflowFlag, SignFlag, ZeroFlag) get arithmeticFlag => (of, sf, zf);
+/// Real to Flag.
+extension RealToFlag on Real {
+  (OverflowFlag, SignFlag, ZeroFlag) get flag => (of, sf, zf);
   OverflowFlag get of => this < -0x8000 || this > 0x7fff;
   SignFlag get sf => signed < 0;
   ZeroFlag get zf => unsigned == 0;

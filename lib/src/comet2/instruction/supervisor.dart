@@ -1,7 +1,7 @@
-import '../resource/resource.dart';
 import '../../typedef/typedef.dart';
 import '../../charcode/charcode.dart';
-import 'util.dart';
+import '../resource/resource.dart';
+import './util.dart';
 
 /// An instruction of COMET2, named SVC.
 ///

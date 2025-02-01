@@ -1,5 +1,5 @@
 import '../resource/resource.dart';
-import 'util.dart';
+import './util.dart';
 
 /// An instruction of COMET2, named JMI.
 ///

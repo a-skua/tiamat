@@ -8,11 +8,11 @@ void main() {
   group('ADDA', () {
     group('r,adr,x', () {
       final tests = [
-        _testAddArithmetic1(),
-        _testAddArithmetic2(),
-        _testAddArithmetic3(),
-        _testAddArithmetic4(),
-        _testAddArithmetic5(),
+        _testAdd1(),
+        _testAdd2(),
+        _testAdd3(),
+        _testAdd4(),
+        _testAdd5(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -21,11 +21,11 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _testAddArithmeticGR1(),
-        _testAddArithmeticGR2(),
-        _testAddArithmeticGR3(),
-        _testAddArithmeticGR4(),
-        _testAddArithmeticGR5(),
+        _testAddGR1(),
+        _testAddGR2(),
+        _testAddGR3(),
+        _testAddGR4(),
+        _testAddGR5(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -62,11 +62,11 @@ void main() {
   group('SUBA', () {
     group('r,adr,x', () {
       final tests = [
-        _testSubArithmetic1(),
-        _testSubArithmetic2(),
-        _testSubArithmetic3(),
-        _testSubArithmetic4(),
-        _testSubArithmetic5(),
+        _testSub1(),
+        _testSub2(),
+        _testSub3(),
+        _testSub4(),
+        _testSub5(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -75,11 +75,11 @@ void main() {
 
     group('r1,r2', () {
       final tests = [
-        _testSubArithmeticGR1(),
-        _testSubArithmeticGR2(),
-        _testSubArithmeticGR3(),
-        _testSubArithmeticGR4(),
-        _testSubArithmeticGR5(),
+        _testSubGR1(),
+        _testSubGR2(),
+        _testSubGR3(),
+        _testSubGR4(),
+        _testSubGR5(),
       ];
       for (final (description, body) in tests) {
         test(description, body);
@@ -112,7 +112,7 @@ void main() {
   });
 }
 
-TestCase _testAddArithmetic1() {
+TestCase _testAdd1() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = -1, GR2 = #0001, RAM[#8001] = 2 (-1 + 2 = 1)',
     () {
@@ -125,7 +125,7 @@ TestCase _testAddArithmetic1() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      addArithmetic(r, Device());
+      add(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(1));
@@ -136,7 +136,7 @@ TestCase _testAddArithmetic1() {
   );
 }
 
-TestCase _testAddArithmetic2() {
+TestCase _testAdd2() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = -1, GR2 = #0001, RAM[#8001] = -1 (-1 + -1 = -2)',
     () {
@@ -149,7 +149,7 @@ TestCase _testAddArithmetic2() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      addArithmetic(r, Device());
+      add(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(-2));
@@ -160,7 +160,7 @@ TestCase _testAddArithmetic2() {
   );
 }
 
-TestCase _testAddArithmetic3() {
+TestCase _testAdd3() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = -1, GR2 = #0001, RAM[#8001] = 1 (-1 + 1 = 0)',
     () {
@@ -173,7 +173,7 @@ TestCase _testAddArithmetic3() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      addArithmetic(r, Device());
+      add(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(0));
@@ -184,7 +184,7 @@ TestCase _testAddArithmetic3() {
   );
 }
 
-TestCase _testAddArithmetic4() {
+TestCase _testAdd4() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = #7FFF, GR2 = #0001, RAM[#8001] = 1 (0x7fff + 1 = 0x8000)',
     () {
@@ -197,7 +197,7 @@ TestCase _testAddArithmetic4() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      addArithmetic(r, Device());
+      add(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(0x8000));
@@ -210,7 +210,7 @@ TestCase _testAddArithmetic4() {
   );
 }
 
-TestCase _testAddArithmetic5() {
+TestCase _testAdd5() {
   return (
     'ADDA GR1,#8000,GR2 ; GR1 = #8000, GR2 = #0001, RAM[#8001] = #FFFF (0x8000 + 0xfffff = 0x7fff)',
     () {
@@ -223,7 +223,7 @@ TestCase _testAddArithmetic5() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      addArithmetic(r, Device());
+      add(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(-32769));
@@ -236,7 +236,7 @@ TestCase _testAddArithmetic5() {
   );
 }
 
-TestCase _testAddArithmeticGR1() {
+TestCase _testAddGR1() {
   return (
     'ADDA GR1,GR2 ; GR1 = -1, GR2 = 2 (-1 + 2 = 1)',
     () {
@@ -247,7 +247,7 @@ TestCase _testAddArithmeticGR1() {
       r.gr[2] = 2;
       r.pr = 0x3000;
 
-      addArithmeticGR(r, Device());
+      addGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(1));
@@ -258,7 +258,7 @@ TestCase _testAddArithmeticGR1() {
   );
 }
 
-TestCase _testAddArithmeticGR2() {
+TestCase _testAddGR2() {
   return (
     'ADDA GR1,GR2 ; GR1 = -1, GR2 = -1 (-1 + -1 = -2)',
     () {
@@ -269,7 +269,7 @@ TestCase _testAddArithmeticGR2() {
       r.gr[2] = -1;
       r.pr = 0x3000;
 
-      addArithmeticGR(r, Device());
+      addGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(-2));
@@ -280,7 +280,7 @@ TestCase _testAddArithmeticGR2() {
   );
 }
 
-TestCase _testAddArithmeticGR3() {
+TestCase _testAddGR3() {
   return (
     'ADDA GR1,GR2 ; GR1 = -1, GR2 = 1 (-1 + 1 = 0)',
     () {
@@ -291,7 +291,7 @@ TestCase _testAddArithmeticGR3() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      addArithmeticGR(r, Device());
+      addGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(0));
@@ -302,7 +302,7 @@ TestCase _testAddArithmeticGR3() {
   );
 }
 
-TestCase _testAddArithmeticGR4() {
+TestCase _testAddGR4() {
   return (
     'ADDA GR1,GR2 ; GR1 = #7FFF, GR2 = 1 (0x7fff + 1 = 0x8000)',
     () {
@@ -313,7 +313,7 @@ TestCase _testAddArithmeticGR4() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      addArithmeticGR(r, Device());
+      addGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(0x8000));
@@ -326,7 +326,7 @@ TestCase _testAddArithmeticGR4() {
   );
 }
 
-TestCase _testAddArithmeticGR5() {
+TestCase _testAddGR5() {
   return (
     'ADDA GR1,GR2 ; GR1 = #8000, GR2 = #FFFF (0x8000 + 0xfffff = 0x7fff)',
     () {
@@ -337,7 +337,7 @@ TestCase _testAddArithmeticGR5() {
       r.gr[2] = 0xffff;
       r.pr = 0x3000;
 
-      addArithmeticGR(r, Device());
+      addGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(-32769));
@@ -550,7 +550,7 @@ TestCase _testAddLogicalGR4() {
   );
 }
 
-TestCase _testSubArithmetic1() {
+TestCase _testSub1() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = 2, GR2 = #0001, RAM[#8001] = 1 (2 - 1 = 1)',
     () {
@@ -563,7 +563,7 @@ TestCase _testSubArithmetic1() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      subtractArithmetic(r, Device());
+      subtract(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(1));
@@ -574,7 +574,7 @@ TestCase _testSubArithmetic1() {
   );
 }
 
-TestCase _testSubArithmetic2() {
+TestCase _testSub2() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = 1, GR2 = #0001, RAM[#8001] = 2 (1 - 2 = -1)',
     () {
@@ -587,7 +587,7 @@ TestCase _testSubArithmetic2() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      subtractArithmetic(r, Device());
+      subtract(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(-1));
@@ -598,7 +598,7 @@ TestCase _testSubArithmetic2() {
   );
 }
 
-TestCase _testSubArithmetic3() {
+TestCase _testSub3() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = 1, GR2 = #0001, RAM[#8001] = 1 (1 - 1 = 0)',
     () {
@@ -611,7 +611,7 @@ TestCase _testSubArithmetic3() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      subtractArithmetic(r, Device());
+      subtract(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(0));
@@ -622,7 +622,7 @@ TestCase _testSubArithmetic3() {
   );
 }
 
-TestCase _testSubArithmetic4() {
+TestCase _testSub4() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = #7FFF, GR2 = #0001, RAM[#8001] = -1 (0x7fff - (-1) = 0x8000)',
     () {
@@ -635,7 +635,7 @@ TestCase _testSubArithmetic4() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      subtractArithmetic(r, Device());
+      subtract(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(32768));
@@ -648,7 +648,7 @@ TestCase _testSubArithmetic4() {
   );
 }
 
-TestCase _testSubArithmetic5() {
+TestCase _testSub5() {
   return (
     'SUBA, GR1,#8000,GR2 ; GR1 = #8000, GR2 = #0001, RAM[#8001] = #7FFF (0x8000 - 0x7fff = 0x10000)',
     () {
@@ -661,7 +661,7 @@ TestCase _testSubArithmetic5() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      subtractArithmetic(r, Device());
+      subtract(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(-65535));
@@ -674,7 +674,7 @@ TestCase _testSubArithmetic5() {
   );
 }
 
-TestCase _testSubArithmeticGR1() {
+TestCase _testSubGR1() {
   return (
     'SUBA, GR1,GR2 ; GR1 = 2, GR2 = 1 (2 - 1 = 1)',
     () {
@@ -685,7 +685,7 @@ TestCase _testSubArithmeticGR1() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      subtractArithmeticGR(r, Device());
+      subtractGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(1));
@@ -696,7 +696,7 @@ TestCase _testSubArithmeticGR1() {
   );
 }
 
-TestCase _testSubArithmeticGR2() {
+TestCase _testSubGR2() {
   return (
     'SUBA, GR1,GR2 ; GR1 = 1, GR2 = 2 (1 - 2 = -1)',
     () {
@@ -707,7 +707,7 @@ TestCase _testSubArithmeticGR2() {
       r.gr[2] = 2;
       r.pr = 0x3000;
 
-      subtractArithmeticGR(r, Device());
+      subtractGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(-1));
@@ -718,7 +718,7 @@ TestCase _testSubArithmeticGR2() {
   );
 }
 
-TestCase _testSubArithmeticGR3() {
+TestCase _testSubGR3() {
   return (
     'SUBA, GR1,GR2 ; GR1 = 1, GR2 = 1 (1 - 1 = 0)',
     () {
@@ -729,7 +729,7 @@ TestCase _testSubArithmeticGR3() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      subtractArithmeticGR(r, Device());
+      subtractGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(0));
@@ -740,7 +740,7 @@ TestCase _testSubArithmeticGR3() {
   );
 }
 
-TestCase _testSubArithmeticGR4() {
+TestCase _testSubGR4() {
   return (
     'SUBA, GR1,GR2 ; GR1 = #7FFF, GR2 = -1 (0x7fff - (-1) = 0x8000)',
     () {
@@ -751,7 +751,7 @@ TestCase _testSubArithmeticGR4() {
       r.gr[2] = -1;
       r.pr = 0x3000;
 
-      subtractArithmeticGR(r, Device());
+      subtractGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(32768));
@@ -764,7 +764,7 @@ TestCase _testSubArithmeticGR4() {
   );
 }
 
-TestCase _testSubArithmeticGR5() {
+TestCase _testSubGR5() {
   return (
     'SUBA, GR1,GR2 ; GR1 = #8000, GR2 = #7FFF (0x8000 - 0x7fff = 0x10000)',
     () {
@@ -775,7 +775,7 @@ TestCase _testSubArithmeticGR5() {
       r.gr[2] = 0x7fff;
       r.pr = 0x3000;
 
-      subtractArithmeticGR(r, Device());
+      subtractGR(r, Device());
 
       expect(r.pr, equals(0x3001));
       expect(r.gr[1], equals(-65535));

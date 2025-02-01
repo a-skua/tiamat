@@ -1,17 +1,17 @@
 import '../resource/resource.dart';
-import 'util.dart';
+import './util.dart' as util;
 
 /// An instruction of COMET2, named SLA.
 ///
 /// That's two words instruction,
 /// register shift left(arithmetic) effective address.
 /// Syntax: SLA r,adr,x
-Future<void> shiftLeftArithmetic(final Resource r, Device _) async {
+Future<void> shiftLeft(final Resource r, Device _) async {
   final op = r.count();
   final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final (result, of) = shiftLeft(r.gr[op.r].signed, adr);
-  final (_, sf, zf) = result.arithmeticFlag;
+  final (result, of) = util.shiftLeft(r.gr[op.r].signed, adr);
+  final (_, sf, zf) = result.flag;
 
   r.gr[op.r] = result.unsigned;
   r.of = of;
@@ -24,12 +24,12 @@ Future<void> shiftLeftArithmetic(final Resource r, Device _) async {
 /// That's two words instruction,
 /// register shift right(arithmetic) effective address.
 /// Syntax: SRA r,adr,x
-Future<void> shiftRightArithmetic(final Resource r, Device _) async {
+Future<void> shiftRight(final Resource r, Device _) async {
   final op = r.count();
   final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final (result, of) = shiftRight(r.gr[op.r].signed, adr);
-  final (_, sf, zf) = result.arithmeticFlag;
+  final (result, of) = util.shiftRight(r.gr[op.r].signed, adr);
+  final (_, sf, zf) = result.flag;
 
   r.gr[op.r] = result.unsigned;
   r.of = of;
@@ -46,7 +46,7 @@ Future<void> shiftLeftLogical(final Resource r, Device _) async {
   final op = r.count();
   final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final (result, of) = shiftLeft(r.gr[op.r].unsigned, adr);
+  final (result, of) = util.shiftLeft(r.gr[op.r].unsigned, adr);
   final (_, sf, zf) = result.logicalFlag;
 
   r.gr[op.r] = result.unsigned;
@@ -64,7 +64,7 @@ Future<void> shiftRightLogical(final Resource r, Device _) async {
   final op = r.count();
   final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final (result, of) = shiftRight(r.gr[op.r].unsigned, adr);
+  final (result, of) = util.shiftRight(r.gr[op.r].unsigned, adr);
   final (_, sf, zf) = result.logicalFlag;
 
   r.gr[op.r] = result.unsigned;

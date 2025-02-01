@@ -70,7 +70,7 @@ TestCase _testSla1() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      shiftLeftArithmetic(r, Device());
+      shiftLeft(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(0xfff0));
@@ -93,7 +93,7 @@ TestCase _testSla2() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      shiftLeftArithmetic(r, Device());
+      shiftLeft(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(0xfff0));
@@ -116,7 +116,7 @@ TestCase _testSla3() {
       r.gr[2] = 0x0001;
       r.pr = 0x3000;
 
-      shiftLeftArithmetic(r, Device());
+      shiftLeft(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(0));
@@ -139,7 +139,7 @@ TestCase _testSra1() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      shiftRightArithmetic(r, Device());
+      shiftRight(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(0xf8ff));
@@ -162,7 +162,7 @@ TestCase _testSra2() {
       r.gr[2] = 1;
       r.pr = 0x3000;
 
-      shiftRightArithmetic(r, Device());
+      shiftRight(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(0xff));
@@ -185,7 +185,7 @@ TestCase _testSra3() {
       r.gr[2] = 0x0001;
       r.pr = 0x3000;
 
-      shiftRightArithmetic(r, Device());
+      shiftRight(r, Device());
 
       expect(r.pr, equals(0x3002));
       expect(r.gr[1], equals(0));

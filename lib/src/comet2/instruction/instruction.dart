@@ -9,7 +9,7 @@ import './stack.dart';
 import './subroutine.dart';
 import './supervisor.dart';
 import './no_operation.dart';
-import './util.dart';
+import './util.dart' as util;
 
 typedef Instruction = Future<void> Function(Resource r, Device d);
 
@@ -19,12 +19,12 @@ Instruction instruction(final int op) {
     (0x1, 0x1) => store,
     (0x1, 0x2) => loadAddress,
     (0x1, 0x4) => loadGR,
-    (0x2, 0x0) => addArithmetic,
-    (0x2, 0x1) => subtractArithmetic,
+    (0x2, 0x0) => add,
+    (0x2, 0x1) => subtract,
     (0x2, 0x2) => addLogical,
     (0x2, 0x3) => subtractLogical,
-    (0x2, 0x4) => addArithmeticGR,
-    (0x2, 0x5) => subtractArithmeticGR,
+    (0x2, 0x4) => addGR,
+    (0x2, 0x5) => subtractGR,
     (0x2, 0x6) => addLogicalGR,
     (0x2, 0x7) => subtractLogicalGR,
     (0x3, 0x0) => and,
@@ -33,12 +33,12 @@ Instruction instruction(final int op) {
     (0x3, 0x4) => andGR,
     (0x3, 0x5) => orGR,
     (0x3, 0x6) => exclusiveOrGR,
-    (0x4, 0x0) => compareArithmetic,
+    (0x4, 0x0) => compare,
     (0x4, 0x1) => compareLogical,
-    (0x4, 0x4) => compareArithmeticGR,
+    (0x4, 0x4) => compareGR,
     (0x4, 0x5) => compareLogicalGR,
-    (0x5, 0x0) => shiftLeftArithmetic,
-    (0x5, 0x1) => shiftRightArithmetic,
+    (0x5, 0x0) => shiftLeft,
+    (0x5, 0x1) => shiftRight,
     (0x5, 0x2) => shiftLeftLogical,
     (0x5, 0x3) => shiftRightLogical,
     (0x6, 0x1) => jumpOnMinus,
