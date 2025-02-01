@@ -79,7 +79,7 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
         'STATEMENT(OPECODE(POP),OPERAND(GR(GR1))),'
         'STATEMENT(OPECODE(RET))'
         ')))',
-    'Err(L35: [SYNTAX ERROR] Invalid String: \'hello,world)',
+    'Err(L35: [SYNTAX ERROR] Unexpected Token: UNEXPECTED(\'hello,world))',
     'Ok(())',
   ];
 

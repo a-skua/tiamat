@@ -43,7 +43,7 @@ abstract class Casl2Error {
   int get hashCode => message.hashCode;
 }
 
-/// CASL2 instance.
+// CASL2 instance.
 final class Casl2 {
   final Parser _parser;
   final Compiler _compiler;
@@ -82,7 +82,7 @@ final class Casl2 {
     final flatWords = <Word>[];
     final blockWords = <Words>[];
     final refs = <Label, Word>{};
-    for (final stmt in result.ok) {
+    for (final stmt in result.unwrap) {
       final result = _compiler.compile(stmt).map((block) {
         final label = block.label;
         if (label != null) refs[label.$1] = label.$2;

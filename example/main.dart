@@ -49,9 +49,10 @@ MAIN    START
 
   final (words, labels) = switch (casl2.build()) {
     Ok<(List<Real>, Map<String, Address>), dynamic> ok => ok.unwrap,
-    Err<dynamic, List<Casl2Error>> err => throw Exception(err.unwrap),
+    Err err => throw Exception(err.err),
   };
 
+  print('run:');
   final comet2 = Comet2(words);
 
   final start = labels['MAIN'] ?? 0;
@@ -65,46 +66,39 @@ void syntaxHighlight(final String asm) {
   const green = 120;
   const red = 196;
   const gray = 240;
+  const purple = 92;
+
+  String colorString(String str, int color) {
+    return '\u001b[38;5;${color}m$str';
+  }
 
   final lexer = Lexer(asm.runes);
 
   var str = '';
-  while (true) {
-    final result = lexer.nextToken();
-    if (result.isErr) {
-      print(result);
-      break;
-    }
-    final token = result.ok;
-    if (token == tokenEOF) {
-      break;
-    }
-
+  for (final token in lexer.tokenize()) {
     switch (token.type) {
       case Type.label:
-        str += '\u001b[38;5;${yellow}m${token.string}';
+      case Type.ref:
+        str += colorString(token.string, yellow);
         break;
       case Type.hex:
       case Type.dec:
-        str += '\u001b[38;5;92m${token.string}';
-        break;
-      case Type.ref:
-        str += '\u001b[38;5;${yellow}m${token.string}';
+        str += colorString(token.string, purple);
         break;
       case Type.gr:
-        str += '\u001b[38;5;${orange}m${token.string}';
+        str += colorString(token.string, orange);
         break;
       case Type.text:
-        str += '\u001b[38;5;${green}m${token.string}';
+        str += colorString(token.string, green);
         break;
       case Type.unexpected:
-        str += '\u001b[38;5;${red}m${token.string}';
+        str += colorString(token.string, red);
         break;
       case Type.comment:
-        str += '\u001b[38;5;${gray}m${token.string}';
+        str += colorString(token.string, gray);
         break;
       default:
-        str += '\u001b[38;5;${white}m${token.string}';
+        str += colorString(token.string, white);
     }
   }
   print(str);
