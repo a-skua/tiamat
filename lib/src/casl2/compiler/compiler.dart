@@ -1,8 +1,8 @@
 import '../../typedef/typedef.dart';
+import '../../charcode/charcode.dart' show RuneToReal;
 import '../parser/parser.dart' show Subroutine, Statement, Macro;
 import '../lexer/lexer.dart' show Token;
 import '../casl2.dart' show Casl2Error;
-import '../charcode.dart' show RuneToReal;
 import '../word.dart';
 import './macro.dart';
 import './const.dart';

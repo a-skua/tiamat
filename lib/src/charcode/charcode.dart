@@ -1,4 +1,7 @@
-import './word.dart';
+import '../casl2/word.dart';
+
+/// Dart [Rune]
+typedef Rune = int;
 
 /// JIS X 0201 0x20-0x7E
 const latin = ''
@@ -17,6 +20,8 @@ const kana = '｡｢｣､･ｦｧｨｩｪｫｬｭｮｯ'
 
 final _runes = latin.runes.toList()..addAll(kana.runes);
 
+final _space = _runes.first;
+
 /// JIS X 0201 0x21-0x7E, 0xA1-0xDF
 final _jis = List.generate(latin.runes.length, (i) => 0x20 + i)
   ..addAll(List.generate(kana.runes.length, (i) => 0xa1 + i));
@@ -31,7 +36,7 @@ extension RuneToReal on Rune {
 
 /// [Real] to [Rune]
 extension RealToRune on Real {
-  Rune get rune => _jis2rune[this] ?? ' '.runes.first;
+  Rune get rune => _jis2rune[this] ?? _space;
 }
 
 /// [String] to [List<Real>]

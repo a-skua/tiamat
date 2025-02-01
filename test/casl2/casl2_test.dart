@@ -1,5 +1,5 @@
 import 'package:tiamat/casl2.dart';
-import 'package:tiamat/src/casl2/charcode.dart' show RuneToReal;
+import 'package:tiamat/src/charcode/charcode.dart' show RuneToReal;
 import 'package:tiamat/typedef.dart';
 import 'package:test/test.dart';
 

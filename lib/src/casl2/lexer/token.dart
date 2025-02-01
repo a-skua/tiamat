@@ -1,4 +1,4 @@
-import '../word.dart' show Rune;
+typedef Rune = int;
 
 /// Type of [Token]
 enum Type {

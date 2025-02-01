@@ -2,10 +2,7 @@ import '../typedef/result.dart';
 import './lexer/token.dart' show Token;
 import './compiler/compiler.dart' show CompileError;
 
-/// Dart [Rune]
-typedef Rune = int;
-
-/// [Real] [Word]
+/// [Real] [Word] of COMET2
 typedef Real = int;
 
 /// [Address] [Real] Word
