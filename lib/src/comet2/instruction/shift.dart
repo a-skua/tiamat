@@ -7,17 +7,16 @@ import 'util.dart';
 /// register shift left(arithmetic) effective address.
 /// Syntax: SLA r,adr,x
 Future<void> shiftLeftArithmetic(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
-
-  final result = r.gr[op.r].signed << adr;
-  final f = ShiftLeftArithmeticFlagger(result);
+  final (result, of) = shiftLeft(r.gr[op.r].signed, adr);
+  final (_, sf, zf) = result.arithmeticFlag;
 
   r.gr[op.r] = result.unsigned;
-  r.fr = f.overflow | f.sign | f.zero;
+  r.of = of;
+  r.sf = sf;
+  r.zf = zf;
 }
 
 /// An instruction of COMET2, named SRA.
@@ -26,17 +25,16 @@ Future<void> shiftLeftArithmetic(final Resource r, Device _) async {
 /// register shift right(arithmetic) effective address.
 /// Syntax: SRA r,adr,x
 Future<void> shiftRightArithmetic(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final (result, of) = shiftRight(r.gr[op.r].signed, adr);
+  final (_, sf, zf) = result.arithmeticFlag;
 
-  final f = ShiftRightArithmeticFlagger(r.gr[op.r].signed, adr);
-
-  final result = r.gr[op.r].signed >> adr;
   r.gr[op.r] = result.unsigned;
-  r.fr = f.overflow | f.sign | f.zero;
+  r.of = of;
+  r.sf = sf;
+  r.zf = zf;
 }
 
 /// An instruction of COMET2, named SLL.
@@ -45,17 +43,16 @@ Future<void> shiftRightArithmetic(final Resource r, Device _) async {
 /// register shift left(logical) effective address.
 /// Syntax: SLL r,adr,x
 Future<void> shiftLeftLogical(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
-
-  final result = r.gr[op.r].unsigned << adr;
-  final f = ShiftLeftLogicalFlagger(result);
+  final (result, of) = shiftLeft(r.gr[op.r].unsigned, adr);
+  final (_, sf, zf) = result.logicalFlag;
 
   r.gr[op.r] = result.unsigned;
-  r.fr = f.overflow | f.sign | f.zero;
+  r.of = of;
+  r.sf = sf;
+  r.zf = zf;
 }
 
 /// An instruction of COMET2, named SRL.
@@ -64,14 +61,14 @@ Future<void> shiftLeftLogical(final Resource r, Device _) async {
 /// register shift right(logical) effective address.
 /// Syntax: SRL r,adr,x
 Future<void> shiftRightLogical(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final (result, of) = shiftRight(r.gr[op.r].unsigned, adr);
+  final (_, sf, zf) = result.logicalFlag;
 
-  final f = ShiftRightLogicalFlagger(r.gr[op.r].unsigned, adr);
-
-  r.gr[op.r] = r.gr[op.r].unsigned >> adr;
-  r.fr = f.overflow | f.sign | f.zero;
+  r.gr[op.r] = result.unsigned;
+  r.of = of;
+  r.sf = sf;
+  r.zf = zf;
 }

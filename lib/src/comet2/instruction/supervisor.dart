@@ -9,11 +9,8 @@ import 'util.dart';
 /// call supsvcervisor function.
 /// Syntax: SVC adr,x
 Future<void> supervisorCall(final Resource r, Device d) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
-
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
   return switch (adr) {
     1 => _read(r, d),

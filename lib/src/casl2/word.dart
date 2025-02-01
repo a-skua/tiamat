@@ -1,12 +1,7 @@
 import '../typedef/result.dart';
+import '../comet2/comet2.dart' show Real, Address;
 import './lexer/token.dart' show Token;
 import './compiler/compiler.dart' show CompileError;
-
-/// [Real] [Word] of COMET2
-typedef Real = int;
-
-/// [Address] [Real] Word
-typedef Address = int;
 
 typedef Label = String;
 typedef Resolve = Address? Function(Label label);

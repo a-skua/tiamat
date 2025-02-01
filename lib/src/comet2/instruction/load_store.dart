@@ -7,17 +7,15 @@ import 'util.dart';
 /// load effective address to register.
 /// Syntax: LD r,adr,x
 Future<void> load(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
-
-  final result = r.memory[adr];
-  final f = ArithmeticFlagger(result);
+  final result = r.memory[adr].unsigned;
+  final (_, sf, zf) = result.logicalFlag;
 
   r.gr[op.r] = result;
-  r.fr = f.sign | f.zero;
+  r.sf = sf;
+  r.zf = zf;
 }
 
 /// An instruction of COMET2, named LD.
@@ -26,14 +24,14 @@ Future<void> load(final Resource r, Device _) async {
 /// load 2nd register to 1st register.
 /// Syntax: LD r1,r2
 Future<void> loadGR(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
 
-  final result = r.gr[op.r2];
-  final f = ArithmeticFlagger(result);
+  final result = r.gr[op.r2].unsigned;
+  final (_, sf, zf) = result.logicalFlag;
 
   r.gr[op.r1] = result;
-  r.fr = f.sign | f.zero;
+  r.sf = sf;
+  r.zf = zf;
 }
 
 /// An instruction of COMET2, named ST.
@@ -42,13 +40,10 @@ Future<void> loadGR(final Resource r, Device _) async {
 /// store register to effective address.
 /// Syntax: ST r,adr,x
 Future<void> store(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
-
-  r.memory[adr] = r.gr[op.r];
+  r.memory[adr] = r.gr[op.r].unsigned;
 }
 
 /// An instruction of COMET2, named LAD.
@@ -57,11 +52,8 @@ Future<void> store(final Resource r, Device _) async {
 /// load effective address(not value) to register.
 /// Syntax: LAD r,adr,x
 Future<void> loadAddress(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
-
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
   r.gr[op.r] = adr;
 }

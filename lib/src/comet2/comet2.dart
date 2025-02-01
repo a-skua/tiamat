@@ -1,9 +1,14 @@
 import 'dart:async';
-import '../casl2/casl2.dart' show Real, Address;
 import './instruction/instruction.dart';
 import './resource/resource.dart';
 
 export './resource/resource.dart';
+
+/// [Real] Word of COMET2
+typedef Real = int;
+
+/// Memory [Address] of COMET2
+typedef Address = Real;
 
 /// Comet2's [Status]
 enum Status {

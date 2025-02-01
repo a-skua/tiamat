@@ -6,5 +6,5 @@ import '../resource/resource.dart';
 /// do nothing.
 /// Syntax: NOP
 Future<void> noOperation(final Resource r, Device _) async {
-  r.pr += 1;
+  r.count();
 }

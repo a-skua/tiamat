@@ -1,5 +1,5 @@
 import '../../typedef/typedef.dart';
-import '../../casl2/casl2.dart' show Real;
+import '../comet2.dart' show Real;
 import './device.dart' as device;
 
 /// Flag position bits.
@@ -8,6 +8,10 @@ final class Flag {
   static const sign = 0x0002;
   static const overflow = 0x0004;
 }
+
+typedef OverflowFlag = bool;
+typedef SignFlag = bool;
+typedef ZeroFlag = bool;
 
 typedef GR = int;
 
@@ -25,9 +29,13 @@ final class Resource {
   /// General Register
   final List<GR> gr = List.filled(8, 0, growable: false);
 
-  /// Program Counter
+  /// Stack Pointer
   Real sp = 0xffff;
+
+  /// Program Counter
   Real pr = 0;
+
+  /// Flag Register
   Real fr = 0;
 
   Resource();
@@ -57,6 +65,23 @@ final class Resource {
     } else {
       fr &= Flag.overflow ^ 0xffff;
     }
+  }
+
+  Real count() {
+    final real = memory[pr.unsigned];
+    pr += 1;
+    return real;
+  }
+
+  void push(final Real real) {
+    sp -= 1;
+    memory[sp.unsigned] = real;
+  }
+
+  Real pop() {
+    final real = memory[sp.unsigned];
+    sp += 1;
+    return real;
   }
 
   @override

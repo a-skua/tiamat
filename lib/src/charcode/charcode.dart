@@ -1,4 +1,4 @@
-import '../casl2/word.dart';
+import '../comet2/comet2.dart' show Real;
 
 /// Dart [Rune]
 typedef Rune = int;

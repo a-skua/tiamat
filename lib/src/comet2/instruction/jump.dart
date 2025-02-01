@@ -7,11 +7,8 @@ import 'util.dart';
 /// jump to effective address when sign flag is on.
 /// Syntax: JMI adr,x
 Future<void> jumpOnMinus(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
-
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
   if (r.sf) {
     r.pr = adr;
@@ -24,11 +21,8 @@ Future<void> jumpOnMinus(final Resource r, Device _) async {
 /// jump to effective address when zero flag is off.
 /// Syntax: JNZ adr,x
 Future<void> jumpOnNonZero(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
-
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
   if (!r.zf) {
     r.pr = adr;
@@ -41,11 +35,8 @@ Future<void> jumpOnNonZero(final Resource r, Device _) async {
 /// jump to effective address when zero flag is on.
 /// Syntax: JZE adr,x
 Future<void> jumpOnZero(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
-
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
   if (r.zf) {
     r.pr = adr;
@@ -58,11 +49,8 @@ Future<void> jumpOnZero(final Resource r, Device _) async {
 /// jump to effective address.
 /// Syntax: JUMP adr,x
 Future<void> unconditionalJump(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
-
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
   r.pr = adr;
 }
@@ -73,11 +61,8 @@ Future<void> unconditionalJump(final Resource r, Device _) async {
 /// jump to effective address when sign flag and zero flag are off.
 /// Syntax: JPL adr,x
 Future<void> jumpOnPlus(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
-
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
   if (!r.sf && !r.zf) {
     r.pr = adr;
@@ -90,11 +75,8 @@ Future<void> jumpOnPlus(final Resource r, Device _) async {
 /// jump to effective address when overflow flag is on.
 /// Syntax: JOV adr,x
 Future<void> jumpOnOverflow(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
-
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
   if (r.of) {
     r.pr = adr;

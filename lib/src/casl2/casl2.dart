@@ -1,4 +1,5 @@
 import '../typedef/typedef.dart';
+import '../comet2/comet2.dart' show Address, Real;
 import './lexer/lexer.dart';
 import './parser/parser.dart';
 import './compiler/compiler.dart';

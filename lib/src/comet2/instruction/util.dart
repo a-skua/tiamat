@@ -1,35 +1,56 @@
+import '../comet2.dart' show Real, Address;
 import '../resource/resource.dart';
 
-/// Calculate an effective address.
-int getEffectiveAddress(final Resource r, final int x) {
-  return x == 0
-      ? r.memory[r.pr.unsigned].unsigned
-      : (r.memory[r.pr.unsigned].unsigned + r.gr[x].unsigned);
+/// Real to Operand.
+///
+/// ## Bit Layout
+/// |F  C|B  8|7  4|3  0|
+/// | opecode | operand |
+/// |    -    |r/r1|x/r2|
+///
+/// ## e.g.
+/// ```
+/// final (r1, r2) = 0x0012.operand; // (1, 2)
+/// ```
+extension RealToOperand on Real {
+  (Real, Real) get operand => (r1, r2);
+  Real get r1 => (this & 0x00f0) >> 4;
+  Real get r2 => this & 0x000f;
+  Real get r => r1;
+  Real get x => r2;
 }
 
-/// Parse instruction word
+/// Real to Opecode.
 ///
+/// ## Bit Layout
 /// |F  C|B  8|7  4|3  0|
-/// | operand |r/r1|x/r2|
-/// |main|sub |    |    |
-class Operand {
-  final int _value;
-  const Operand(this._value);
+/// | opecode | operand |
+/// |main|sub |    -    |
+///
+/// ## e.g.
+/// ```
+/// final (main, sub) = 0x1200.opecode; // (1, 2)
+/// ```
+extension RealToOpecode on Real {
+  (Real, Real) get opecode => (maincode, subcode);
+  Real get maincode => (this & 0xf000) >> 12;
+  Real get subcode => (this & 0x0f00) >> 8;
+}
 
-  /// Get operand code.
-  int get code => (_value >> 8) & 0xff;
-
-  /// Get r.
-  int get r => (_value >> 4) & 0xf;
-
-  /// Get x.
-  int get x => _value & 0xf;
-
-  /// Get r1.
-  int get r1 => r;
-
-  /// Get r2.
-  int get r2 => x;
+/// Real to Address.
+///
+/// ## Bit Layout
+/// |F  C|B  8|7  4|3  0|
+/// |      address      |
+///
+/// ## e.g.
+/// ```
+/// final address = adr.effectiveAddress(r.gr, op.x)
+/// ```
+extension RealToAddress on Real {
+  Address effectiveAddress(final List<GR> gr, final Real x) {
+    return x == 0 ? unsigned : (unsigned + gr[x].unsigned);
+  }
 }
 
 /// Interface.
@@ -46,151 +67,38 @@ class Flagger {
   int get zero => 0;
 }
 
-/// Calculate a flag when arithmetic.
-///
-/// ```
-/// int getFlag(final int v) {
-///   final f = ArithmeticFlagger(v);
-///   return f.overflow | f.sign | f.zero;
-/// }
-/// ```
-class ArithmeticFlagger extends Flagger {
-  /// base value;
-  final int _value;
-
-  const ArithmeticFlagger(this._value);
-
-  @override
-  int get overflow => _value < -0x8000 || _value > 0x7fff ? Flag.overflow : 0;
-
-  @override
-  int get sign => _value & 0x8000 > 0 ? Flag.sign : 0;
-
-  @override
-  int get zero => _value.unsigned == 0 ? Flag.zero : 0;
+/// Real to Arithmetic Flag.
+extension RealToArithmeticFlag on Real {
+  (OverflowFlag, SignFlag, ZeroFlag) get arithmeticFlag => (of, sf, zf);
+  OverflowFlag get of => this < -0x8000 || this > 0x7fff;
+  SignFlag get sf => signed < 0;
+  ZeroFlag get zf => unsigned == 0;
 }
 
-/// Calculate a flag when logical.
-///
-/// ```
-/// int getFlag(int v) {
-///   final f = LogicalFlagger(v);
-///   return f.overflow | f.sign | f.zero;
-/// }
-/// ```
-class LogicalFlagger extends Flagger {
-  final int _value;
-  const LogicalFlagger(this._value);
-
-  @override
-  int get overflow => _value < 0 || _value > 0xffff ? Flag.overflow : 0;
-
-  @override
-  int get zero => _value.unsigned == 0 ? Flag.zero : 0;
-
-  @override
-  int get sign => _value & 0x8000 > 0 ? Flag.sign : 0;
+/// Real to Logical Flag.
+extension RealToLogicalFlag on Real {
+  (OverflowFlag, SignFlag, ZeroFlag) get logicalFlag => (of, sf, zf);
+  OverflowFlag get of => this < 0 || this > 0xffff;
+  SignFlag get sf => signed < 0;
+  ZeroFlag get zf => unsigned == 0;
 }
 
-/// Calculate a compared flag.
-///
-/// ```
-/// int getFlag(final int l, final int r) {
-///   final f = CompareFlagger(l, r);
-///   return f.sign | f.zero;
-/// }
-/// ```
-class CompareFlagger extends Flagger {
-  final int _left;
-  final int _right;
-
-  const CompareFlagger(this._left, this._right);
-
-  @override
-  int get sign => _left < _right ? Flag.sign : 0;
-
-  @override
-  int get zero => _left == _right ? Flag.zero : 0;
+(SignFlag, ZeroFlag) compare(final Real l, final Real r) {
+  return (l < r, l == r);
 }
 
-/// Calculate a shift left flag when arithmetic.
-///
-/// ```
-/// int getFlag(final int v) {
-///   final f = ShiftLeftArithmeticFlagger(v);
-///   return f.overflow | f.sign | f.zero;
-/// }
-/// ```
-class ShiftLeftArithmeticFlagger extends ArithmeticFlagger {
-  const ShiftLeftArithmeticFlagger(super.value);
-
-  @override
-  int get overflow => _value & 0x10000 > 0 ? Flag.overflow : 0;
+/// Shift Left
+(Real, OverflowFlag) shiftLeft(final Real v, final Real s) {
+  final result = v << s;
+  return (result, result & 0x10000 > 0);
 }
 
-/// Calculate a shift right flag when arithmetic.
-///
-/// ```
-/// int getFlag(final int v, final int s) {
-///   final f = ShiftRightArithmeticFlagger(v, s);
-///   return f.overflow | f.sign | f.zero;
-/// }
-/// ```
-class ShiftRightArithmeticFlagger extends ArithmeticFlagger {
-  final int _origin;
-  final int _shift;
-
-  const ShiftRightArithmeticFlagger(this._origin, this._shift)
-      : super(_origin >> _shift);
-
-  @override
-  int get overflow {
-    if (_shift <= 0) {
-      return 0;
-    }
-    final v = _origin >> (_shift - 1);
-
-    return v & 1 > 0 ? Flag.overflow : 0;
+/// Shift Right
+(Real, OverflowFlag) shiftRight(final Real v, final Real s) {
+  if (s == 0) {
+    return (v, false);
   }
-}
 
-/// Calculate a shift left flag when logical.
-///
-/// ```
-/// int getFlag(final int v) {
-///   final f = ShiftLeftLogicalFlagger(v);
-///   return f.overflow | f.sign | f.zero;
-/// }
-/// ```
-class ShiftLeftLogicalFlagger extends LogicalFlagger {
-  const ShiftLeftLogicalFlagger(super.value);
-
-  @override
-  int get overflow => _value & 0x10000 > 0 ? Flag.overflow : 0;
-}
-
-/// Calculate a shift right flag when logical.
-///
-/// ```
-/// int getFlag(final int v, final int s) {
-///   final f = ShiftRightLogicalFlagger(v, s);
-///   return f.overflow | f.sign | f.zero;
-/// }
-/// ```
-class ShiftRightLogicalFlagger extends LogicalFlagger {
-  final int _origin;
-  final int _shift;
-
-  const ShiftRightLogicalFlagger(this._origin, this._shift)
-      : super(_origin >> _shift);
-
-  @override
-  int get overflow {
-    if (_shift <= 0) {
-      return 0;
-    }
-    final v = _origin >> (_shift - 1);
-
-    return v & 1 > 0 ? Flag.overflow : 0;
-  }
+  final of = (v >> (s - 1)) & 1 > 0;
+  return (v >> s, of);
 }

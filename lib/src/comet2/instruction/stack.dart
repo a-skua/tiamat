@@ -7,14 +7,10 @@ import 'util.dart';
 /// push effective address to stack.
 /// Syntax: PUSH adr,x
 Future<void> push(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
-
-  r.sp -= 1;
-  r.memory[r.sp] = adr;
+  r.push(adr);
 }
 
 /// An instruction of COMET2, named POP.
@@ -23,9 +19,7 @@ Future<void> push(final Resource r, Device _) async {
 /// pop value on stack pointer to register.
 /// Syntax: POP r
 Future<void> pop(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
 
-  r.gr[op.r] = r.memory[r.sp.unsigned];
-  r.sp += 1;
+  r.gr[op.r] = r.pop();
 }

@@ -8,14 +8,10 @@ import 'util.dart';
 /// set effective address to program register.
 /// Syntax: CALL adr,x
 Future<void> callSubroutine(final Resource r, Device _) async {
-  final op = Operand(r.memory[r.pr.unsigned]);
-  r.pr += 1;
+  final op = r.count();
+  final adr = r.count().effectiveAddress(r.gr, op.x);
 
-  final adr = getEffectiveAddress(r, op.x);
-  r.pr += 1;
-
-  r.sp -= 1;
-  r.memory[r.sp.unsigned] = r.pr;
+  r.push(r.pr);
   r.pr = adr;
 }
 
@@ -25,6 +21,5 @@ Future<void> callSubroutine(final Resource r, Device _) async {
 /// pop on stack pointer to program register.
 /// Syntax: RET
 Future<void> returnFromSubroutine(final Resource r, Device _) async {
-  r.pr = r.memory[r.sp.unsigned];
-  r.sp += 1;
+  r.pr = r.pop();
 }
