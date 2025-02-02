@@ -3,12 +3,12 @@ import 'package:test/test.dart';
 
 void main() {
   group('Lexer', () {
-    test('nextToken()', testNextToken);
-    test('label error', testLabelError);
+    test('nextToken()', _testNextToken);
+    test('label error', _testLabelError);
   });
 }
 
-void testNextToken() {
+void _testNextToken() {
   final input = '''
 MAIN    START                   ; コメント
         CALL    COUNT1          ; COUNT1呼び出し
@@ -243,16 +243,18 @@ RETURN  LD      GR0,GR2         ; GR0 = Count
   ];
 
   final lexer = Lexer.fromString(input);
+  var i = 0;
   for (final expected in tests) {
     final actual = lexer.nextToken();
-    expect('$actual', equals('$expected'));
+    expect('$actual', equals('$expected'), reason: 'tests[$i]');
+    i += 1;
   }
 
   final eofToken = lexer.nextToken();
   expect(eofToken.isEof, equals(true));
 }
 
-void testLabelError() {
+void _testLabelError() {
   final input = '''
 MAIN    START                   ; コメント
         JUMP    GR1

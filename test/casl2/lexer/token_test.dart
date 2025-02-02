@@ -147,7 +147,7 @@ void _testTokenIsEol() {
 
 void _testTokenIsEof() {
   final tests = [
-    (Token.eof([]), true),
+    (Token.eof(), true),
     (Token.dec('127'.runes), false),
     (Token([], Type.eof), true),
     (Token('127'.runes, Type.dec), false),

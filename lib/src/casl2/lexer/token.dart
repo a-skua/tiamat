@@ -222,14 +222,13 @@ final class Token {
   }) =>
       Token._(runes, Type.eol, start, end, lineStart, lineNumber);
 
-  factory Token.eof(
-    Iterable<Rune> runes, {
+  factory Token.eof({
     int start = 0,
     int end = 0,
     int lineStart = 0,
     int lineNumber = 1,
   }) =>
-      Token._(runes, Type.eof, start, end, lineStart, lineNumber);
+      Token._([], Type.eof, start, end, lineStart, lineNumber);
 
   factory Token.separation(
     Iterable<Rune> runes, {

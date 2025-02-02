@@ -28,8 +28,8 @@ final class Comet2 {
     resource.memory.setAll(start, words);
   }
 
-  void init(Address start, [Real sp = 0xffff]) {
-    resource.pr = start;
+  void init(Address pr, [Real sp = 0xffff]) {
+    resource.pr = pr;
     resource.sp = sp;
   }
 
@@ -42,8 +42,8 @@ final class Comet2 {
     }
   }
 
-  Future<void> run(Address start) async {
-    init(start);
+  Future<void> run(Address pr) async {
+    init(pr);
     for (final ins in step()) {
       await ins();
     }
