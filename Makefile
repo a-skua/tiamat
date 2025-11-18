@@ -26,3 +26,6 @@ pub:
 .PHONY: analyze
 analyze:
 	dart analyze
+
+%.wasm: %.wat
+	wasm-tools parse $< -o $@
