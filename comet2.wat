@@ -1,7 +1,12 @@
 (module
+  (import "env" "call_supervisor" (func $call_supervisor (param (ref null extern))))
+  ;; Memories
   (memory $external i32 2)
   (memory $internal i32 1)
   (export "memory" (memory $external))
+  ;; Supervisor Function Table
+  (table $su i32 16 (ref null extern))
+  (export "supervisor" (table $su))
   ;; General Registers
   (global $GR0 (mut i32) (i32.const 0))
   (export "GR0" (global $GR0))
@@ -159,7 +164,7 @@
     ;; RET
     (i32.eqz (i32.xor (local.get $op) (i32.const 0x8100)))
     (if (then (return_call $RET)))
-    ;; SVC
+    ;; SVC adr,x
     (i32.eqz (i32.xor (local.get $op) (i32.const 0xf000)))
     (if (then (return_call $SVC)))
     ;; NOP
@@ -274,39 +279,113 @@
     unreachable
   )
   (func $PUSH
-    unreachable
+    (local $op i32)
+    (local $addr i32)
+    ;; Fetch operand
+    (local.set $op (call $load (global.get $PR)))
+    call $incr_pr
+    ;; Get target address
+    (local.set $addr (call $get_addr (local.get $op)))
+    call $incr_pr
+    ;; Push value onto stack
+    (call $store (global.get $SP) (local.get $addr))
+    call $decr_sp
   )
   (func $POP
-    unreachable
+    (local $op i32)
+    (local $val i32)
+    ;; Fetch operand
+    (local.set $op (call $load (global.get $PR)))
+    call $incr_pr
+    ;; Pop value from stack
+    (local.set $val (call $load (global.get $SP)))
+    call $incr_sp
+    ;; Set register
+    (call $set_r (local.get $op) (local.get $val))
   )
   (func $CALL
-    unreachable
+    (local $op i32)
+    (local $addr i32)
+    ;; Fetch operand
+    (local.set $op (call $load (global.get $PR)))
+    call $incr_pr
+    ;; Get target address
+    (local.set $addr (call $get_addr (local.get $op)))
+    call $incr_pr
+    ;; Push PR onto stack
+    (call $store (global.get $SP) (global.get $PR))
+    call $decr_sp
+    (global.set $PR (local.get $addr))
   )
   (func $RET
-    unreachable
+    (local $addr i32)
+    ;; Pop return address from stack
+    (local.set $addr (call $load (global.get $SP)))
+    call $incr_sp
+    ;; Set PR to return address
+    (global.set $PR (local.get $addr))
   )
   (func $SVC
-    unreachable
+    (local $op i32)
+    (local $addr i32)
+    ;; Fetch operand
+    (local.set $op (call $load (global.get $PR)))
+    call $incr_pr
+    ;; Get target address
+    (local.set $addr (call $get_addr (local.get $op)))
+    call $incr_pr
+    (call $call_supervisor (table.get $su (local.get $addr)))
   )
   (func $NOP
     return_call $incr_pr
   )
   (func $load (param $addr i32) (result i32)
-    (i32.load16_u $external (i32.mul (local.get $addr) (i32.const 2)))
+    (i32.load16_u $external
+      (i32.mul (local.get $addr) (i32.const 2))
+    )
+  )
+  (func $store (param $addr i32) (param $val i32)
+    (i32.store16 $external
+      (i32.mul (local.get $addr) (i32.const 2))
+      (local.get $val)
+    )
   )
   (func $incr_pr
-    (i32.add (global.get $PR) (i32.const 1))
-    (global.set $PR)
-  )
-  (func $load_addr (param $op i32) (result i32)
-    (return_call $load
+    (global.set $PR
       (i32.and
-        (i32.add
-          (call $load (global.get $PR))
-          (call $get_x (local.get $op))
-        )
+        (i32.add (global.get $PR) (i32.const 1))
         (i32.const 0xffff)
       )
+    )
+  )
+  (func $incr_sp
+    (global.set $SP
+      (i32.and
+        (i32.add (global.get $SP) (i32.const 1))
+        (i32.const 0xffff)
+      )
+    )
+  )
+  (func $decr_sp
+    (global.set $SP
+      (i32.and
+        (i32.sub (global.get $SP) (i32.const 1))
+        (i32.const 0xffff)
+      )
+    )
+  )
+  (func $load_addr (param $op i32) (result i32)
+    (call $load
+      (call $get_addr (local.get $op))
+    )
+  )
+  (func $get_addr (param $op i32) (result i32)
+    (i32.and
+      (i32.add
+        (call $load (global.get $PR))
+        (call $get_x (local.get $op))
+      )
+      (i32.const 0xffff)
     )
   )
   (func $set_r (param $op i32) (param $val i32)
