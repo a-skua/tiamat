@@ -1,9 +1,9 @@
 (module
-  (import "env" "call_supervisor" (func $call_supervisor (param (ref null extern))))
+  (import "env" "call_supervisor" (func $call_su (param (ref null extern))))
   ;; Memories
-  (memory $external i32 2)
+  (memory $mem i32 2)
   (memory $internal i32 1)
-  (export "memory" (memory $external))
+  (export "memory" (memory $mem))
   ;; Supervisor Function Table
   (table $su i32 16 (ref null extern))
   (export "supervisor" (table $su))
@@ -180,7 +180,7 @@
     (local.set $val (call $load_u (call $get_adr (local.get $op))))
     call $incr_pr
     ;; Set register
-    (call $set_r (local.get $op) (local.get $val))
+    (call $set_r_u (local.get $op) (local.get $val))
     ;; OF not affected
     (call $set_zf (local.get $val))
     (call $set_sf (local.get $val))
@@ -194,7 +194,7 @@
     ;; Load value from memory
     (local.set $val (call $get_r2 (local.get $op)))
     ;; Set register
-    (call $set_r1 (local.get $op) (local.get $val))
+    (call $set_r1_u (local.get $op) (local.get $val))
     ;; OF not affected
     (call $set_zf (local.get $val))
     (call $set_sf (local.get $val))
@@ -209,7 +209,7 @@
     (local.set $adr (call $get_adr (local.get $op)))
     call $incr_pr
     ;; Store value to memory
-    (call $store (local.get $adr) (call $get_r (local.get $op)))
+    (call $store (local.get $adr) (call $get_r_u (local.get $op)))
   )
   (func $LAD
     (local $op i32)
@@ -221,20 +221,51 @@
     (local.set $adr (call $get_adr (local.get $op)))
     call $incr_pr
     ;; Set register
-    (call $set_r (local.get $op) (local.get $adr))
+    (call $set_r_u (local.get $op) (local.get $adr))
   )
   (func $ADDA
     (local $op i32)
-    (local $adr i32)
+    (local $val i32)
     ;; Fetch operand
     (local.set $op (call $load_u (global.get $PR)))
     call $incr_pr
-    ;; Get target adress
-    (local.set $adr (call $get_adr (local.get $op)))
+    ;; Get value from memory and add to register
+    (call $set_r_s
+      (local.get $op)
+      (local.tee $val
+        (i32.add
+          (call $get_r_s (local.get $op))
+          (call $load_s (call $get_adr (local.get $op)))
+        )
+      )
+    )
     call $incr_pr
+    ;; Set flags
+    (call $set_of_s (local.get $val))
+    (call $set_zf (local.get $val))
+    (call $set_sf (local.get $val))
   )
   (func $SUBA
-    unreachable
+    (local $op i32)
+    (local $val i32)
+    ;; Fetch operand
+    (local.set $op (call $load_u (global.get $PR)))
+    call $incr_pr
+    ;; Get value from memory and add to register
+    (call $set_r_s
+      (local.get $op)
+      (local.tee $val
+        (i32.sub
+          (call $get_r_s (local.get $op))
+          (call $load_s (call $get_adr (local.get $op)))
+        )
+      )
+    )
+    call $incr_pr
+    ;; Set flags
+    (call $set_of_s (local.get $val))
+    (call $set_zf (local.get $val))
+    (call $set_sf (local.get $val))
   )
   (func $ADDL
     unreachable
@@ -337,7 +368,7 @@
     (local.set $val (call $load_u (global.get $SP)))
     call $incr_sp
     ;; Set register
-    (call $set_r (local.get $op) (local.get $val))
+    (call $set_r_u (local.get $op) (local.get $val))
   )
   (func $CALL
     (local $op i32)
@@ -370,27 +401,29 @@
     ;; Get target adress
     (local.set $adr (call $get_adr (local.get $op)))
     call $incr_pr
-    (call $call_supervisor (table.get $su (local.get $adr)))
+    (call $call_su (table.get $su (local.get $adr)))
   )
   (func $NOP
     return_call $incr_pr
   )
+  ;; Memory Access Functions
   (func $load_u (param $adr i32) (result i32)
-    (i32.load16_u $external
+    (i32.load16_u $mem
       (i32.mul (local.get $adr) (i32.const 2))
     )
   )
   (func $load_s (param $adr i32) (result i32)
-    (i32.load16_s $external
+    (i32.load16_s $mem
       (i32.mul (local.get $adr) (i32.const 2))
     )
   )
   (func $store (param $adr i32) (param $val i32)
-    (i32.store16 $external
+    (i32.store16 $mem
       (i32.mul (local.get $adr) (i32.const 2))
       (local.get $val)
     )
   )
+  ;; Increment and Decrement Functions
   (func $incr_pr
     (global.set $PR
       (i32.and
@@ -415,6 +448,7 @@
       )
     )
   )
+  ;; Operand Decoding Functions
   (func $get_adr (param $op i32) (result i32)
     (i32.and
       (i32.add
@@ -424,7 +458,11 @@
       (i32.const 0xffff)
     )
   )
-  (func $get_r (param $op i32) (result i32)
+  (func $get_r_s (param $op i32) (result i32)
+    (i32.store16 $internal (i32.const 0) (call $get_r_u (local.get $op)))
+    (i32.load16_s $internal (i32.const 0))
+  )
+  (func $get_r_u (param $op i32) (result i32)
     (block $GR7
       (block $GR6
         (block $GR5
@@ -458,7 +496,9 @@
     )
     global.get $GR7
   )
-  (func $set_r (param $op i32) (param $val i32)
+  (func $set_r_s (param $op i32) (param $val i32)
+    (i32.store16 $internal (i32.const 0) (local.get $val))
+    (local.set $val (i32.load16_s $internal (i32.const 0)))
     (block $GR7
       (block $GR6
         (block $GR5
@@ -492,8 +532,43 @@
     )
     (global.set $GR7 (local.get $val))
   )
-  (func $set_r1 (param $op i32) (param $val i32)
-    (call $set_r (local.get $op) (local.get $val))
+  (func $set_r_u (param $op i32) (param $val i32)
+    (local.set $val (i32.and (local.get $val) (i32.const 0xffff)))
+    (block $GR7
+      (block $GR6
+        (block $GR5
+          (block $GR4
+            (block $GR3
+              (block $GR2
+                (block $GR1
+                  (block $GR0
+                    (block $trap
+                      (i32.shr_u
+                        (i32.and (local.get $op) (i32.const 0x00f0))
+                        (i32.const 4)
+                      )
+                      (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
+                    )
+                    unreachable
+                  )
+                  (return (global.set $GR0 (local.get $val)))
+                )
+                (return (global.set $GR1 (local.get $val)))
+              )
+              (return (global.set $GR2 (local.get $val)))
+            )
+            (return (global.set $GR3 (local.get $val)))
+          )
+          (return (global.set $GR4 (local.get $val)))
+        )
+        (return (global.set $GR5 (local.get $val)))
+      )
+      (return (global.set $GR6 (local.get $val)))
+    )
+    (global.set $GR7 (local.get $val))
+  )
+  (func $set_r1_u (param $op i32) (param $val i32)
+    (call $set_r_u (local.get $op) (local.get $val))
   )
   (func $get_x (param $op i32) (result i32)
     (block $GR7
@@ -557,18 +632,27 @@
     )
     global.get $GR7
   )
-  (func $set_zf (param $val i32)
-    (if (i32.eqz (local.get $val))
-      (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x0001))))
-      (else (global.set $FR (i32.and (global.get $FR) (i32.const 0xfffe))))
+  ;; Flag Register Update Functions
+  (func $set_of_s (param $val i32)
+    (i32.or
+      (i32.gt_s (local.get $val) (i32.const 32767))
+      (i32.lt_s (local.get $val) (i32.const -32768))
+    )
+    (if
+      (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x4))))
+      (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x3))))
     )
   )
   (func $set_sf (param $val i32)
-    (i32.store16 $internal (i32.const 0) (local.get $val))
-    (i32.lt_s (i32.load16_s $internal (i32.const 0)) (i32.const 0))
-    (if
-      (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x0002))))
-      (else (global.set $FR (i32.and (global.get $FR) (i32.const 0xfffd))))
+    (if (i32.gt_u (i32.and (local.get $val) (i32.const 0x8000)) (i32.const 0))
+      (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x2))))
+      (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x5))))
+    )
+  )
+  (func $set_zf (param $val i32)
+    (if (i32.eqz (i32.and (local.get $val) (i32.const 0xffff)))
+      (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x1))))
+      (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x6))))
     )
   )
 )
