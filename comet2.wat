@@ -397,11 +397,14 @@
               (block $GR2
                 (block $GR1
                   (block $GR0
-                    (i32.shr_u
-                      (i32.and (local.get $op) (i32.const 0x00f0))
-                      (i32.const 4)
+                    (block $trap
+                      (i32.shr_u
+                        (i32.and (local.get $op) (i32.const 0x00f0))
+                        (i32.const 4)
+                      )
+                      (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
                     )
-                    (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7)
+                    unreachable
                   )
                   (return (global.set $GR0 (local.get $val)))
                 )
@@ -428,8 +431,11 @@
               (block $GR2
                 (block $GR1
                   (block $GR0
-                    (i32.and (local.get $op) (i32.const 0x000f))
-                    (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7)
+                    (block $trap
+                      (i32.and (local.get $op) (i32.const 0x000f))
+                      (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
+                    )
+                    unreachable
                   )
                   (return (i32.const 0))
                 )

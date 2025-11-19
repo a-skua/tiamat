@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertThrows } from "@std/assert";
 import * as comet2 from "./comet2.wasm";
 
 console.log("comet2:", comet2);
@@ -287,89 +287,122 @@ Deno.test("step", async (t) => {
   });
 
   await t.step("POP", async (t) => {
-    const tests = [
-      {
-        op: 0x7100,
-        val: 1,
-        sp: 255,
-        expect: { gr: [1, 0, 0, 0, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
-      },
-      {
-        op: 0x7110,
-        val: 1,
-        sp: 255,
-        expect: { gr: [0, 1, 0, 0, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
-      },
-      {
-        op: 0x7120,
-        val: 1,
-        sp: 255,
-        expect: { gr: [0, 0, 1, 0, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
-      },
-      {
-        op: 0x7130,
-        val: 1,
-        sp: 255,
-        expect: { gr: [0, 0, 0, 1, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
-      },
-      {
-        op: 0x7140,
-        val: 1,
-        sp: 255,
-        expect: { gr: [0, 0, 0, 0, 1, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
-      },
-      {
-        op: 0x7150,
-        val: 1,
-        sp: 255,
-        expect: { gr: [0, 0, 0, 0, 0, 1, 0, 0], pr: 1, sp: 256, fr: 0b000 },
-      },
-      {
-        op: 0x7160,
-        val: 1,
-        sp: 255,
-        expect: { gr: [0, 0, 0, 0, 0, 0, 1, 0], pr: 1, sp: 256, fr: 0b000 },
-      },
-      {
-        op: 0x7170,
-        val: 1,
-        sp: 255,
-        expect: { gr: [0, 0, 0, 0, 0, 0, 0, 1], pr: 1, sp: 256, fr: 0b000 },
-      },
-      {
-        op: 0x7100,
-        val: 0,
-        sp: 255,
-        expect: { gr: [0, 0, 0, 0, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
-      },
-      {
-        op: 0x7100,
-        val: 0xffff,
-        sp: 255,
-        expect: {
-          gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
-          pr: 1,
-          sp: 256,
-          fr: 0b000,
+    await t.step("normal", async (t) => {
+      const tests = [
+        {
+          op: 0x7100,
+          val: 1,
+          sp: 255,
+          expect: { gr: [1, 0, 0, 0, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
         },
-      },
-    ] as const;
-
-    for (const { op, val, sp, expect } of tests) {
-      await t.step(
-        `op=0x${op.toString(16).padStart(4, "0")}, val=${val}`,
-        () => {
-          reset();
-
-          SP.value = sp;
-
-          memory.setInt16(0, op, true);
-          memory.setInt16(sp * 2, val, true);
-          step();
-          test(expect);
+        {
+          op: 0x7110,
+          val: 1,
+          sp: 255,
+          expect: { gr: [0, 1, 0, 0, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
         },
-      );
-    }
+        {
+          op: 0x7120,
+          val: 1,
+          sp: 255,
+          expect: { gr: [0, 0, 1, 0, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
+        },
+        {
+          op: 0x7130,
+          val: 1,
+          sp: 255,
+          expect: { gr: [0, 0, 0, 1, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
+        },
+        {
+          op: 0x7140,
+          val: 1,
+          sp: 255,
+          expect: { gr: [0, 0, 0, 0, 1, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
+        },
+        {
+          op: 0x7150,
+          val: 1,
+          sp: 255,
+          expect: { gr: [0, 0, 0, 0, 0, 1, 0, 0], pr: 1, sp: 256, fr: 0b000 },
+        },
+        {
+          op: 0x7160,
+          val: 1,
+          sp: 255,
+          expect: { gr: [0, 0, 0, 0, 0, 0, 1, 0], pr: 1, sp: 256, fr: 0b000 },
+        },
+        {
+          op: 0x7170,
+          val: 1,
+          sp: 255,
+          expect: { gr: [0, 0, 0, 0, 0, 0, 0, 1], pr: 1, sp: 256, fr: 0b000 },
+        },
+        {
+          op: 0x7100,
+          val: 0,
+          sp: 255,
+          expect: { gr: [0, 0, 0, 0, 0, 0, 0, 0], pr: 1, sp: 256, fr: 0b000 },
+        },
+        {
+          op: 0x7100,
+          val: 0xffff,
+          sp: 255,
+          expect: {
+            gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+            pr: 1,
+            sp: 256,
+            fr: 0b000,
+          },
+        },
+      ] as const;
+
+      for (const { op, val, sp, expect } of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}, val=${val}`,
+          () => {
+            reset();
+
+            SP.value = sp;
+
+            memory.setInt16(0, op, true);
+            memory.setInt16(sp * 2, val, true);
+            step();
+            test(expect);
+          },
+        );
+      }
+    });
+
+    await t.step("unreachable", async (t) => {
+      const tests = [
+        0x7180,
+        0x7190,
+        0x71a0,
+        0x71b0,
+        0x71c0,
+        0x71d0,
+        0x71e0,
+        0x71f0,
+      ];
+
+      for (const op of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}`,
+          () => {
+            reset();
+
+            const val = 1;
+            const sp = 255;
+            SP.value = sp;
+
+            memory.setInt16(0, op, true);
+            memory.setInt16(sp * 2, val, true);
+
+            assertThrows(() => step());
+          },
+        );
+      }
+    });
   });
 
   await t.step("CALL", async (t) => {
@@ -519,105 +552,142 @@ Deno.test("step", async (t) => {
   });
 
   await t.step("SVC", async (t) => {
-    const tests = [
-      {
-        op: 0xf000,
-        adr: 0,
-        gr: [100, 0, 0, 0, 0, 0, 0, 0],
-        expect: {
+    await t.step("normal", async (t) => {
+      const tests = [
+        {
+          op: 0xf000,
+          adr: 0,
           gr: [100, 0, 0, 0, 0, 0, 0, 0],
-          pr: 2,
-          sp: 0xffff,
-          fr: 0b000,
+          expect: {
+            gr: [100, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
         },
-      },
-      {
-        op: 0xf001,
-        adr: 0,
-        gr: [100, 1, 0, 0, 0, 0, 0, 0],
-        expect: {
+        {
+          op: 0xf001,
+          adr: 0,
           gr: [100, 1, 0, 0, 0, 0, 0, 0],
-          pr: 2,
-          sp: 0xffff,
-          fr: 0b000,
+          expect: {
+            gr: [100, 1, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
         },
-      },
-      {
-        op: 0xf002,
-        adr: 0,
-        gr: [100, 0, 1, 0, 0, 0, 0, 0],
-        expect: {
+        {
+          op: 0xf002,
+          adr: 0,
           gr: [100, 0, 1, 0, 0, 0, 0, 0],
-          pr: 2,
-          sp: 0xffff,
-          fr: 0b000,
+          expect: {
+            gr: [100, 0, 1, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
         },
-      },
-      {
-        op: 0xf003,
-        adr: 0,
-        gr: [100, 0, 0, 1, 0, 0, 0, 0],
-        expect: {
+        {
+          op: 0xf003,
+          adr: 0,
           gr: [100, 0, 0, 1, 0, 0, 0, 0],
-          pr: 2,
-          sp: 0xffff,
-          fr: 0b000,
+          expect: {
+            gr: [100, 0, 0, 1, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
         },
-      },
-      {
-        op: 0xf004,
-        adr: 0,
-        gr: [100, 0, 0, 0, 1, 0, 0, 0],
-        expect: {
+        {
+          op: 0xf004,
+          adr: 0,
           gr: [100, 0, 0, 0, 1, 0, 0, 0],
-          pr: 2,
-          sp: 0xffff,
-          fr: 0b000,
+          expect: {
+            gr: [100, 0, 0, 0, 1, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
         },
-      },
-      {
-        op: 0xf005,
-        adr: 0,
-        gr: [100, 0, 0, 0, 0, 1, 0, 0],
-        expect: {
+        {
+          op: 0xf005,
+          adr: 0,
           gr: [100, 0, 0, 0, 0, 1, 0, 0],
-          pr: 2,
-          sp: 0xffff,
-          fr: 0b000,
+          expect: {
+            gr: [100, 0, 0, 0, 0, 1, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
         },
-      },
-      {
-        op: 0xf006,
-        adr: 0,
-        gr: [100, 0, 0, 0, 0, 0, 1, 0],
-        expect: {
+        {
+          op: 0xf006,
+          adr: 0,
           gr: [100, 0, 0, 0, 0, 0, 1, 0],
-          pr: 2,
-          sp: 0xffff,
-          fr: 0b000,
+          expect: {
+            gr: [100, 0, 0, 0, 0, 0, 1, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
         },
-      },
-      {
-        op: 0xf007,
-        adr: 0,
-        gr: [100, 0, 0, 0, 0, 0, 0, 1],
-        expect: {
+        {
+          op: 0xf007,
+          adr: 0,
           gr: [100, 0, 0, 0, 0, 0, 0, 1],
-          pr: 2,
-          sp: 0xffff,
-          fr: 0b000,
+          expect: {
+            gr: [100, 0, 0, 0, 0, 0, 0, 1],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
         },
-      },
-    ] as const;
+      ] as const;
 
-    for (const { op, adr, gr, expect } of tests) {
-      await t.step(
-        `op=0x${op.toString(16).padStart(4, "0")}, adr=${
-          adr.toString(16).padStart(4, "0")
-        }`,
-        () => {
+      for (const { op, adr, gr, expect } of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}, adr=${
+            adr.toString(16).padStart(4, "0")
+          }`,
+          () => {
+            reset();
+
+            for (const i in gr) {
+              GR[i].value = gr[i];
+            }
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+
+            const x = gr.slice(1).reduce((a, b) => a + b, 0 as number);
+            let call = 0;
+            supervisor.set(adr + x, () => call++);
+
+            step();
+            test(expect);
+            assertEquals(call, 1);
+          },
+        );
+      }
+    });
+
+    await t.step("unreachable", async (t) => {
+      const tests = [
+        0xf008,
+        0xf009,
+        0xf00a,
+        0xf00b,
+        0xf00c,
+        0xf00d,
+        0xf00e,
+        0xf00f,
+      ];
+      for (const op of tests) {
+        await t.step(`op=0x${op.toString(16).padStart(4, "0")}`, () => {
           reset();
 
+          const op = 0xf008;
+          const adr = 0;
+          const gr = [100, 0, 0, 0, 0, 0, 0, 1];
           for (const i in gr) {
             GR[i].value = gr[i];
           }
@@ -628,12 +698,10 @@ Deno.test("step", async (t) => {
           let call = 0;
           supervisor.set(adr + x, () => call++);
 
-          step();
-          test(expect);
-          assertEquals(call, 1);
-        },
-      );
-    }
+          assertThrows(() => step());
+        });
+      }
+    });
   });
 
   await t.step("NOP", () => {
