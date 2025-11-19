@@ -55,7 +55,7 @@
   ;; |-------------------|
   (func (export "step")
     (local $op i32)
-    (local.set $op (i32.and (call $load (global.get $PR)) (i32.const 0xff00)))
+    (local.set $op (i32.and (call $load_u (global.get $PR)) (i32.const 0xff00)))
     ;; LD r,adr,x
     (i32.eqz (i32.xor (local.get $op) (i32.const 0x1000)))
     (if (then (return_call $LD)))
@@ -174,10 +174,10 @@
     (local $op i32)
     (local $val i32)
     ;; Fetch operand
-    (local.set $op (call $load (global.get $PR)))
+    (local.set $op (call $load_u (global.get $PR)))
     call $incr_pr
-    ;; Load value from memory
-    (local.set $val (call $load_addr (local.get $op)))
+    ;; Get value from memory
+    (local.set $val (call $load_u (call $get_adr (local.get $op))))
     call $incr_pr
     ;; Set register
     (call $set_r (local.get $op) (local.get $val))
@@ -189,7 +189,7 @@
     (local $op i32)
     (local $val i32)
     ;; Fetch operand
-    (local.set $op (call $load (global.get $PR)))
+    (local.set $op (call $load_u (global.get $PR)))
     call $incr_pr
     ;; Load value from memory
     (local.set $val (call $get_r2 (local.get $op)))
@@ -201,30 +201,37 @@
   )
   (func $ST
     (local $op i32)
-    (local $addr i32)
+    (local $adr i32)
     ;; Fetch operand
-    (local.set $op (call $load (global.get $PR)))
+    (local.set $op (call $load_u (global.get $PR)))
     call $incr_pr
-    ;; Get target address
-    (local.set $addr (call $get_addr (local.get $op)))
+    ;; Get target adress
+    (local.set $adr (call $get_adr (local.get $op)))
     call $incr_pr
     ;; Store value to memory
-    (call $store (local.get $addr) (call $get_r (local.get $op)))
+    (call $store (local.get $adr) (call $get_r (local.get $op)))
   )
   (func $LAD
     (local $op i32)
-    (local $addr i32)
+    (local $adr i32)
     ;; Fetch operand
-    (local.set $op (call $load (global.get $PR)))
+    (local.set $op (call $load_u (global.get $PR)))
     call $incr_pr
-    ;; Get target address
-    (local.set $addr (call $get_addr (local.get $op)))
+    ;; Get target adress
+    (local.set $adr (call $get_adr (local.get $op)))
     call $incr_pr
     ;; Set register
-    (call $set_r (local.get $op) (local.get $addr))
+    (call $set_r (local.get $op) (local.get $adr))
   )
   (func $ADDA
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    ;; Fetch operand
+    (local.set $op (call $load_u (global.get $PR)))
+    call $incr_pr
+    ;; Get target adress
+    (local.set $adr (call $get_adr (local.get $op)))
+    call $incr_pr
   )
   (func $SUBA
     unreachable
@@ -309,73 +316,78 @@
   )
   (func $PUSH
     (local $op i32)
-    (local $addr i32)
+    (local $adr i32)
     ;; Fetch operand
-    (local.set $op (call $load (global.get $PR)))
+    (local.set $op (call $load_u (global.get $PR)))
     call $incr_pr
-    ;; Get target address
-    (local.set $addr (call $get_addr (local.get $op)))
+    ;; Get target adress
+    (local.set $adr (call $get_adr (local.get $op)))
     call $incr_pr
     ;; Push value onto stack
-    (call $store (global.get $SP) (local.get $addr))
+    (call $store (global.get $SP) (local.get $adr))
     call $decr_sp
   )
   (func $POP
     (local $op i32)
     (local $val i32)
     ;; Fetch operand
-    (local.set $op (call $load (global.get $PR)))
+    (local.set $op (call $load_u (global.get $PR)))
     call $incr_pr
     ;; Pop value from stack
-    (local.set $val (call $load (global.get $SP)))
+    (local.set $val (call $load_u (global.get $SP)))
     call $incr_sp
     ;; Set register
     (call $set_r (local.get $op) (local.get $val))
   )
   (func $CALL
     (local $op i32)
-    (local $addr i32)
+    (local $adr i32)
     ;; Fetch operand
-    (local.set $op (call $load (global.get $PR)))
+    (local.set $op (call $load_u (global.get $PR)))
     call $incr_pr
-    ;; Get target address
-    (local.set $addr (call $get_addr (local.get $op)))
+    ;; Get target adress
+    (local.set $adr (call $get_adr (local.get $op)))
     call $incr_pr
     ;; Push PR onto stack
     (call $store (global.get $SP) (global.get $PR))
     call $decr_sp
-    (global.set $PR (local.get $addr))
+    (global.set $PR (local.get $adr))
   )
   (func $RET
-    (local $addr i32)
-    ;; Pop return address from stack
-    (local.set $addr (call $load (global.get $SP)))
+    (local $adr i32)
+    ;; Pop return adress from stack
+    (local.set $adr (call $load_u (global.get $SP)))
     call $incr_sp
-    ;; Set PR to return address
-    (global.set $PR (local.get $addr))
+    ;; Set PR to return adress
+    (global.set $PR (local.get $adr))
   )
   (func $SVC
     (local $op i32)
-    (local $addr i32)
+    (local $adr i32)
     ;; Fetch operand
-    (local.set $op (call $load (global.get $PR)))
+    (local.set $op (call $load_u (global.get $PR)))
     call $incr_pr
-    ;; Get target address
-    (local.set $addr (call $get_addr (local.get $op)))
+    ;; Get target adress
+    (local.set $adr (call $get_adr (local.get $op)))
     call $incr_pr
-    (call $call_supervisor (table.get $su (local.get $addr)))
+    (call $call_supervisor (table.get $su (local.get $adr)))
   )
   (func $NOP
     return_call $incr_pr
   )
-  (func $load (param $addr i32) (result i32)
+  (func $load_u (param $adr i32) (result i32)
     (i32.load16_u $external
-      (i32.mul (local.get $addr) (i32.const 2))
+      (i32.mul (local.get $adr) (i32.const 2))
     )
   )
-  (func $store (param $addr i32) (param $val i32)
+  (func $load_s (param $adr i32) (result i32)
+    (i32.load16_s $external
+      (i32.mul (local.get $adr) (i32.const 2))
+    )
+  )
+  (func $store (param $adr i32) (param $val i32)
     (i32.store16 $external
-      (i32.mul (local.get $addr) (i32.const 2))
+      (i32.mul (local.get $adr) (i32.const 2))
       (local.get $val)
     )
   )
@@ -403,15 +415,10 @@
       )
     )
   )
-  (func $load_addr (param $op i32) (result i32)
-    (call $load
-      (call $get_addr (local.get $op))
-    )
-  )
-  (func $get_addr (param $op i32) (result i32)
+  (func $get_adr (param $op i32) (result i32)
     (i32.and
       (i32.add
-        (call $load (global.get $PR))
+        (call $load_u (global.get $PR))
         (call $get_x (local.get $op))
       )
       (i32.const 0xffff)
