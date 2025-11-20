@@ -176,7 +176,7 @@
     (local.set $op (call $load_op))
     (local.set $adr (call $load_adr (local.get $op)))
     ;; Set register
-    (call $set_r_u (local.get $op) 
+    (call $set_r1_u (local.get $op)
       (local.tee $val (call $load_u (local.get $adr)))
     )
     ;; OF not affected
@@ -210,7 +210,7 @@
     (local $adr i32)
     (local.set $op (call $load_op))
     (local.set $adr (call $load_adr (local.get $op)))
-    (call $set_r_u (local.get $op) (local.get $adr))
+    (call $set_r1_u (local.get $op) (local.get $adr))
   )
   (func $ADDA
     (local $op i32)
@@ -375,7 +375,7 @@
     (local.set $val (call $load_u (global.get $SP)))
     call $incr_sp
     ;; Set register
-    (call $set_r_u (local.get $op) (local.get $val))
+    (call $set_r1_u (local.get $op) (local.get $val))
   )
   (func $CALL
     (local $op i32)
@@ -475,86 +475,104 @@
       (i32.const 0xffff)
     )
   )
+  (func $set_r1_s (param $op i32) (param $val i32)
+    (call $set_rx_unsafe
+      (i32.shr_u
+        (i32.and (local.get $op) (i32.const 0x00f0))
+        (i32.const 4)
+      )
+      (i32.extend16_s (local.get $val))
+    )
+  )
+  (func $set_r1_u (param $op i32) (param $val i32)
+    (call $set_rx_unsafe
+      (i32.shr_u
+        (i32.and (local.get $op) (i32.const 0x00f0))
+        (i32.const 4)
+      )
+      (i32.and (local.get $val) (i32.const 0xffff))
+    )
+  )
+  (func $set_rx_unsafe (param $i i32) (param $val i32)
+    (block $GR7
+      (block $GR6
+        (block $GR5
+          (block $GR4
+            (block $GR3
+              (block $GR2
+                (block $GR1
+                  (block $GR0
+                    (block $trap
+                      (local.get $i)
+                      (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
+                    )
+                    unreachable
+                  )
+                  (return (global.set $GR0 (local.get $val)))
+                )
+                (return (global.set $GR1 (local.get $val)))
+              )
+              (return (global.set $GR2 (local.get $val)))
+            )
+            (return (global.set $GR3 (local.get $val)))
+          )
+          (return (global.set $GR4 (local.get $val)))
+        )
+        (return (global.set $GR5 (local.get $val)))
+      )
+      (return (global.set $GR6 (local.get $val)))
+    )
+    (global.set $GR7 (local.get $val))
+  )
   (func $get_r_s (param $op i32) (result i32)
     (call $get_r1_s (local.get $op))
   )
   (func $get_r_u (param $op i32) (result i32)
     (call $get_r1_u (local.get $op))
   )
-  (func $set_r_s (param $op i32) (param $val i32)
-    (local.set $val (i32.extend16_s (local.get $val)))
-    (block $GR7
-      (block $GR6
-        (block $GR5
-          (block $GR4
-            (block $GR3
-              (block $GR2
-                (block $GR1
-                  (block $GR0
-                    (block $trap
-                      (i32.shr_u
-                        (i32.and (local.get $op) (i32.const 0x00f0))
-                        (i32.const 4)
-                      )
-                      (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
-                    )
-                    unreachable
-                  )
-                  (return (global.set $GR0 (local.get $val)))
-                )
-                (return (global.set $GR1 (local.get $val)))
-              )
-              (return (global.set $GR2 (local.get $val)))
-            )
-            (return (global.set $GR3 (local.get $val)))
-          )
-          (return (global.set $GR4 (local.get $val)))
-        )
-        (return (global.set $GR5 (local.get $val)))
-      )
-      (return (global.set $GR6 (local.get $val)))
-    )
-    (global.set $GR7 (local.get $val))
-  )
-  (func $set_r_u (param $op i32) (param $val i32)
-    (local.set $val (i32.and (local.get $val) (i32.const 0xffff)))
-    (block $GR7
-      (block $GR6
-        (block $GR5
-          (block $GR4
-            (block $GR3
-              (block $GR2
-                (block $GR1
-                  (block $GR0
-                    (block $trap
-                      (i32.shr_u
-                        (i32.and (local.get $op) (i32.const 0x00f0))
-                        (i32.const 4)
-                      )
-                      (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
-                    )
-                    unreachable
-                  )
-                  (return (global.set $GR0 (local.get $val)))
-                )
-                (return (global.set $GR1 (local.get $val)))
-              )
-              (return (global.set $GR2 (local.get $val)))
-            )
-            (return (global.set $GR3 (local.get $val)))
-          )
-          (return (global.set $GR4 (local.get $val)))
-        )
-        (return (global.set $GR5 (local.get $val)))
-      )
-      (return (global.set $GR6 (local.get $val)))
-    )
-    (global.set $GR7 (local.get $val))
-  )
-  (func $set_r1_u (param $op i32) (param $val i32)
-    (call $set_r_u (local.get $op) (local.get $val))
-  )
   (func $get_x (param $op i32) (result i32)
+    (if (result i32)
+      (i32.eqz (i32.and (local.get $op) (i32.const 0x000f)))
+      (then (i32.const 0))
+      (else (call $get_r2_s (local.get $op)))
+    )
+  )
+  (func $get_r1_s (param $op i32) (result i32)
+    (i32.extend16_s
+      (call $get_r1_unsafe (local.get $op))
+    )
+  )
+  (func $get_r1_u (param $op i32) (result i32)
+    (i32.and
+      (call $get_r1_unsafe (local.get $op))
+      (i32.const 0xffff)
+    )
+  )
+  (func $get_r1_unsafe (param $op i32) (result i32)
+    (call $get_rx_unsafe
+      (i32.shr_u
+        (i32.and (local.get $op) (i32.const 0x00f0))
+        (i32.const 4)
+      )
+    )
+  )
+  (func $get_r2_s (param $op i32) (result i32)
+    (i32.extend16_s
+      (call $get_r2_unsafe (local.get $op))
+    )
+  )
+  (func $get_r2_u (param $op i32) (result i32)
+    (i32.and
+      (call $get_r2_unsafe (local.get $op))
+      (i32.const 0xffff)
+    )
+  )
+  (func $get_r2_unsafe (param $op i32) (result i32)
+    (call $get_rx_unsafe
+      (i32.and (local.get $op) (i32.const 0x000f))
+    )
+  )
+  (func $get_rx_unsafe (param $i i32) (result i32)
     (block $GR7
       (block $GR6
         (block $GR5
@@ -564,12 +582,12 @@
                 (block $GR1
                   (block $GR0
                     (block $trap
-                      (i32.and (local.get $op) (i32.const 0x000f))
+                      (local.get $i)
                       (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
                     )
                     unreachable
                   )
-                  (return (i32.const 0))
+                  (return (global.get $GR0))
                 )
                 (return (global.get $GR1))
               )
@@ -583,78 +601,7 @@
       )
       (return (global.get $GR6))
     )
-    global.get $GR7
-  )
-  (func $get_r1_s (param $op i32) (result i32)
-    (i32.extend16_s (call $get_r1_u (local.get $op)))
-  )
-  (func $get_r1_u (param $op i32) (result i32)
-    (block $GR7
-      (block $GR6
-        (block $GR5
-          (block $GR4
-            (block $GR3
-              (block $GR2
-                (block $GR1
-                  (block $GR0
-                    (block $trap
-                      (i32.shr_u
-                        (i32.and (local.get $op) (i32.const 0x00f0))
-                        (i32.const 4)
-                      )
-                      (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
-                    )
-                    unreachable
-                  )
-                  (return (i32.and (global.get $GR0) (i32.const 0xffff)))
-                )
-                (return (i32.and (global.get $GR1) (i32.const 0xffff)))
-              )
-              (return (i32.and (global.get $GR2) (i32.const 0xffff)))
-            )
-            (return (i32.and (global.get $GR3) (i32.const 0xffff)))
-          )
-          (return (i32.and (global.get $GR4) (i32.const 0xffff)))
-        )
-        (return (i32.and (global.get $GR5) (i32.const 0xffff)))
-      )
-      (return (i32.and (global.get $GR6) (i32.const 0xffff)))
-    )
-    (i32.and (global.get $GR7) (i32.const 0xffff))
-  )
-  (func $get_r2_s (param $op i32) (result i32)
-    (i32.extend16_s (call $get_r2_u (local.get $op)))
-  )
-  (func $get_r2_u (param $op i32) (result i32)
-    (block $GR7
-      (block $GR6
-        (block $GR5
-          (block $GR4
-            (block $GR3
-              (block $GR2
-                (block $GR1
-                  (block $GR0
-                    (block $trap
-                      (i32.and (local.get $op) (i32.const 0x000f))
-                      (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
-                    )
-                    unreachable
-                  )
-                  (return (i32.and (global.get $GR0) (i32.const 0xffff)))
-                )
-                (return (i32.and (global.get $GR1) (i32.const 0xffff)))
-              )
-              (return (i32.and (global.get $GR2) (i32.const 0xffff)))
-            )
-            (return (i32.and (global.get $GR3) (i32.const 0xffff)))
-          )
-          (return (i32.and (global.get $GR4) (i32.const 0xffff)))
-        )
-        (return (i32.and (global.get $GR5) (i32.const 0xffff)))
-      )
-      (return (i32.and (global.get $GR6) (i32.const 0xffff)))
-    )
-    (i32.and (global.get $GR7) (i32.const 0xffff))
+    (global.get $GR7)
   )
   ;; Flag Register Update Functions
   (func $set_of_s (param $val i32)
@@ -696,7 +643,7 @@
   (type $binomial_t (func (param i32) (param i32) (result i32)))
   (func $binomial_s (param $op i32) (param $fn (ref null $binomial_t)) (param $a i32) (param $b i32)
     (local $val i32)
-    (call $set_r_s
+    (call $set_r1_s
       (local.get $op)
       (local.tee $val
         (call_ref $binomial_t
@@ -713,7 +660,7 @@
   )
   (func $binomial_u (param $op i32) (param $fn (ref null $binomial_t)) (param $a i32) (param $b i32)
     (local $val i32)
-    (call $set_r_u (local.get $op)
+    (call $set_r1_u (local.get $op)
       (local.tee $val
         (call_ref $binomial_t
           (local.get $a)
