@@ -29,3 +29,6 @@ analyze:
 
 %.wasm: %.wat
 	wasm-tools parse $< -o $@
+
+%_slim.wasm: %.wasm
+	wasm-tools strip $< -a -o $@

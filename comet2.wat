@@ -2,7 +2,6 @@
   (import "env" "call_supervisor" (func $call_su (param (ref null extern))))
   ;; Memories
   (memory $mem i32 2)
-  (memory $internal i32 1)
   (export "memory" (memory $mem))
   ;; Supervisor Function Table
   (table $su i32 16 (ref null extern))
@@ -224,48 +223,10 @@
     (call $set_r_u (local.get $op) (local.get $adr))
   )
   (func $ADDA
-    (local $op i32)
-    (local $val i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get value from memory and add to register
-    (call $set_r_s
-      (local.get $op)
-      (local.tee $val
-        (i32.add
-          (call $get_r_s (local.get $op))
-          (call $load_s (call $get_adr (local.get $op)))
-        )
-      )
-    )
-    call $incr_pr
-    ;; Set flags
-    (call $set_of_s (local.get $val))
-    (call $set_zf (local.get $val))
-    (call $set_sf (local.get $val))
+    (call $binomial_s (ref.func $add))
   )
   (func $SUBA
-    (local $op i32)
-    (local $val i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get value from memory and add to register
-    (call $set_r_s
-      (local.get $op)
-      (local.tee $val
-        (i32.sub
-          (call $get_r_s (local.get $op))
-          (call $load_s (call $get_adr (local.get $op)))
-        )
-      )
-    )
-    call $incr_pr
-    ;; Set flags
-    (call $set_of_s (local.get $val))
-    (call $set_zf (local.get $val))
-    (call $set_sf (local.get $val))
+    (call $binomial_s (ref.func $sub))
   )
   (func $ADDL
     unreachable
@@ -459,8 +420,7 @@
     )
   )
   (func $get_r_s (param $op i32) (result i32)
-    (i32.store16 $internal (i32.const 0) (call $get_r_u (local.get $op)))
-    (i32.load16_s $internal (i32.const 0))
+    (i32.extend16_s (call $get_r_u (local.get $op)))
   )
   (func $get_r_u (param $op i32) (result i32)
     (block $GR7
@@ -497,8 +457,7 @@
     global.get $GR7
   )
   (func $set_r_s (param $op i32) (param $val i32)
-    (i32.store16 $internal (i32.const 0) (local.get $val))
-    (local.set $val (i32.load16_s $internal (i32.const 0)))
+    (local.set $val (i32.extend16_s (local.get $val)))
     (block $GR7
       (block $GR6
         (block $GR5
@@ -644,7 +603,7 @@
     )
   )
   (func $set_sf (param $val i32)
-    (if (i32.gt_u (i32.and (local.get $val) (i32.const 0x8000)) (i32.const 0))
+    (if (call $is_signed (local.get $val))
       (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x2))))
       (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x5))))
     )
@@ -654,5 +613,44 @@
       (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x1))))
       (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x6))))
     )
+  )
+  ;; Helper Functions
+  (func $is_signed (param $val i32) (result i32)
+    (i32.xor
+      (i32.eqz (i32.and (local.get $val) (i32.const 0x8000)))
+      (i32.const 1)
+    )
+  )
+  (type $binomial_t (func (param i32) (param i32) (result i32)))
+  (func $binomial_s (param $fn (ref null $binomial_t))
+    (local $op i32)
+    (local $val i32)
+    ;; Fetch operand
+    (local.set $op (call $load_u (global.get $PR)))
+    call $incr_pr
+    ;; Get value from memory and add to register
+    (call $set_r_s
+      (local.get $op)
+      (local.tee $val
+        (call_ref $binomial_t
+          (call $get_r_s (local.get $op))
+          (call $load_s (call $get_adr (local.get $op)))
+          (local.get $fn)
+        )
+      )
+    )
+    call $incr_pr
+    ;; Set flags
+    (call $set_of_s (local.get $val))
+    (call $set_zf (local.get $val))
+    (call $set_sf (local.get $val))
+  )
+  ;; Function Table
+  (elem declare func $add $sub)
+  (func $add (param $a i32) (param $b i32) (result i32)
+    (i32.add (local.get $a) (local.get $b))
+  )
+  (func $sub (param $a i32) (param $b i32) (result i32)
+    (i32.sub (local.get $a) (local.get $b))
   )
 )
