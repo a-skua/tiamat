@@ -171,15 +171,14 @@
   )
   (func $LD
     (local $op i32)
+    (local $adr i32)
     (local $val i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get value from memory
-    (local.set $val (call $load_u (call $get_adr (local.get $op))))
-    call $incr_pr
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
     ;; Set register
-    (call $set_r_u (local.get $op) (local.get $val))
+    (call $set_r_u (local.get $op) 
+      (local.tee $val (call $load_u (local.get $adr)))
+    )
     ;; OF not affected
     (call $set_zf (local.get $val))
     (call $set_sf (local.get $val))
@@ -187,13 +186,11 @@
   (func $LD_GR
     (local $op i32)
     (local $val i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Load value from memory
-    (local.set $val (call $get_r2 (local.get $op)))
+    (local.set $op (call $load_op))
     ;; Set register
-    (call $set_r1_u (local.get $op) (local.get $val))
+    (call $set_r1_u (local.get $op)
+      (local.tee $val (call $get_r2 (local.get $op)))
+    )
     ;; OF not affected
     (call $set_zf (local.get $val))
     (call $set_sf (local.get $val))
@@ -201,38 +198,63 @@
   (func $ST
     (local $op i32)
     (local $adr i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get target adress
-    (local.set $adr (call $get_adr (local.get $op)))
-    call $incr_pr
-    ;; Store value to memory
-    (call $store (local.get $adr) (call $get_r_u (local.get $op)))
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $store
+      (local.get $adr)
+      (call $get_r_u (local.get $op))
+    )
   )
   (func $LAD
     (local $op i32)
     (local $adr i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get target adress
-    (local.set $adr (call $get_adr (local.get $op)))
-    call $incr_pr
-    ;; Set register
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
     (call $set_r_u (local.get $op) (local.get $adr))
   )
   (func $ADDA
-    (call $binomial_s (ref.func $add))
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $binomial_s (local.get $op)
+      (ref.func $add)
+      (call $get_r_s (local.get $op))
+      (call $load_s (local.get $adr))
+    )
   )
   (func $SUBA
-    (call $binomial_s (ref.func $sub))
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $binomial_s (local.get $op)
+      (ref.func $sub)
+      (call $get_r_s (local.get $op))
+      (call $load_s (local.get $adr))
+    )
   )
   (func $ADDL
-    (call $binomial_u (ref.func $add))
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $binomial_u (local.get $op)
+      (ref.func $add)
+      (call $get_r_u (local.get $op))
+      (call $load_u (local.get $adr))
+    )
   )
   (func $SUBL
-    (call $binomial_u (ref.func $sub))
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $binomial_u (local.get $op)
+      (ref.func $sub)
+      (call $get_r_u (local.get $op))
+      (call $load_u (local.get $adr))
+    )
   )
   (func $ADDA_GR
     unreachable
@@ -410,6 +432,16 @@
     )
   )
   ;; Operand Decoding Functions
+  (func $load_op (result i32)
+    global.get $PR
+    call $load_u
+    call $incr_pr
+  )
+  (func $load_adr (param $op i32) (result i32)
+    local.get $op
+    call $get_adr
+    call $incr_pr
+  )
   (func $get_adr (param $op i32) (result i32)
     (i32.and
       (i32.add
@@ -629,47 +661,34 @@
     )
   )
   (type $binomial_t (func (param i32) (param i32) (result i32)))
-  (func $binomial_s (param $fn (ref null $binomial_t))
-    (local $op i32)
+  (func $binomial_s (param $op i32) (param $fn (ref null $binomial_t)) (param $a i32) (param $b i32)
     (local $val i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get value from memory and add to register
     (call $set_r_s
       (local.get $op)
       (local.tee $val
         (call_ref $binomial_t
-          (call $get_r_s (local.get $op))
-          (call $load_s (call $get_adr (local.get $op)))
+          (local.get $a)
+          (local.get $b)
           (local.get $fn)
         )
       )
     )
-    call $incr_pr
     ;; Set flags
     (call $set_of_s (local.get $val))
     (call $set_zf (local.get $val))
     (call $set_sf (local.get $val))
   )
-  (func $binomial_u (param $fn (ref null $binomial_t))
-    (local $op i32)
+  (func $binomial_u (param $op i32) (param $fn (ref null $binomial_t)) (param $a i32) (param $b i32)
     (local $val i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get value from memory and add to register
-    (call $set_r_u
-      (local.get $op)
+    (call $set_r_u (local.get $op)
       (local.tee $val
         (call_ref $binomial_t
-          (call $get_r_u (local.get $op))
-          (call $load_u (call $get_adr (local.get $op)))
+          (local.get $a)
+          (local.get $b)
           (local.get $fn)
         )
       )
     )
-    call $incr_pr
     ;; Set flags
     (call $set_of_u (local.get $val))
     (call $set_zf (local.get $val))
