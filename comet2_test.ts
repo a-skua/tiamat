@@ -1422,6 +1422,545 @@ Deno.test("step", async (t) => {
     });
   });
 
+  await t.step("ADDL", async (t) => {
+    await t.step("normal", async (t) => {
+      const tests = [
+        {
+          op: 0x2200,
+          val: 0,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b001,
+          },
+        },
+        {
+          op: 0x2200,
+          val: 1,
+          gr: [1, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [2, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2210,
+          val: 1,
+          gr: [0, 1, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 2, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2220,
+          val: 1,
+          gr: [0, 0, 1, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 2, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2230,
+          val: 1,
+          gr: [0, 0, 0, 1, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 2, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2240,
+          val: 1,
+          gr: [0, 0, 0, 0, 1, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 2, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2250,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 1, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 0, 2, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2260,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 1, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 0, 0, 2, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2270,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 1],
+          expect: {
+            gr: [0, 0, 0, 0, 0, 0, 0, 2],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2201,
+          val: 1,
+          gr: [1, 10, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [2, 10, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2202,
+          val: 1,
+          gr: [1, 0, 10, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [2, 0, 10, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2203,
+          val: 1,
+          gr: [1, 0, 0, 10, 0, 0, 0, 0],
+          expect: {
+            gr: [2, 0, 0, 10, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2204,
+          val: 1,
+          gr: [1, 0, 0, 0, 10, 0, 0, 0],
+          expect: {
+            gr: [2, 0, 0, 0, 10, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2205,
+          val: 1,
+          gr: [1, 0, 0, 0, 0, 10, 0, 0],
+          expect: {
+            gr: [2, 0, 0, 0, 0, 10, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2206,
+          val: 1,
+          gr: [1, 0, 0, 0, 0, 0, 10, 0],
+          expect: {
+            gr: [2, 0, 0, 0, 0, 0, 10, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2207,
+          val: 1,
+          gr: [1, 0, 0, 0, 0, 0, 0, 10],
+          expect: {
+            gr: [2, 0, 0, 0, 0, 0, 0, 10],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x2200,
+          val: 1,
+          gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b101,
+          },
+        },
+        {
+          op: 0x2200,
+          val: -1,
+          gr: [-1, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xfffe, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2200,
+          val: 0xffff,
+          gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xfffe, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2200,
+          val: 1,
+          gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0x8000, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b010,
+          },
+        },
+        {
+          op: 0x2200,
+          val: 0xffff,
+          gr: [0x8000, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b100,
+          },
+        },
+      ] as const;
+
+      for (const { op, val, gr, expect } of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}, val=${val}`,
+          () => {
+            reset();
+
+            for (const i in gr) {
+              GR[i].value = gr[i];
+            }
+            const adr = random(2 ** 15) + 2;
+            const x = (op & 0xf) > 0
+              ? gr.slice(1).reduce((a, b) => a + b, 0 as number)
+              : 0;
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+            memory.setInt16((adr + x) * 2, val, true);
+
+            step();
+            test(expect);
+          },
+        );
+      }
+    });
+
+    await t.step("unreachable", async (t) => {
+      const tests = [
+        0x2280,
+        0x2290,
+        0x22a0,
+        0x22b0,
+        0x22c0,
+        0x22d0,
+        0x22e0,
+        0x22f0,
+        0x2208,
+        0x2209,
+        0x220a,
+        0x220b,
+        0x220c,
+        0x220d,
+        0x220e,
+        0x220f,
+      ] as const;
+
+      for (const op of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}`,
+          () => {
+            reset();
+
+            const adr = random(2 ** 15) + 2;
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+
+            assertThrows(() => step());
+          },
+        );
+      }
+    });
+  });
+
+  await t.step("SUBL", async (t) => {
+    await t.step("normal", async (t) => {
+      const tests = [
+        {
+          op: 0x2300,
+          val: 0,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b001,
+          },
+        },
+        {
+          op: 0x2300,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2310,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0xffff, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2320,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0xffff, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2330,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0xffff, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2340,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 0xffff, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2350,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 0, 0xffff, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2360,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 0, 0, 0xffff, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2370,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0, 0, 0, 0, 0, 0, 0, 0xffff],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2301,
+          val: 1,
+          gr: [0, 10, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 10, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2302,
+          val: 1,
+          gr: [0, 0, 10, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0, 10, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2303,
+          val: 1,
+          gr: [0, 0, 0, 10, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0, 0, 10, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2304,
+          val: 1,
+          gr: [0, 0, 0, 0, 10, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0, 0, 0, 10, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2305,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 10, 0, 0],
+          expect: {
+            gr: [0xffff, 0, 0, 0, 0, 10, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2306,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 10, 0],
+          expect: {
+            gr: [0xffff, 0, 0, 0, 0, 0, 10, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+        {
+          op: 0x2307,
+          val: 1,
+          gr: [0, 0, 0, 0, 0, 0, 0, 10],
+          expect: {
+            gr: [0xffff, 0, 0, 0, 0, 0, 0, 10],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b110,
+          },
+        },
+      ] as const;
+
+      for (const { op, val, gr, expect } of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}, val=${val}`,
+          () => {
+            reset();
+
+            for (const i in gr) {
+              GR[i].value = gr[i];
+            }
+            const adr = random(2 ** 15) + 2;
+            const x = (op & 0xf) > 0
+              ? gr.slice(1).reduce((a, b) => a + b, 0 as number)
+              : 0;
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+            memory.setInt16((adr + x) * 2, val, true);
+
+            step();
+            test(expect);
+          },
+        );
+      }
+    });
+
+    await t.step("unreachable", async (t) => {
+      const tests = [
+        0x2380,
+        0x2390,
+        0x23a0,
+        0x23b0,
+        0x23c0,
+        0x23d0,
+        0x23e0,
+        0x23f0,
+        0x2308,
+        0x2309,
+        0x230a,
+        0x230b,
+        0x230c,
+        0x230d,
+        0x230e,
+        0x230f,
+      ] as const;
+
+      for (const op of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}`,
+          () => {
+            reset();
+
+            const adr = random(2 ** 15) + 2;
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+
+            assertThrows(() => step());
+          },
+        );
+      }
+    });
+  });
+
   await t.step("PUSH", async (t) => {
     const tests = [
       {

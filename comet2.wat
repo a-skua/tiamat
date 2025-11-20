@@ -229,10 +229,10 @@
     (call $binomial_s (ref.func $sub))
   )
   (func $ADDL
-    unreachable
+    (call $binomial_u (ref.func $add))
   )
   (func $SUBL
-    unreachable
+    (call $binomial_u (ref.func $sub))
   )
   (func $ADDA_GR
     unreachable
@@ -440,21 +440,21 @@
                     )
                     unreachable
                   )
-                  (return (global.get $GR0))
+                  (return (i32.and (global.get $GR0) (i32.const 0xffff)))
                 )
-                (return (global.get $GR1))
+                (return (i32.and (global.get $GR1) (i32.const 0xffff)))
               )
-              (return (global.get $GR2))
+              (return (i32.and (global.get $GR2) (i32.const 0xffff)))
             )
-            (return (global.get $GR3))
+            (return (i32.and (global.get $GR3) (i32.const 0xffff)))
           )
-          (return (global.get $GR4))
+          (return (i32.and (global.get $GR4) (i32.const 0xffff)))
         )
-        (return (global.get $GR5))
+        (return (i32.and (global.get $GR5) (i32.const 0xffff)))
       )
-      (return (global.get $GR6))
+      (return (i32.and (global.get $GR6) (i32.const 0xffff)))
     )
-    global.get $GR7
+    (i32.and (global.get $GR7) (i32.const 0xffff))
   )
   (func $set_r_s (param $op i32) (param $val i32)
     (local.set $val (i32.extend16_s (local.get $val)))
@@ -602,6 +602,13 @@
       (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x3))))
     )
   )
+  (func $set_of_u (param $val i32)
+    (i32.gt_u (local.get $val) (i32.const 65535))
+    (if
+      (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x4))))
+      (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x3))))
+    )
+  )
   (func $set_sf (param $val i32)
     (if (call $is_signed (local.get $val))
       (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x2))))
@@ -642,6 +649,29 @@
     call $incr_pr
     ;; Set flags
     (call $set_of_s (local.get $val))
+    (call $set_zf (local.get $val))
+    (call $set_sf (local.get $val))
+  )
+  (func $binomial_u (param $fn (ref null $binomial_t))
+    (local $op i32)
+    (local $val i32)
+    ;; Fetch operand
+    (local.set $op (call $load_u (global.get $PR)))
+    call $incr_pr
+    ;; Get value from memory and add to register
+    (call $set_r_u
+      (local.get $op)
+      (local.tee $val
+        (call_ref $binomial_t
+          (call $get_r_u (local.get $op))
+          (call $load_u (call $get_adr (local.get $op)))
+          (local.get $fn)
+        )
+      )
+    )
+    call $incr_pr
+    ;; Set flags
+    (call $set_of_u (local.get $val))
     (call $set_zf (local.get $val))
     (call $set_sf (local.get $val))
   )
