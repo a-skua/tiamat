@@ -354,66 +354,46 @@
   )
   (func $PUSH
     (local $op i32)
-    (local $adr i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get target adress
-    (local.set $adr (call $get_adr (local.get $op)))
-    call $incr_pr
-    ;; Push value onto stack
-    (call $store (global.get $SP) (local.get $adr))
-    call $decr_sp
+    (local.set $op (call $load_op))
+    (call $push
+      (call $load_adr (local.get $op))
+    )
   )
   (func $POP
     (local $op i32)
-    (local $val i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Pop value from stack
-    (local.set $val (call $load_u (global.get $SP)))
-    call $incr_sp
-    ;; Set register
-    (call $set_r1_u (local.get $op) (local.get $val))
+    (local.set $op (call $load_op))
+    (call $set_r1_u (local.get $op) (call $pop))
   )
   (func $CALL
     (local $op i32)
     (local $adr i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get target adress
-    (local.set $adr (call $get_adr (local.get $op)))
-    call $incr_pr
-    ;; Push PR onto stack
-    (call $store (global.get $SP) (global.get $PR))
-    call $decr_sp
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $push (global.get $PR))
     (global.set $PR (local.get $adr))
   )
   (func $RET
-    (local $adr i32)
-    ;; Pop return adress from stack
-    (local.set $adr (call $load_u (global.get $SP)))
-    call $incr_sp
-    ;; Set PR to return adress
-    (global.set $PR (local.get $adr))
+    (global.set $PR (call $pop))
   )
   (func $SVC
     (local $op i32)
-    (local $adr i32)
-    ;; Fetch operand
-    (local.set $op (call $load_u (global.get $PR)))
-    call $incr_pr
-    ;; Get target adress
-    (local.set $adr (call $get_adr (local.get $op)))
-    call $incr_pr
-    (call $call_su (table.get $su (local.get $adr)))
+    (local.set $op (call $load_op))
+    (call $call_su
+      (table.get $su (call $load_adr (local.get $op)))
+    )
   )
   (func $NOP
-    return_call $incr_pr
+    call $incr_pr
   )
   ;; Memory Access Functions
+  (func $push (param $val i32)
+    (call $store (global.get $SP) (local.get $val))
+    call $decr_sp
+  )
+  (func $pop (result i32)
+    (call $load_u (global.get $SP))
+    call $incr_sp
+  )
   (func $load_u (param $adr i32) (result i32)
     (i32.load16_u $mem
       (i32.mul (local.get $adr) (i32.const 2))
