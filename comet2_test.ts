@@ -4180,6 +4180,382 @@ Deno.test("step", async (t) => {
     });
   });
 
+  await t.step("CPA", async (t) => {
+    await t.step("normal", async (t) => {
+      const tests = [
+        {
+          op: 0x4000,
+          val: 0x7fff,
+          gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b010,
+          },
+        },
+        {
+          op: 0x4000,
+          val: 0xffff,
+          gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x4000,
+          val: 0xffff,
+          gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b001,
+          },
+        },
+      ] as const;
+
+      for (const { op, val, gr, expect } of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}, val=${val}`,
+          () => {
+            reset();
+
+            for (const i in gr) {
+              GR[i].value = gr[i];
+            }
+            const adr = random(2 ** 15) + 2;
+            const x = (op & 0xf) > 0
+              ? gr.slice(1).reduce((a, b) => a + b, 0 as number)
+              : 0;
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+            memory.setInt16((adr + x) * 2, val, true);
+
+            step();
+            test(expect);
+          },
+        );
+      }
+    });
+
+    await t.step("unreachable", async (t) => {
+      const tests = [
+        0x4080,
+        0x4090,
+        0x40a0,
+        0x40b0,
+        0x40c0,
+        0x40d0,
+        0x40e0,
+        0x40f0,
+        0x4008,
+        0x4009,
+        0x400a,
+        0x400b,
+        0x400c,
+        0x400d,
+        0x400e,
+        0x400f,
+      ] as const;
+
+      for (const op of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}`,
+          () => {
+            reset();
+
+            const adr = random(2 ** 15) + 2;
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+
+            assertThrows(() => step());
+          },
+        );
+      }
+    });
+  });
+
+  await t.step("CPL", async (t) => {
+    await t.step("normal", async (t) => {
+      const tests = [
+        {
+          op: 0x4100,
+          val: 0x7fff,
+          gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x4100,
+          val: 0xffff,
+          gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b010,
+          },
+        },
+        {
+          op: 0x4100,
+          val: 0xffff,
+          gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
+            pr: 2,
+            sp: 0xffff,
+            fr: 0b001,
+          },
+        },
+      ] as const;
+
+      for (const { op, val, gr, expect } of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}, val=${val}`,
+          () => {
+            reset();
+
+            for (const i in gr) {
+              GR[i].value = gr[i];
+            }
+            const adr = random(2 ** 15) + 2;
+            const x = (op & 0xf) > 0
+              ? gr.slice(1).reduce((a, b) => a + b, 0 as number)
+              : 0;
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+            memory.setInt16((adr + x) * 2, val, true);
+
+            step();
+            test(expect);
+          },
+        );
+      }
+    });
+
+    await t.step("unreachable", async (t) => {
+      const tests = [
+        0x4180,
+        0x4190,
+        0x41a0,
+        0x41b0,
+        0x41c0,
+        0x41d0,
+        0x41e0,
+        0x41f0,
+        0x4108,
+        0x4109,
+        0x410a,
+        0x410b,
+        0x410c,
+        0x410d,
+        0x410e,
+        0x410f,
+      ] as const;
+
+      for (const op of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}`,
+          () => {
+            reset();
+
+            const adr = random(2 ** 15) + 2;
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+
+            assertThrows(() => step());
+          },
+        );
+      }
+    });
+  });
+
+  await t.step("CPA_GR", async (t) => {
+    await t.step("normal", async (t) => {
+      const tests = [
+        {
+          op: 0x4401,
+          gr: [0xffff, 0x7fff, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0x7fff, 0, 0, 0, 0, 0, 0],
+            pr: 1,
+            sp: 0xffff,
+            fr: 0b010,
+          },
+        },
+        {
+          op: 0x4401,
+          gr: [0x7fff, 0xffff, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0x7fff, 0xffff, 0, 0, 0, 0, 0, 0],
+            pr: 1,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x4401,
+          gr: [0xffff, 0xffff, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0xffff, 0, 0, 0, 0, 0, 0],
+            pr: 1,
+            sp: 0xffff,
+            fr: 0b001,
+          },
+        },
+      ] as const;
+
+      for (const { op, gr, expect } of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}`,
+          () => {
+            reset();
+
+            for (const i in gr) {
+              GR[i].value = gr[i];
+            }
+            memory.setInt16(0, op, true);
+
+            step();
+            test(expect);
+          },
+        );
+      }
+    });
+
+    await t.step("unreachable", async (t) => {
+      const tests = [
+        0x4480,
+        0x4490,
+        0x44a0,
+        0x44b0,
+        0x44c0,
+        0x44d0,
+        0x44e0,
+        0x44f0,
+        0x4408,
+        0x4409,
+        0x440a,
+        0x440b,
+        0x440c,
+        0x440d,
+        0x440e,
+        0x440f,
+      ] as const;
+
+      for (const op of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}`,
+          () => {
+            reset();
+
+            const adr = random(2 ** 15) + 2;
+            memory.setInt16(0, op, true);
+            memory.setInt16(2, adr, true);
+
+            assertThrows(() => step());
+          },
+        );
+      }
+    });
+  });
+
+  await t.step("CPL_GR", async (t) => {
+    await t.step("normal", async (t) => {
+      const tests = [
+        {
+          op: 0x4501,
+          gr: [0xffff, 0x7fff, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0x7fff, 0, 0, 0, 0, 0, 0],
+            pr: 1,
+            sp: 0xffff,
+            fr: 0b000,
+          },
+        },
+        {
+          op: 0x4501,
+          gr: [0x7fff, 0xffff, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0x7fff, 0xffff, 0, 0, 0, 0, 0, 0],
+            pr: 1,
+            sp: 0xffff,
+            fr: 0b010,
+          },
+        },
+        {
+          op: 0x4501,
+          gr: [0xffff, 0xffff, 0, 0, 0, 0, 0, 0],
+          expect: {
+            gr: [0xffff, 0xffff, 0, 0, 0, 0, 0, 0],
+            pr: 1,
+            sp: 0xffff,
+            fr: 0b001,
+          },
+        },
+      ] as const;
+
+      for (const { op, gr, expect } of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}`,
+          () => {
+            reset();
+
+            for (const i in gr) {
+              GR[i].value = gr[i];
+            }
+            memory.setInt16(0, op, true);
+
+            step();
+            test(expect);
+          },
+        );
+      }
+    });
+
+    await t.step("unreachable", async (t) => {
+      const tests = [
+        0x4580,
+        0x4590,
+        0x45a0,
+        0x45b0,
+        0x45c0,
+        0x45d0,
+        0x45e0,
+        0x45f0,
+        0x4508,
+        0x4509,
+        0x450a,
+        0x450b,
+        0x450c,
+        0x450d,
+        0x450e,
+        0x450f,
+      ] as const;
+
+      for (const op of tests) {
+        await t.step(
+          `op=0x${op.toString(16).padStart(4, "0")}`,
+          () => {
+            reset();
+
+            memory.setInt16(0, op, true);
+
+            assertThrows(() => step());
+          },
+        );
+      }
+    });
+  });
+
   await t.step("PUSH", async (t) => {
     const tests = [
       {

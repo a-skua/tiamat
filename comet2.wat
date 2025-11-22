@@ -353,16 +353,40 @@
     )
   )
   (func $CPA
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $compare
+      (call $get_r_s (local.get $op))
+      (call $load_s (local.get $adr))
+    )
   )
   (func $CPL
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $compare
+      (call $get_r_u (local.get $op))
+      (call $load_u (local.get $adr))
+    )
   )
   (func $CPA_GR
-    unreachable
+    (local $op i32)
+    (local.set $op (call $load_op))
+    (call $compare
+      (call $get_r1_s (local.get $op))
+      (call $get_r2_s (local.get $op))
+    )
   )
   (func $CPL_GR
-    unreachable
+    (local $op i32)
+    (local.set $op (call $load_op))
+    (call $compare
+      (call $get_r1_u (local.get $op))
+      (call $get_r2_u (local.get $op))
+    )
   )
   (func $SLA
     unreachable
@@ -695,6 +719,20 @@
     (call $set_of_u (local.get $val))
     (call $set_zf (local.get $val))
     (call $set_sf (local.get $val))
+  )
+  (func $compare  (param $a i32) (param $b i32)
+    (local $val i32)
+    (local.set $val
+      (call $sub (local.get $a) (local.get $b))
+    )
+    ;; Set flags
+    (call $set_of_u (i32.const 0))
+    (call $set_sf (if (result i32)
+      (i32.lt_s (local.get $val) (i32.const 0))
+      (then (i32.const 0x8000))
+      (else (i32.const 0))
+    ))
+    (call $set_zf (local.get $val))
   )
   ;; Function Table
   (elem declare func $add $sub $and $or $xor)
