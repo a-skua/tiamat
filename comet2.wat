@@ -389,16 +389,80 @@
     )
   )
   (func $SLA
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local $val i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $set_r1_s (local.get $op)
+      (local.tee $val
+        (call $shl
+          (call $get_r_s (local.get $op))
+          (i32.extend16_s (local.get $adr))
+        )
+      )
+    )
+    ;; Set flags
+    (call $set_of_shl (local.get $val))
+    (call $set_zf (local.get $val))
+    (call $set_sf (local.get $val))
   )
   (func $SRA
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local $val i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $set_r1_s (local.get $op)
+      (local.tee $val
+        (call $shr
+          (call $get_r_s (local.get $op))
+          (i32.extend16_s (local.get $adr))
+        )
+      )
+    )
+    ;; Set flags
+    (call $set_of_shr (local.get $val))
+    (call $set_zf (local.get $val))
+    (call $set_sf (local.get $val))
   )
   (func $SLL
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local $val i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $set_r1_u (local.get $op)
+      (local.tee $val
+        (call $shl
+          (call $get_r_u (local.get $op))
+          (i32.extend16_s (local.get $adr))
+        )
+      )
+    )
+    ;; Set flags
+    (call $set_of_shl (local.get $val))
+    (call $set_zf (local.get $val))
+    (call $set_sf (local.get $val))
   )
   (func $SRL
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local $val i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $set_r1_u (local.get $op)
+      (local.tee $val
+        (call $shr
+          (call $get_r_u (local.get $op))
+          (i32.extend16_s (local.get $adr))
+        )
+      )
+    )
+    ;; Set flags
+    (call $set_of_shr (local.get $val))
+    (call $set_zf (local.get $val))
+    (call $set_sf (local.get $val))
   )
   (func $JMI
     unreachable
@@ -661,8 +725,19 @@
     )
   )
   (func $set_of_u (param $val i32)
-    (i32.gt_u (local.get $val) (i32.const 65535))
-    (if
+    (if (i32.gt_u (local.get $val) (i32.const 65535))
+      (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x4))))
+      (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x3))))
+    )
+  )
+  (func $set_of_shl (param $val i32)
+    (if (i32.and (local.get $val) (i32.const 0x10000))
+      (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x4))))
+      (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x3))))
+    )
+  )
+  (func $set_of_shr (param $val i32)
+    (if (i32.and (local.get $val) (i32.const 0x8000_0000))
       (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x4))))
       (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x3))))
     )
@@ -750,5 +825,11 @@
   )
   (func $xor (param $a i32) (param $b i32) (result i32)
     (i32.xor (local.get $a) (local.get $b))
+  )
+  (func $shl (param $a i32) (param $b i32) (result i32)
+    (i32.shl (local.get $a) (local.get $b))
+  )
+  (func $shr (param $a i32) (param $b i32) (result i32)
+    (i32.rotr (local.get $a) (local.get $b))
   )
 )
