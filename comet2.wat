@@ -465,22 +465,74 @@
     (call $set_sf (local.get $val))
   )
   (func $JMI
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $get_r1_unsafe (local.get $op)) ;; check r1
+    drop
+    (if (call $get_sf)
+      (then (global.set $PR (local.get $adr)))
+    )
   )
   (func $JNZ
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $get_r1_unsafe (local.get $op)) ;; check r1
+    drop
+    (if (i32.eqz (call $get_zf))
+      (then (global.set $PR (local.get $adr)))
+    )
   )
   (func $JZE
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $get_r1_unsafe (local.get $op)) ;; check r1
+    drop
+    (if (call $get_zf)
+      (then (global.set $PR (local.get $adr)))
+    )
   )
   (func $JUMP
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $get_r1_unsafe (local.get $op)) ;; check r1
+    drop
+    (global.set $PR (local.get $adr))
   )
   (func $JPL
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $get_r1_unsafe (local.get $op)) ;; check r1
+    drop
+    (if
+      (i32.eqz
+        (i32.or
+          (call $get_sf)
+          (call $get_zf)
+        )
+      )
+      (then (global.set $PR (local.get $adr)))
+    )
   )
   (func $JOV
-    unreachable
+    (local $op i32)
+    (local $adr i32)
+    (local.set $op (call $load_op))
+    (local.set $adr (call $load_adr (local.get $op)))
+    (call $get_r1_unsafe (local.get $op)) ;; check r1
+    drop
+    (if (call $get_of)
+      (then (global.set $PR (local.get $adr)))
+    )
   )
   (func $PUSH
     (local $op i32)
@@ -753,6 +805,15 @@
       (then (global.set $FR (i32.or (global.get $FR) (i32.const 0x1))))
       (else (global.set $FR (i32.and (global.get $FR) (i32.const 0x6))))
     )
+  )
+  (func $get_of (result i32)
+    (i32.and (global.get $FR) (i32.const 4))
+  )
+  (func $get_sf (result i32)
+    (i32.and (global.get $FR) (i32.const 2))
+  )
+  (func $get_zf (result i32)
+    (i32.and (global.get $FR) (i32.const 1))
   )
   ;; Helper Functions
   (func $is_signed (param $val i32) (result i32)
