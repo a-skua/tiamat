@@ -469,8 +469,7 @@
     (local $adr i32)
     (local.set $op (call $load_op))
     (local.set $adr (call $load_adr (local.get $op)))
-    (call $get_r1_unsafe (local.get $op)) ;; check r1
-    drop
+    (call $check_r1 (local.get $op))
     (if (call $get_sf)
       (then (global.set $PR (local.get $adr)))
     )
@@ -480,8 +479,7 @@
     (local $adr i32)
     (local.set $op (call $load_op))
     (local.set $adr (call $load_adr (local.get $op)))
-    (call $get_r1_unsafe (local.get $op)) ;; check r1
-    drop
+    (call $check_r1 (local.get $op))
     (if (i32.eqz (call $get_zf))
       (then (global.set $PR (local.get $adr)))
     )
@@ -491,8 +489,7 @@
     (local $adr i32)
     (local.set $op (call $load_op))
     (local.set $adr (call $load_adr (local.get $op)))
-    (call $get_r1_unsafe (local.get $op)) ;; check r1
-    drop
+    (call $check_r1 (local.get $op))
     (if (call $get_zf)
       (then (global.set $PR (local.get $adr)))
     )
@@ -502,8 +499,7 @@
     (local $adr i32)
     (local.set $op (call $load_op))
     (local.set $adr (call $load_adr (local.get $op)))
-    (call $get_r1_unsafe (local.get $op)) ;; check r1
-    drop
+    (call $check_r1 (local.get $op))
     (global.set $PR (local.get $adr))
   )
   (func $JPL
@@ -511,8 +507,7 @@
     (local $adr i32)
     (local.set $op (call $load_op))
     (local.set $adr (call $load_adr (local.get $op)))
-    (call $get_r1_unsafe (local.get $op)) ;; check r1
-    drop
+    (call $check_r1 (local.get $op))
     (if
       (i32.eqz
         (i32.or
@@ -528,8 +523,7 @@
     (local $adr i32)
     (local.set $op (call $load_op))
     (local.set $adr (call $load_adr (local.get $op)))
-    (call $get_r1_unsafe (local.get $op)) ;; check r1
-    drop
+    (call $check_r1 (local.get $op))
     (if (call $get_of)
       (then (global.set $PR (local.get $adr)))
     )
@@ -686,6 +680,37 @@
     )
     (global.set $GR7 (local.get $val))
   )
+  (func $check_r1 (param $op i32)
+    (call $check_rx
+      (i32.shr_u
+        (i32.and (local.get $op) (i32.const 0x00f0))
+        (i32.const 4)
+      )
+    )
+  )
+  (func $check_rx (param $i i32)
+    (block $GR7
+      (block $GR6
+        (block $GR5
+          (block $GR4
+            (block $GR3
+              (block $GR2
+                (block $GR1
+                  (block $GR0
+                    (block $trap
+                      (local.get $i)
+                      (br_table $GR0 $GR1 $GR2 $GR3 $GR4 $GR5 $GR6 $GR7 $trap)
+                    )
+                    unreachable
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
   (func $get_r_s (param $op i32) (result i32)
     (call $get_r1_s (local.get $op))
   )
@@ -766,6 +791,9 @@
     (global.get $GR7)
   )
   ;; Flag Register Update Functions
+  (func $set_fr (param $val i32)
+    (global.set $FR (local.get $val))
+  )
   (func $set_of_s (param $val i32)
     (i32.or
       (i32.gt_s (local.get $val) (i32.const 32767))
