@@ -41,8 +41,10 @@ function test(
   }, expect);
 }
 
-const { reset, step, supervisor } = comet2;
 const memory = new DataView(comet2.memory.buffer);
+const reset = comet2.reset as () => void;
+const step = comet2.step as () => void;
+const supervisor = comet2.supervisor as WebAssembly.Table;
 
 const GR = [
   comet2.GR0 as unknown as WebAssembly.Global,
@@ -71,7 +73,7 @@ Deno.test("reset", () => {
   FR.value = random();
 
   reset();
-  test({ gr: [0, 0, 0, 0, 0, 0, 0, 0], pr: 0, sp: 0xffff, fr: 0b000 });
+  test({ gr: [0, 0, 0, 0, 0, 0, 0, 0], pr: 0, sp: 0, fr: 0b000 });
 });
 
 Deno.test("step", async (t) => {
@@ -82,63 +84,63 @@ Deno.test("step", async (t) => {
         adr: random(2 ** 15),
         val: 1,
         gr: [0, 0, 0, 0, 0, 0, 0, 0],
-        expect: { gr: [1, 0, 0, 0, 0, 0, 0, 0], pr: 2, sp: 0xffff, fr: 0b000 },
+        expect: { gr: [1, 0, 0, 0, 0, 0, 0, 0], pr: 2, sp: 0, fr: 0b000 },
       },
       {
         op: 0x1010,
         adr: random(2 ** 15),
         val: 1,
         gr: [0, 0, 0, 0, 0, 0, 0, 0],
-        expect: { gr: [0, 1, 0, 0, 0, 0, 0, 0], pr: 2, sp: 0xffff, fr: 0b000 },
+        expect: { gr: [0, 1, 0, 0, 0, 0, 0, 0], pr: 2, sp: 0, fr: 0b000 },
       },
       {
         op: 0x1020,
         adr: random(2 ** 15),
         val: 1,
         gr: [0, 0, 0, 0, 0, 0, 0, 0],
-        expect: { gr: [0, 0, 1, 0, 0, 0, 0, 0], pr: 2, sp: 0xffff, fr: 0b000 },
+        expect: { gr: [0, 0, 1, 0, 0, 0, 0, 0], pr: 2, sp: 0, fr: 0b000 },
       },
       {
         op: 0x1030,
         adr: random(2 ** 15),
         val: 1,
         gr: [0, 0, 0, 0, 0, 0, 0, 0],
-        expect: { gr: [0, 0, 0, 1, 0, 0, 0, 0], pr: 2, sp: 0xffff, fr: 0b000 },
+        expect: { gr: [0, 0, 0, 1, 0, 0, 0, 0], pr: 2, sp: 0, fr: 0b000 },
       },
       {
         op: 0x1040,
         adr: random(2 ** 15),
         val: 1,
         gr: [0, 0, 0, 0, 0, 0, 0, 0],
-        expect: { gr: [0, 0, 0, 0, 1, 0, 0, 0], pr: 2, sp: 0xffff, fr: 0b000 },
+        expect: { gr: [0, 0, 0, 0, 1, 0, 0, 0], pr: 2, sp: 0, fr: 0b000 },
       },
       {
         op: 0x1050,
         adr: random(2 ** 15),
         val: 1,
         gr: [0, 0, 0, 0, 0, 0, 0, 0],
-        expect: { gr: [0, 0, 0, 0, 0, 1, 0, 0], pr: 2, sp: 0xffff, fr: 0b000 },
+        expect: { gr: [0, 0, 0, 0, 0, 1, 0, 0], pr: 2, sp: 0, fr: 0b000 },
       },
       {
         op: 0x1060,
         adr: random(2 ** 15),
         val: 1,
         gr: [0, 0, 0, 0, 0, 0, 0, 0],
-        expect: { gr: [0, 0, 0, 0, 0, 0, 1, 0], pr: 2, sp: 0xffff, fr: 0b000 },
+        expect: { gr: [0, 0, 0, 0, 0, 0, 1, 0], pr: 2, sp: 0, fr: 0b000 },
       },
       {
         op: 0x1070,
         adr: random(2 ** 15),
         val: 1,
         gr: [0, 0, 0, 0, 0, 0, 0, 0],
-        expect: { gr: [0, 0, 0, 0, 0, 0, 0, 1], pr: 2, sp: 0xffff, fr: 0b000 },
+        expect: { gr: [0, 0, 0, 0, 0, 0, 0, 1], pr: 2, sp: 0, fr: 0b000 },
       },
       {
         op: 0x1000,
         adr: random(2 ** 15),
         val: 0,
         gr: [0, 0, 0, 0, 0, 0, 0, 0],
-        expect: { gr: [0, 0, 0, 0, 0, 0, 0, 0], pr: 2, sp: 0xffff, fr: 0b001 },
+        expect: { gr: [0, 0, 0, 0, 0, 0, 0, 0], pr: 2, sp: 0, fr: 0b001 },
       },
       {
         op: 0x1000,
@@ -148,7 +150,7 @@ Deno.test("step", async (t) => {
         expect: {
           gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
           pr: 2,
-          sp: 0xffff,
+          sp: 0,
           fr: 0b010,
         },
       },
@@ -160,7 +162,7 @@ Deno.test("step", async (t) => {
         expect: {
           gr: [1, 0, 0, 0, 0, 0, 0, 100],
           pr: 2,
-          sp: 0xffff,
+          sp: 0,
           fr: 0b000,
         },
       },
@@ -172,7 +174,7 @@ Deno.test("step", async (t) => {
         expect: {
           gr: [100, 1, 0, 0, 0, 0, 0, 0],
           pr: 2,
-          sp: 0xffff,
+          sp: 0,
           fr: 0b000,
         },
       },
@@ -211,7 +213,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -222,7 +224,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -233,7 +235,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 1, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -244,7 +246,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 1, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -255,7 +257,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 1, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -266,7 +268,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 1, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -277,7 +279,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 1, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -288,7 +290,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 1],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -299,7 +301,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 100, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -310,7 +312,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 100, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -321,7 +323,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 100, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -332,7 +334,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 100, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -343,7 +345,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 100, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -354,7 +356,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 100, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -365,7 +367,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0, 100],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -445,7 +447,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [100, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -456,7 +458,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 100, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -467,7 +469,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 100, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -478,7 +480,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 100, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -489,7 +491,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 100, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -500,7 +502,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 100, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -511,7 +513,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 100, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -522,7 +524,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 100],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -533,7 +535,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [101, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -544,7 +546,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [101, 0, 1, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -555,7 +557,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [101, 0, 0, 1, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -566,7 +568,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [101, 0, 0, 0, 1, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -577,7 +579,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [101, 0, 0, 0, 0, 1, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -588,7 +590,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [101, 0, 0, 0, 0, 0, 1, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -599,7 +601,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [101, 0, 0, 0, 0, 0, 0, 1],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -674,7 +676,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -684,7 +686,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 1, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -694,7 +696,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 1, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -704,7 +706,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 1, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -714,7 +716,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 1, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -724,7 +726,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 1, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -734,7 +736,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 1, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -744,7 +746,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0, 1],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -754,7 +756,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 1, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -764,7 +766,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 1, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -774,7 +776,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 1, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -784,7 +786,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 1, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -794,7 +796,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 1, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -804,7 +806,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 1, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -814,7 +816,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0, 1],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -824,7 +826,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0xffff],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -893,7 +895,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -904,7 +906,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -915,7 +917,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 2, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -926,7 +928,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 2, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -937,7 +939,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 2, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -948,7 +950,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 2, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -959,7 +961,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 2, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -970,7 +972,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 2, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -981,7 +983,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 2],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -992,7 +994,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1003,7 +1005,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 1, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1014,7 +1016,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 1, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1025,7 +1027,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 1, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1036,7 +1038,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 1, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1047,7 +1049,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 0, 1, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1058,7 +1060,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 0, 0, 1],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1069,7 +1071,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -1080,7 +1082,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-2, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1091,7 +1093,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-2, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1102,7 +1104,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-32768, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1113,7 +1115,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b100,
           },
         },
@@ -1190,7 +1192,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -1201,7 +1203,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1212,7 +1214,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1223,7 +1225,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 1, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1234,7 +1236,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 1, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1245,7 +1247,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 1, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1256,7 +1258,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 1, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1267,7 +1269,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 1, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1278,7 +1280,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 1],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1289,7 +1291,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1300,7 +1302,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 1, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1311,7 +1313,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 1, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1322,7 +1324,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 1, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1333,7 +1335,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 0, 1, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1344,7 +1346,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 0, 0, 1, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1355,7 +1357,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 0, 0, 0, 1],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1432,7 +1434,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -1443,7 +1445,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1454,7 +1456,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 2, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1465,7 +1467,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 2, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1476,7 +1478,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 2, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1487,7 +1489,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 2, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1498,7 +1500,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 2, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1509,7 +1511,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 2, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1520,7 +1522,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 2],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1531,7 +1533,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 10, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1542,7 +1544,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 10, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1553,7 +1555,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 10, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1564,7 +1566,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 10, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1575,7 +1577,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 10, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1586,7 +1588,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 0, 10, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1597,7 +1599,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 0, 0, 10],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1608,7 +1610,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b101,
           },
         },
@@ -1619,7 +1621,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xfffe, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1630,7 +1632,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xfffe, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1641,7 +1643,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x8000, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -1652,7 +1654,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b100,
           },
         },
@@ -1729,7 +1731,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -1740,7 +1742,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1751,7 +1753,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0xffff, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1762,7 +1764,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0xffff, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1773,7 +1775,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0xffff, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1784,7 +1786,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0xffff, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1795,7 +1797,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0xffff, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1806,7 +1808,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0xffff, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1817,7 +1819,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0xffff],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1828,7 +1830,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 10, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1839,7 +1841,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 10, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1850,7 +1852,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 10, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1861,7 +1863,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 10, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1872,7 +1874,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 10, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1883,7 +1885,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 10, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1894,7 +1896,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 10],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -1970,7 +1972,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -1980,7 +1982,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -1990,7 +1992,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 3, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2000,7 +2002,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 3, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2010,7 +2012,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 3, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2020,7 +2022,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 3, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2030,7 +2032,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 3, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2040,7 +2042,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 3, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2050,7 +2052,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0, 3],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2060,7 +2062,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 2, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2070,7 +2072,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 2, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2080,7 +2082,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 2, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2090,7 +2092,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 0, 2, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2100,7 +2102,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 0, 0, 2, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2110,7 +2112,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 0, 0, 0, 2, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2120,7 +2122,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 0, 0, 0, 0, 2],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2130,7 +2132,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-0x8000, 0x7fff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -2140,7 +2142,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-3, -2, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2210,7 +2212,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -2220,7 +2222,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -2230,7 +2232,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, -1, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2240,7 +2242,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, -1, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2250,7 +2252,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, -1, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2260,7 +2262,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, -1, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2270,7 +2272,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, -1, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2280,7 +2282,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, -1, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2290,7 +2292,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0, -1],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2300,7 +2302,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 2, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2310,7 +2312,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 2, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2320,7 +2322,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 2, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2330,7 +2332,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 2, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2340,7 +2342,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 0, 2, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2350,7 +2352,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 0, 0, 2, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2360,7 +2362,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 0, 0, 0, 2],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2370,7 +2372,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 0, 0, 0, 0, 0, 0, 0xffff],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2440,7 +2442,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -2450,7 +2452,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2460,7 +2462,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 3, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2470,7 +2472,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 3, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2480,7 +2482,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 3, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2490,7 +2492,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 3, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2500,7 +2502,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 3, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2510,7 +2512,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 3, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2520,7 +2522,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0, 3],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2530,7 +2532,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 2, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2540,7 +2542,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 2, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2550,7 +2552,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 2, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2560,7 +2562,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 0, 2, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2570,7 +2572,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 0, 0, 2, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2580,7 +2582,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 0, 0, 0, 2, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2590,7 +2592,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [3, 0, 0, 0, 0, 0, 0, 2],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2600,7 +2602,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 1],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b101,
           },
         },
@@ -2610,7 +2612,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x8000, 0, 0, 0, 0, 0, 0, 1],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -2680,7 +2682,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -2690,7 +2692,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -2700,7 +2702,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0xffff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -2710,7 +2712,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0xffff, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -2720,7 +2722,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0xffff, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -2730,7 +2732,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0xffff, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -2740,7 +2742,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0xffff, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -2750,7 +2752,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0xffff, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -2760,7 +2762,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0, 0xffff],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -2831,7 +2833,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -2842,7 +2844,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2853,7 +2855,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0x000f, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2864,7 +2866,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0x000f, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2875,7 +2877,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0x000f, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2886,7 +2888,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0x000f, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2897,7 +2899,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0x000f, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2908,7 +2910,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0x000f, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2919,7 +2921,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0x000f],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2930,7 +2932,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2941,7 +2943,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2952,7 +2954,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2963,7 +2965,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2974,7 +2976,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2985,7 +2987,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -2996,7 +2998,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3007,7 +3009,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -3018,7 +3020,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x8000, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3095,7 +3097,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3106,7 +3108,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0xffff, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3117,7 +3119,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0xffff, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3128,7 +3130,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0xffff, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3139,7 +3141,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0xffff, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3150,7 +3152,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0xffff, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3161,7 +3163,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0xffff, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3172,7 +3174,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0xffff],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3183,7 +3185,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3194,7 +3196,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3205,7 +3207,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3216,7 +3218,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3227,7 +3229,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3238,7 +3240,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3249,7 +3251,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3260,7 +3262,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -3337,7 +3339,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3348,7 +3350,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0x000f, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3359,7 +3361,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0x000f, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3370,7 +3372,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0x000f, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3381,7 +3383,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0x000f, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3392,7 +3394,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0x000f, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3403,7 +3405,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0x000f, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3414,7 +3416,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0x000f],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3425,7 +3427,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3436,7 +3438,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 1, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3447,7 +3449,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 1, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3458,7 +3460,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 1, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3469,7 +3471,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 1, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3480,7 +3482,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 1, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3491,7 +3493,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 1],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3502,7 +3504,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 1],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -3513,7 +3515,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 1],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3589,7 +3591,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3599,7 +3601,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0xffff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3609,7 +3611,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0xffff, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3619,7 +3621,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0xffff, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3629,7 +3631,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0xffff, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3639,7 +3641,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0xffff, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3649,7 +3651,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0xffff, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3659,7 +3661,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0xffff],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3669,7 +3671,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x00ff, 0x000f, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3679,7 +3681,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x00ff, 0, 0x000f, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3689,7 +3691,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x00ff, 0, 0, 0x000f, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3699,7 +3701,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x00ff, 0, 0, 0, 0x000f, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3709,7 +3711,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x00ff, 0, 0, 0, 0, 0x000f, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3719,7 +3721,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x00ff, 0, 0, 0, 0, 0, 0x000f, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3729,7 +3731,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x00ff, 0, 0, 0, 0, 0, 0, 0x000f],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3739,7 +3741,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -3749,7 +3751,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x8000, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3819,7 +3821,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -3829,7 +3831,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x0f0f, 0xffff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3839,7 +3841,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x0f0f, 0, 0xffff, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3849,7 +3851,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x0f0f, 0, 0, 0xffff, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3859,7 +3861,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x0f0f, 0, 0, 0, 0xffff, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3869,7 +3871,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x0f0f, 0, 0, 0, 0, 0xffff, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3879,7 +3881,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x0f0f, 0, 0, 0, 0, 0, 0xffff, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3889,7 +3891,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x0f0f, 0, 0, 0, 0, 0, 0, 0xffff],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -3959,7 +3961,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -3969,7 +3971,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -3979,7 +3981,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0x000f, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3989,7 +3991,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0x000f, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -3999,7 +4001,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0x000f, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4009,7 +4011,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0x000f, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4019,7 +4021,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0x000f, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4029,7 +4031,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0x000f, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4039,7 +4041,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0x000f],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4049,7 +4051,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0xfff0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4059,7 +4061,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0xfff0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4069,7 +4071,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0xfff0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4079,7 +4081,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0xfff0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4089,7 +4091,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0xfff0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4099,7 +4101,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0xfff0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4109,7 +4111,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x000f, 0, 0, 0, 0, 0, 0, 0xfff0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4119,7 +4121,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0xf0f0, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -4190,7 +4192,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -4201,7 +4203,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4212,7 +4214,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -4289,7 +4291,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4300,7 +4302,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x7fff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -4311,7 +4313,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -4387,7 +4389,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0x7fff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -4397,7 +4399,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x7fff, 0xffff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4407,7 +4409,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0xffff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -4477,7 +4479,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0x7fff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4487,7 +4489,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x7fff, 0xffff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -4497,7 +4499,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0xffff, 0xffff, 0, 0, 0, 0, 0, 0],
             pr: 1,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -4566,7 +4568,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -4577,7 +4579,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4588,7 +4590,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0b10, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4599,7 +4601,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-32768, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -4610,7 +4612,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b100,
           },
         },
@@ -4684,7 +4686,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -4695,7 +4697,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, -1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -4706,7 +4708,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [-1, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -4780,7 +4782,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -4791,7 +4793,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4802,7 +4804,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0b10, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4813,7 +4815,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x8000, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -4824,7 +4826,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [2, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b100,
           },
         },
@@ -4898,7 +4900,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -4909,7 +4911,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0x7fff, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -4920,7 +4922,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x7fff, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b100,
           },
         },
@@ -4931,7 +4933,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0x4000, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -5006,7 +5008,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -5018,7 +5020,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -5094,7 +5096,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -5106,7 +5108,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -5182,7 +5184,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -5194,7 +5196,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -5270,7 +5272,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [1, 0, 0, 0, 0, 0, 0, 0],
             pr: 100,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -5282,7 +5284,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -5294,7 +5296,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 1, 0, 0, 0, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -5306,7 +5308,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 1, 0, 0, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b011,
           },
         },
@@ -5318,7 +5320,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 1, 0, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b100,
           },
         },
@@ -5330,7 +5332,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 1, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b101,
           },
         },
@@ -5342,7 +5344,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 1, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b110,
           },
         },
@@ -5354,7 +5356,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 1],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b111,
           },
         },
@@ -5430,7 +5432,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b010,
           },
         },
@@ -5442,7 +5444,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b001,
           },
         },
@@ -5454,7 +5456,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b100,
           },
         },
@@ -5530,7 +5532,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -5542,7 +5544,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [0, 1, 0, 0, 0, 0, 0, 0],
             pr: 101,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b100,
           },
         },
@@ -5686,7 +5688,7 @@ Deno.test("step", async (t) => {
 
           step();
           test(expect);
-          assertEquals(memory.getInt16(sp * 2, true), adr + x);
+          assertEquals(memory.getInt16((sp - 1) * 2, true), adr + x);
         },
       );
     }
@@ -5907,7 +5909,7 @@ Deno.test("step", async (t) => {
 
           step();
           test(expect);
-          assertEquals(memory.getInt16(sp * 2, true), 2);
+          assertEquals(memory.getInt16((sp - 1) * 2, true), 2);
         },
       );
     }
@@ -5967,7 +5969,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [100, 0, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -5978,7 +5980,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [100, 1, 0, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -5989,7 +5991,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [100, 0, 1, 0, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -6000,7 +6002,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [100, 0, 0, 1, 0, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -6011,7 +6013,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [100, 0, 0, 0, 1, 0, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -6022,7 +6024,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [100, 0, 0, 0, 0, 1, 0, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -6033,7 +6035,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [100, 0, 0, 0, 0, 0, 1, 0],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -6044,7 +6046,7 @@ Deno.test("step", async (t) => {
           expect: {
             gr: [100, 0, 0, 0, 0, 0, 0, 1],
             pr: 2,
-            sp: 0xffff,
+            sp: 0,
             fr: 0b000,
           },
         },
@@ -6117,6 +6119,6 @@ Deno.test("step", async (t) => {
     PR.value = pr;
 
     step();
-    test({ gr: [0, 0, 0, 0, 0, 0, 0, 0], pr: pr + 1, sp: 0xffff, fr: 0b000 });
+    test({ gr: [0, 0, 0, 0, 0, 0, 0, 0], pr: pr + 1, sp: 0, fr: 0b000 });
   });
 });

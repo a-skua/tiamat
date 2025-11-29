@@ -32,7 +32,7 @@
   ;; Flag Register
   (global $FR (mut i32) (i32.const 0))
   (export "FR" (global $FR))
-  (func (export "reset")
+  (func $reset
     (global.set $GR0 (i32.const 0))
     (global.set $GR1 (i32.const 0))
     (global.set $GR2 (i32.const 0))
@@ -42,9 +42,11 @@
     (global.set $GR6 (i32.const 0))
     (global.set $GR7 (i32.const 0))
     (global.set $PR (i32.const 0))
-    (global.set $SP (i32.const 0xffff))
+    (global.set $SP (i32.const 0))
     (global.set $FR (i32.const 0))
   )
+  (export "reset" (func $reset))
+  (start $reset)
   ;; |F  C|B  8|7  4|3  0|
   ;; |-------------------|
   ;; | opecode | operand |
@@ -418,8 +420,8 @@
   )
   ;; Memory Access Functions
   (func $push (param $val i32)
-    (call $store (global.get $SP) (local.get $val))
     call $decr_sp
+    (call $store (global.get $SP) (local.get $val))
   )
   (func $pop (result i32)
     (call $load_u (global.get $SP))
