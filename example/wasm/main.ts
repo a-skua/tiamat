@@ -1,3 +1,4 @@
+import { gray } from "@std/fmt/colors";
 import { assert } from "@std/assert";
 import { compileStreaming, instantiate, invoke } from "./build_dart.mjs";
 
@@ -66,10 +67,17 @@ const memory = new Int16Array(
 );
 memory.set(__dart_bin, 0);
 
+const gr0 = comet2.exports.GR0 as WebAssembly.Global;
 const gr1 = comet2.exports.GR1 as WebAssembly.Global;
 const gr2 = comet2.exports.GR2 as WebAssembly.Global;
+const gr3 = comet2.exports.GR3 as WebAssembly.Global;
+const gr4 = comet2.exports.GR4 as WebAssembly.Global;
+const gr5 = comet2.exports.GR5 as WebAssembly.Global;
+const gr6 = comet2.exports.GR6 as WebAssembly.Global;
+const gr7 = comet2.exports.GR7 as WebAssembly.Global;
 const pr = comet2.exports.PR as WebAssembly.Global;
 const sp = comet2.exports.SP as WebAssembly.Global;
+const fr = comet2.exports.FR as WebAssembly.Global;
 
 const step = comet2.exports.step as () => void;
 
@@ -94,5 +102,17 @@ su.set(2, () => {
 
 pr.value = __dart_start;
 do {
+  printRegisters();
   step();
 } while (sp.value);
+
+function printRegisters() {
+  function r2s(r: WebAssembly.Global, l = 4) {
+    return r.value.toString(16).padStart(l, "0");
+  }
+  console.debug(gray(
+    `GR=[${r2s(gr0)}, ${r2s(gr1)}, ${r2s(gr2)}, ${r2s(gr3)}, ${r2s(gr4)}, ${
+      r2s(gr5)
+    }, ${r2s(gr6)}, ${r2s(gr7)}] PR=${r2s(pr)} SP=${r2s(sp)} FR=${r2s(fr, 1)}`,
+  ));
+}

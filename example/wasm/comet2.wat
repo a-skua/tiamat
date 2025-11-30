@@ -58,115 +58,115 @@
     (local $op i32)
     (local.set $op (i32.and (call $load_u (global.get $PR)) (i32.const 0xff00)))
     ;; LD r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x1000)))
+    (i32.eq (local.get $op) (i32.const 0x1000))
     (if (then (return_call $LD)))
     ;; ST r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x1100)))
+    (i32.eq (local.get $op) (i32.const 0x1100))
     (if (then (return_call $ST)))
     ;; LAD r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x1200)))
+    (i32.eq (local.get $op) (i32.const 0x1200))
     (if (then (return_call $LAD)))
     ;; LD r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x1400)))
+    (i32.eq (local.get $op) (i32.const 0x1400))
     (if (then (return_call $LD_GR)))
     ;; ADDA r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x2000)))
+    (i32.eq (local.get $op) (i32.const 0x2000))
     (if (then (return_call $ADDA)))
     ;; SUBA r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x2100)))
+    (i32.eq (local.get $op) (i32.const 0x2100))
     (if (then (return_call $SUBA)))
     ;; ADDL r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x2200)))
+    (i32.eq (local.get $op) (i32.const 0x2200))
     (if (then (return_call $ADDL)))
     ;; SUBL r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x2300)))
+    (i32.eq (local.get $op) (i32.const 0x2300))
     (if (then (return_call $SUBL)))
     ;; ADDA r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x2400)))
+    (i32.eq (local.get $op) (i32.const 0x2400))
     (if (then (return_call $ADDA_GR)))
     ;; SUBA r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x2500)))
+    (i32.eq (local.get $op) (i32.const 0x2500))
     (if (then (return_call $SUBA_GR)))
     ;; ADDL r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x2600)))
+    (i32.eq (local.get $op) (i32.const 0x2600))
     (if (then (return_call $ADDL_GR)))
     ;; SUBL r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x2700)))
+    (i32.eq (local.get $op) (i32.const 0x2700))
     (if (then (return_call $SUBL_GR)))
     ;; AND r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x3000)))
+    (i32.eq (local.get $op) (i32.const 0x3000))
     (if (then (return_call $AND)))
     ;; OR r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x3100)))
+    (i32.eq (local.get $op) (i32.const 0x3100))
     (if (then (return_call $OR)))
     ;; XOR r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x3200)))
+    (i32.eq (local.get $op) (i32.const 0x3200))
     (if (then (return_call $XOR)))
     ;; AND r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x3400)))
+    (i32.eq (local.get $op) (i32.const 0x3400))
     (if (then (return_call $AND_GR)))
     ;; OR r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x3500)))
+    (i32.eq (local.get $op) (i32.const 0x3500))
     (if (then (return_call $OR_GR)))
     ;; XOR r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x3600)))
+    (i32.eq (local.get $op) (i32.const 0x3600))
     (if (then (return_call $XOR_GR)))
     ;; CPA r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x4000)))
+    (i32.eq (local.get $op) (i32.const 0x4000))
     (if (then (return_call $CPA)))
     ;; CPL r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x4100)))
+    (i32.eq (local.get $op) (i32.const 0x4100))
     (if (then (return_call $CPL)))
     ;; CPA r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x4400)))
+    (i32.eq (local.get $op) (i32.const 0x4400))
     (if (then (return_call $CPA_GR)))
     ;; CPL r1,r2
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x4500)))
+    (i32.eq (local.get $op) (i32.const 0x4500))
     (if (then (return_call $CPL_GR)))
     ;; SLA r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x5000)))
+    (i32.eq (local.get $op) (i32.const 0x5000))
     (if (then (return_call $SLA)))
     ;; SRA r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x5100)))
+    (i32.eq (local.get $op) (i32.const 0x5100))
     (if (then (return_call $SRA)))
     ;; SLL r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x5200)))
+    (i32.eq (local.get $op) (i32.const 0x5200))
     (if (then (return_call $SLL)))
     ;; SRL r,adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x5300)))
+    (i32.eq (local.get $op) (i32.const 0x5300))
     (if (then (return_call $SRL)))
     ;; JMI adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x6100)))
+    (i32.eq (local.get $op) (i32.const 0x6100))
     (if (then (return_call $JMI)))
     ;; JNZ adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x6200)))
+    (i32.eq (local.get $op) (i32.const 0x6200))
     (if (then (return_call $JNZ)))
     ;; JZE adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x6300)))
+    (i32.eq (local.get $op) (i32.const 0x6300))
     (if (then (return_call $JZE)))
     ;; JUMP adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x6400)))
+    (i32.eq (local.get $op) (i32.const 0x6400))
     (if (then (return_call $JUMP)))
     ;; JPL adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x6500)))
+    (i32.eq (local.get $op) (i32.const 0x6500))
     (if (then (return_call $JPL)))
     ;; JOV adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x6600)))
+    (i32.eq (local.get $op) (i32.const 0x6600))
     (if (then (return_call $JOV)))
     ;; PUSH adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x7000)))
+    (i32.eq (local.get $op) (i32.const 0x7000))
     (if (then (return_call $PUSH)))
     ;; POP r
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x7100)))
+    (i32.eq (local.get $op) (i32.const 0x7100))
     (if (then (return_call $POP)))
     ;; CALL adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x8000)))
+    (i32.eq (local.get $op) (i32.const 0x8000))
     (if (then (return_call $CALL)))
     ;; RET
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0x8100)))
+    (i32.eq (local.get $op) (i32.const 0x8100))
     (if (then (return_call $RET)))
     ;; SVC adr,x
-    (i32.eqz (i32.xor (local.get $op) (i32.const 0xf000)))
+    (i32.eq (local.get $op) (i32.const 0xf000))
     (if (then (return_call $SVC)))
     ;; NOP
     call $NOP
